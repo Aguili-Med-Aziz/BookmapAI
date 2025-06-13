@@ -479,6 +479,6 @@ java -jar BookmapAI.jar --test
 ---
 
 <div align="center">
-  <p>صُنع بـ ❤️ بواسطة فريق BookmapAI</p>
+  <p>صُنع بـ ❤️ بواسطة فريق MOBookmapAI</p>
   <p>© 2024 BookmapAI. جميع الحقوق محفوظة.</p>
 </div>
