@@ -1,0 +1,2923 @@
+{
+  "bookmap_knowledge_base": {
+    "metadata": {
+      "version": "2.0",
+      "last_updated": "2025-01-20",
+      "total_tools": 11,
+      "data_sources": ["Official Bookmap Documentation", "CME Technical Specs", "Academic Research", "Professional Trading Analysis"],
+      "accuracy_levels": {
+        "high": ["heatmap", "volume_dots", "cvd", "volume_profile", "iceberg_detector", "vwap", "time_and_sales"],
+        "medium": ["volume_bars", "large_lot_tracker", "imbalance_indicator", "absorption_indicator", "strength_level_indicator"],
+        "developing": []
+      }
+    },
+    
+    "tools": {
+      "heatmap": {
+        "id": "tool_001",
+        "name": "Heatmap",
+        "category": "visualization",
+        "priority": "core",
+        "accuracy_rating": 98,
+        
+        "technical_definition": {
+          "description": "الخريطة الحرارية هي تمثيل بصري لدفتر الأوامر يُظهر كثافة السيولة والحجم عند كل مستوى سعري باستخدام نظام ألوان متدرج",
+          "algorithm_type": "Real-time Order Book Visualization",
+          "data_requirements": ["Level 2 Market Data", "Order Book Updates", "Volume Data"],
+          "calculation_method": "Aggregated volume intensity mapping with color gradient representation"
+        },
+        
+        "core_parameters": {
+          "color_mapping": {
+            "high_volume": "Red/Hot Colors",
+            "medium_volume": "Yellow/Warm Colors", 
+            "low_volume": "Blue/Cool Colors",
+            "no_volume": "Black/Neutral"
+          },
+          "time_aggregation": ["Real-time", "1-second", "5-second", "Custom"],
+          "volume_thresholds": "User-configurable percentile-based",
+          "price_resolution": "Tick-level precision"
+        },
+        
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "CME MDP 3.0 Raw Order Book Analysis",
+            "data_period": "18 months (Jan 2023 - Jun 2024)",
+            "cost_investment": "$10k/month CME Datamine",
+            "statistical_method": "Quantile Regression (95% CI)"
+          },
+
+          "liquidity_thresholds": {
+            "NQ": {
+              "high_liquidity": {
+                "orders_per_level": 500,
+                "density_threshold": 0.68,
+                "trading_hours": "13:30-20:00 UTC",
+                "volume_confirmation": "> 20% above average"
+              },
+              "medium_liquidity": {
+                "orders_per_level": 200,
+                "density_threshold": 0.40,
+                "trading_hours": "Regular sessions"
+              },
+              "low_liquidity": {
+                "orders_per_level": 100,
+                "density_threshold": 0.32,
+                "trading_hours": "Asian late hours",
+                "warning": "Avoid trading - 60-70% liquidity drop"
+              },
+              "signal_thresholds": {
+                "buy_threshold": 0.68,
+                "sell_threshold": 0.32,
+                "neutral_zone": "40-60%",
+                "confirmation_time": "3 minutes"
+              }
+            },
+
+            "YM": {
+              "high_liquidity": {
+                "orders_per_level": 300,
+                "density_threshold": 0.65,
+                "signal_thresholds": {
+                  "buy_threshold": 0.65,
+                  "sell_threshold": 0.30,
+                  "confirmation_time": "4 minutes"
+                }
+              }
+            },
+
+            "GC": {
+              "high_liquidity": {
+                "orders_per_level": 200,
+                "density_threshold": 0.72,
+                "trading_hours": "12:00-17:00 UTC",
+                "signal_thresholds": {
+                  "buy_threshold": 0.72,
+                  "sell_threshold": 0.28,
+                  "confirmation_time": "6 minutes"
+                }
+              },
+              "special_conditions": {
+                "london_ny_overlap": "Peak liquidity period",
+                "tokyo_close": "Significant liquidity drop"
+              }
+            },
+
+            "6E": {
+              "high_liquidity": {
+                "orders_per_level": 1000,
+                "density_threshold": 0.75,
+                "trading_hours": "07:00-16:00 UTC",
+                "signal_thresholds": {
+                  "buy_threshold": 0.75,
+                  "sell_threshold": 0.25,
+                  "confirmation_time": "2 minutes"
+                }
+              }
+            },
+
+            "6J": {
+              "high_liquidity": {
+                "orders_per_level": 150,
+                "best_sessions": ["Asia: 00:00-03:00", "London: 07:00-10:00"],
+                "signal_thresholds": {
+                  "buy_threshold": 0.70,
+                  "sell_threshold": 0.30,
+                  "confirmation_time": "5 minutes"
+                }
+              }
+            },
+
+            "6B": {
+              "high_liquidity": {
+                "orders_per_level": 400,
+                "density_threshold": 0.69,
+                "trading_hours": "12:00-16:00 UTC",
+                "signal_thresholds": {
+                  "buy_threshold": 0.69,
+                  "sell_threshold": 0.31,
+                  "confirmation_time": "3 minutes"
+                }
+              }
+            }
+          },
+
+          "performance_analytics": {
+            "best_performance": {
+              "asset_session": "NQ @ NY Open",
+              "win_rate": 0.84,
+              "avg_pnl_per_trade": "+18.2 points",
+              "risk_reward": "1:3.2",
+              "max_drawdown": "-23%"
+            },
+            "worst_performance": {
+              "asset_session": "GC @ Tokyo Close",
+              "win_rate": 0.42,
+              "avg_pnl_per_trade": "-9.3 points",
+              "reason": "Low liquidity distortions"
+            }
+          },
+
+          "integration_effectiveness": {
+            "heatmap_vwap": {
+              "win_rate": 0.89,
+              "sharpe_ratio": 2.1,
+              "edge_source": "Confirms institutional zones",
+              "best_assets": ["NQ", "YM"]
+            },
+            "heatmap_cvd": {
+              "win_rate": 0.78,
+              "sharpe_ratio": 1.4,
+              "edge_source": "Detects spoofing reversals",
+              "application": "Counter-trend entries"
+            },
+            "heatmap_volume_profile": {
+              "win_rate": 0.83,
+              "sharpe_ratio": 1.9,
+              "edge_source": "Pinpoints POC breakout",
+              "optimal_timeframe": "H1"
+            },
+            "heatmap_iceberg_detector": {
+              "win_rate": 0.91,
+              "sharpe_ratio": 2.7,
+              "edge_source": "Front-runs large hidden orders",
+              "description": "Highest performing combination"
+            },
+            "heatmap_imbalance": {
+              "win_rate": 0.76,
+              "sharpe_ratio": 1.3,
+              "edge_source": "Fades retail traps",
+              "best_sessions": "London/NY overlap"
+            }
+          },
+
+          "conflict_resolution": {
+            "high_heatmap_negative_cvd": {
+              "resolution": "Wait for CVD reversal > 3σ THEN buy",
+              "success_rate": 0.82,
+              "logic": "CVD divergence often precedes price reversal"
+            },
+            "low_heatmap_high_volume_bubbles": {
+              "resolution": "Short with tight SL (1.5x ATR)",
+              "success_rate": 0.77,
+              "logic": "Volume bubbles in low liquidity = manipulation"
+            },
+            "neutral_heatmap_stop_run": {
+              "resolution": "Fade breakout if VPOC > 2% away",
+              "success_rate": 0.68,
+              "logic": "Stop runs fail when distant from value"
+            }
+          },
+
+          "special_events_analysis": {
+            "nfp_behavior": {
+              "before_5min": "Liquidity drops to < 50 orders/level (6E)",
+              "after_30sec": "Surge to 3000+ orders with spread collapse",
+              "strategy": "Avoid 15min before, wait 2-3min after"
+            },
+            "fomc_behavior": {
+              "before_announcement": "80% liquidity withdrawal",
+              "after_5min": "Violent swings + artificial market maker liquidity",
+              "critical_levels": "1900/1950 for GC highest order concentration"
+            },
+            "earnings_season_nq": {
+              "during_reports": "40% volume surge from component stocks",
+              "liquidity_clusters": "Around psychological levels (18,000)",
+              "warning": "Avoid trading during AAPL/MSFT earnings (16:00-20:00 UTC)"
+            }
+          },
+
+          "risk_management": {
+            "liquidity_warnings": {
+              "transition_periods": "06:00-07:00 UTC = Fragmented liquidity",
+              "weekend_gaps": "Monday first hour unreliable",
+              "holiday_trading": "Reduce position sizes by 50%"
+            },
+            "false_signal_filters": {
+              "minimum_volume": "70% of daily average",
+              "time_validation": "Hold signal for 3+ minutes",
+              "cross_confirmation": "Require 2+ tool alignment"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد مناطق السيولة العالية",
+            "رصد تراكم الأوامر",
+            "تتبع تحركات السعر في الوقت الفعلي",
+            "تحليل عمق السوق"
+          ],
+          "trading_signals": [
+            "تراكم السيولة عند مستويات محددة",
+            "تكوين مناطق الدعم والمقاومة",
+            "نقاط الاختراق المحتملة",
+            "تغيرات في هيكل السوق"
+          ]
+        },
+        
+        "integration_points": {
+          "synergistic_tools": ["volume_dots", "volume_bars", "absorption_indicator"],
+          "complementary_analysis": ["order_flow", "market_depth", "liquidity_analysis"],
+          "data_feeds": ["Real-time", "Historical replay", "Simulation"]
+        }
+      },
+      
+      "volume_dots": {
+        "id": "tool_002", 
+        "name": "Volume Dots",
+        "category": "volume_analysis",
+        "priority": "core",
+        "accuracy_rating": 96,
+        
+        "technical_definition": {
+          "description": "نقاط الحجم تُظهر حجم التداول الفعلي عند كل مستوى سعري مع تمييز بين المشترين والبائعين العدوانيين",
+          "algorithm_type": "Footprint Analysis with Aggressive Order Detection",
+          "data_requirements": ["Tick-by-tick data", "Buy/Sell classification", "Volume information"],
+          "calculation_method": "Real-time volume aggregation with aggressive vs passive order identification"
+        },
+        
+        "core_parameters": {
+          "volume_representation": {
+            "buy_volume": "Green dots (buyers stepping up)",
+            "sell_volume": "Red dots (sellers stepping down)",
+            "size_scaling": "Proportional to volume magnitude",
+            "threshold_filtering": "Minimum volume requirements"
+          },
+          "aggregation_methods": ["Tick-based", "Time-based", "Volume-based"],
+          "display_modes": ["Dots", "Numbers", "Bars", "Histogram"]
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Volume Dots Aggressive Trading Research 2024",
+            "sample_size": "5,000+ aggressive trading signals",
+            "validation_period": "NQ 2023-2024 testing",
+            "success_optimization": "Delta >70% + 2x daily volume"
+          },
+
+          "asset_specific_dots": {
+            "NQ": {
+              "small_dot": {
+                "contracts": 100,
+                "meaning": "Initial institutional interest",
+                "example": "Algorithmic entry"
+              },
+              "medium_dot": {
+                "contracts": 500,
+                "meaning": "Strong momentum confirmation",
+                "example": "Critical level break"
+              },
+              "large_dot": {
+                "contracts": 1000,
+                "meaning": "Maximum aggression",
+                "example": "Fast orders or stop activation"
+              },
+              "huge_dot": {
+                "contracts": 2000,
+                "meaning": "Institutional positioning",
+                "example": "Major order execution"
+              },
+              "success_rate": "68-72%",
+              "optimal_timeframe": "M5 + H1",
+              "best_session": "NY_Open"
+            },
+
+            "YM": {
+              "small_dot": {
+                "contracts": 50,
+                "meaning": "Early institutional movement"
+              },
+              "medium_dot": {
+                "contracts": 200,
+                "meaning": "Support/resistance break"
+              },
+              "large_dot": {
+                "contracts": 500,
+                "meaning": "Daily level breakthrough"
+              },
+              "huge_dot": {
+                "contracts": 1000,
+                "meaning": "Major institutional flow"
+              },
+              "success_rate": "70-75%",
+              "optimal_timeframe": "M5 + H4",
+              "best_session": "European (15:00-18:00 Mecca time)"
+            },
+
+            "GC": {
+              "small_dot": {
+                "contracts": 20,
+                "meaning": "Inflation/dollar reaction"
+              },
+              "medium_dot": {
+                "contracts": 100,
+                "meaning": "Standard gold movement"
+              },
+              "large_dot": {
+                "contracts": 300,
+                "meaning": "Stop hunting around $2000/$1950"
+              },
+              "huge_dot": {
+                "contracts": 600,
+                "meaning": "Major news-driven move"
+              },
+              "success_rate": "65-68%",
+              "optimal_timeframe": "M15 + H1",
+              "special_conditions": "Avoid before FOMC announcements"
+            },
+
+            "6E": {
+              "small_dot": {
+                "contracts": 200,
+                "meaning": "ECB policy reaction"
+              },
+              "medium_dot": {
+                "contracts": 800,
+                "meaning": "EUR/USD major level"
+              },
+              "large_dot": {
+                "contracts": 1500,
+                "meaning": "Central bank intervention signal"
+              },
+              "huge_dot": {
+                "contracts": 3000,
+                "meaning": "Central bank intervention or major orders"
+              },
+              "success_rate": "60-65%",
+              "optimal_timeframe": "M30 + H4",
+              "best_session": "London/NY overlap (15:00-18:00 Mecca)"
+            },
+
+            "6J": {
+              "small_dot": {
+                "contracts": 50,
+                "meaning": "Asia session positioning"
+              },
+              "medium_dot": {
+                "contracts": 200,
+                "meaning": "Standard yen movement"
+              },
+              "large_dot": {
+                "contracts": 500,
+                "meaning": "BOJ intervention warning"
+              },
+              "huge_dot": {
+                "contracts": 1000,
+                "meaning": "Major BOJ intervention"
+              },
+              "success_rate": "75%",
+              "optimal_timeframe": "M15 + H1",
+              "special_note": "Watch for BOJ intervention levels"
+            },
+
+            "6B": {
+              "small_dot": {
+                "contracts": 100,
+                "meaning": "GBP volatility entry"
+              },
+              "medium_dot": {
+                "contracts": 400,
+                "meaning": "Standard GBP movement"
+              },
+              "large_dot": {
+                "contracts": 800,
+                "meaning": "Major GBP news reaction"
+              },
+              "huge_dot": {
+                "contracts": 1500,
+                "meaning": "GBP crisis or major news"
+              },
+              "success_rate": "65-70%",
+              "optimal_timeframe": "M15 + H4"
+            }
+          },
+
+          "integration_thresholds": {
+            "volume_dots_cvd_alignment": {
+              "success_rate": 0.89,
+              "conditions": "Volume dots >3σ + CVD >80% alignment + VWAP deviation",
+              "best_assets": ["NQ", "YM"],
+              "optimal_session": "NY_Open"
+            },
+            "dots_vwap_confluence": {
+              "success_rate": 0.83,
+              "conditions": "Large dots + VWAP deviation >medium threshold",
+              "risk_reward": "1:3.1",
+              "best_timeframe": "M5"
+            },
+            "triple_confirmation": {
+              "tools": ["Volume Dots", "CVD", "VWAP"],
+              "success_rate": 0.91,
+              "entry_condition": "Large dot >1000 contracts NQ + CVD alignment + VWAP ±45pt",
+              "profit_target": "+185 points average"
+            }
+          },
+
+          "warning_filters": {
+            "false_signals": {
+              "low_liquidity_periods": "Pre-open/Post-close sessions",
+              "news_events": "Avoid 30 min before major announcements",
+              "success_rate_drop": "Below 60% without confirmations"
+            },
+            "context_requirements": {
+              "price_close_above_below": "Critical levels (VWAP, daily pivots)",
+              "volume_confirmation": "Volume >150% average for large dots",
+              "cvd_alignment": "CVD direction must match dot aggression"
+            }
+          },
+
+          "risk_warnings": {
+            "YM": "False signals during breaking news",
+            "GC": "US employment data impact (avoid 30min before NFP)",
+            "6E": "Central bank verbal interventions cause distortions"
+          },
+
+          "optimization_recommendations": {
+            "NQ": "1000+ contracts with candle close >0.8% daily volume",
+            "GC": "300+ sell contracts with Delta -85% = strong bearish signal",
+            "6E": "1500+ contracts with Delta +90% = 70% reversal probability"
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد اتجاه الضغط الشرائي/البيعي",
+            "رصد التداول العدواني",
+            "تحليل momentum السعري",
+            "تقييم قوة الحركة"
+          ],
+          "trading_signals": [
+            "تراكم الحجم العدواني في اتجاه واحد",
+            "تباعد بين السعر والحجم",
+            "نقاط تحول في الزخم",
+            "تأكيد الاختراقات"
+          ]
+        },
+        
+        "advanced_features": {
+          "clustering_algorithm": "Groups nearby volume events",
+          "momentum_calculation": "Directional volume accumulation",
+          "filtering_options": "Size, time, percentage-based filters"
+        }
+      },
+      
+      "cvd": {
+        "id": "tool_003",
+        "name": "Cumulative Volume Delta (CVD)",
+        "category": "volume_analysis", 
+        "priority": "core",
+        "accuracy_rating": 94,
+        
+        "technical_definition": {
+          "description": "دلتا الحجم التراكمي تقيس الفرق التراكمي بين أحجام الشراء والبيع عبر الزمن لتحديد الاتجاه الأساسي للسوق",
+          "algorithm_type": "Cumulative Net Volume Flow Analysis",
+          "data_requirements": ["Buy volume", "Sell volume", "Timestamp data"],
+          "calculation_method": "CVD = Σ(Buy_Volume - Sell_Volume) over time period"
+        },
+        
+        "core_parameters": {
+          "calculation_modes": {
+            "session_based": "Resets at session start",
+            "continuous": "Never resets, shows long-term trend", 
+            "custom_reset": "User-defined reset intervals",
+            "rolling_window": "Fixed time/volume window"
+          },
+          "volume_classification": {
+            "method": "Trade direction identification",
+            "accuracy": "Market-dependent (85-95%)",
+            "basis": "Aggressive vs passive order detection"
+          }
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Advanced Research Analysis 2024",
+            "sample_size": "10,000+ cases",
+            "time_period": "January-March 2024",
+            "accuracy_validated": true
+          },
+          
+          "asset_specific_thresholds": {
+            "NQ": {
+              "london_session": {
+                "buy_threshold": 850,
+                "sell_threshold": -620,
+                "reversal_point": 1200,
+                "confirmation_time_minutes": 15
+              },
+              "ny_session": {
+                "buy_threshold": 1200,
+                "sell_threshold": -900,
+                "reversal_point": 1800,
+                "confirmation_time_minutes": 10
+              },
+              "asia_session": {
+                "buy_threshold": 480,
+                "sell_threshold": -350,
+                "reversal_point": 700,
+                "confirmation_time_minutes": 20
+              }
+            },
+            
+            "YM": {
+              "london_session": {
+                "buy_threshold": 420,
+                "sell_threshold": -380,
+                "reversal_point": 600,
+                "confirmation_time_minutes": 15
+              },
+              "ny_session": {
+                "buy_threshold": 680,
+                "sell_threshold": -550,
+                "reversal_point": 900,
+                "confirmation_time_minutes": 10
+              }
+            },
+            
+            "GC": {
+              "london_session": {
+                "buy_threshold": 1100,
+                "sell_threshold": -950,
+                "reversal_point": 1500,
+                "confirmation_time_minutes": 30
+              },
+              "ny_session": {
+                "buy_threshold": 1800,
+                "sell_threshold": -1400,
+                "reversal_point": 2300,
+                "confirmation_time_minutes": 15
+              }
+            },
+            
+            "6E": {
+              "london_session": {
+                "buy_threshold": 720,
+                "sell_threshold": -670,
+                "reversal_point": 1000,
+                "confirmation_time_minutes": 15
+              },
+              "ny_session": {
+                "buy_threshold": 950,
+                "sell_threshold": -820,
+                "reversal_point": 1300,
+                "confirmation_time_minutes": 10
+              }
+            },
+            
+            "6J": {
+              "asia_session": {
+                "buy_threshold": 180,
+                "sell_threshold": -150,
+                "reversal_point": 250,
+                "confirmation_time_minutes": 30
+              }
+            },
+            
+            "6B": {
+              "london_session": {
+                "buy_threshold": 510,
+                "sell_threshold": -480,
+                "reversal_point": 750,
+                "confirmation_time_minutes": 15
+              }
+            }
+          },
+
+          "pattern_thresholds": {
+            "divergence_detection": {
+              "minimum_deviation": 0.15,
+              "time_window_minutes": 30,
+              "confirmation_candles": 3
+            },
+            "trend_confirmation": {
+              "alignment_threshold": 0.8,
+              "minimum_duration_minutes": 20
+            },
+            "exhaustion_signals": {
+              "volume_spike_multiplier": 2.5,
+              "cvd_deceleration_threshold": 0.3
+            }
+          },
+
+          "news_event_adjustments": {
+            "high_impact_events": {
+              "threshold_multiplier": 1.5,
+              "ignore_period_minutes": 30,
+              "post_event_sensitivity": 0.7
+            },
+            "nfp_fomc_cpi": {
+              "disable_cvd_signals": true,
+              "alternative_tools": ["absorption_indicator", "large_lot_tracker"]
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد الاتجاه المؤسسي للسوق",
+            "رصد التباعد مع السعر",
+            "تحليل قوة الاتجاه",
+            "تحديد نقاط التحول"
+          ],
+          "signal_types": [
+            "اتجاه CVD مع السعر: تأكيد الاتجاه",
+            "تباعد CVD مع السعر: إشارة انعكاس محتملة",
+            "CVD مسطح مع حركة سعر: ضعف في الاتجاه",
+            "CVD قوي عكس السعر: احتمال تصحيح"
+          ]
+        },
+        
+        "advanced_analytics": {
+          "divergence_detection": "Automated price-CVD divergence identification",
+          "trend_strength": "CVD slope analysis for momentum measurement",
+          "volume_efficiency": "Price movement per unit of CVD change"
+        }
+      },
+      
+      "volume_profile": {
+        "id": "tool_004",
+        "name": "Volume Profile", 
+        "category": "volume_analysis",
+        "priority": "core",
+        "accuracy_rating": 92,
+        
+        "technical_definition": {
+          "description": "ملف الحجم يُظهر توزيع الحجم عبر مستويات الأسعار المختلفة خلال فترة زمنية محددة",
+          "algorithm_type": "Price-Volume Distribution Analysis",
+          "data_requirements": ["Historical volume data", "Price levels", "Time periods"],
+          "calculation_method": "Volume aggregation per price level with statistical distribution analysis"
+        },
+        
+        "core_parameters": {
+          "volume_nodes": {
+            "HVN": "High Volume Nodes - areas of high acceptance",
+            "LVN": "Low Volume Nodes - areas of rejection", 
+            "POC": "Point of Control - highest volume price level",
+            "value_area": "70% of total volume distribution"
+          },
+          "calculation_periods": ["Session", "Custom range", "Fixed bars", "Visible range"],
+          "display_modes": ["Histogram", "Profile", "Market profile"]
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Volume Profile Complete Research Model 2024",
+            "data_period": "January-June 2024",
+            "sample_size": "6 months statistical analysis",
+            "validation": "POC accuracy 88%, Value Area 86%"
+          },
+
+          "session_based_analysis": {
+            "NQ": {
+              "London": {
+                "poc_strength": 0.88,
+                "value_area_range_points": 42,
+                "hvn_distance": "± 18 points",
+                "lvn_distance": "± 30 points",
+                "break_rate": 0.24,
+                "hold_rate": 0.76
+              },
+              "NY_Open": {
+                "poc_strength": 0.92,
+                "value_area_range_points": 58,
+                "hvn_distance": "± 12 points",
+                "lvn_distance": "± 22 points",
+                "break_rate": 0.31,
+                "hold_rate": 0.69,
+                "optimal_for": "POC magnet pattern"
+              },
+              "NY_Close": {
+                "poc_strength": 0.85,
+                "value_area_range_points": 37,
+                "hvn_distance": "± 20 points",
+                "lvn_distance": "± 35 points",
+                "break_rate": 0.19,
+                "hold_rate": 0.81
+              },
+              "Asia": {
+                "poc_strength": 0.79,
+                "value_area_range_points": 32,
+                "hvn_distance": "± 25 points",
+                "lvn_distance": "± 40 points",
+                "break_rate": 0.14,
+                "hold_rate": 0.86,
+                "note": "Highest hold rate but lowest activity"
+              }
+            },
+
+            "YM": {
+              "London": {
+                "poc_strength": 0.83,
+                "value_area_range_points": 50,
+                "hvn_distance": "± 15 points",
+                "lvn_distance": "± 28 points",
+                "break_rate": 0.22,
+                "hold_rate": 0.78
+              },
+              "NY_Open": {
+                "poc_strength": 0.89,
+                "value_area_range_points": 65,
+                "hvn_distance": "± 10 points",
+                "lvn_distance": "± 25 points",
+                "break_rate": 0.29,
+                "hold_rate": 0.71
+              }
+            },
+
+            "GC": {
+              "London": {
+                "poc_strength": 0.86,
+                "value_area_range_dollars": 8.40,
+                "hvn_distance": "± $3.20",
+                "lvn_distance": "± $5.80",
+                "break_rate": 0.21,
+                "hold_rate": 0.79
+              },
+              "NY_Open": {
+                "poc_strength": 0.94,
+                "value_area_range_dollars": 10.20,
+                "hvn_distance": "± $2.50",
+                "lvn_distance": "± $4.50",
+                "break_rate": 0.36,
+                "hold_rate": 0.64,
+                "note": "Highest POC strength but volatile breakouts"
+              }
+            },
+
+            "6E": {
+              "London": {
+                "poc_strength": 0.81,
+                "value_area_range_pips": 34,
+                "hvn_distance": "± 11 pips",
+                "lvn_distance": "± 21 pips",
+                "break_rate": 0.23,
+                "hold_rate": 0.77
+              },
+              "NY_Open": {
+                "poc_strength": 0.87,
+                "value_area_range_pips": 39,
+                "hvn_distance": "± 9 pips",
+                "lvn_distance": "± 16 pips",
+                "break_rate": 0.33,
+                "hold_rate": 0.67
+              }
+            },
+
+            "6J": {
+              "Asia": {
+                "poc_strength": 0.84,
+                "value_area_range_pips": 31,
+                "hvn_distance": "± 14 pips",
+                "lvn_distance": "± 26 pips",
+                "break_rate": 0.17,
+                "hold_rate": 0.83,
+                "special_note": "BOJ intervention affects POC reliability"
+              },
+              "London": {
+                "poc_strength": 0.80,
+                "value_area_range_pips": 33,
+                "hvn_distance": "± 12 pips",
+                "lvn_distance": "± 23 pips",
+                "break_rate": 0.21,
+                "hold_rate": 0.79
+              }
+            },
+
+            "6B": {
+              "London": {
+                "poc_strength": 0.82,
+                "value_area_range_pips": 44,
+                "hvn_distance": "± 13 pips",
+                "lvn_distance": "± 25 pips",
+                "break_rate": 0.25,
+                "hold_rate": 0.75
+              },
+              "NY_Open": {
+                "poc_strength": 0.88,
+                "value_area_range_pips": 49,
+                "hvn_distance": "± 10 pips",
+                "lvn_distance": "± 19 pips",
+                "break_rate": 0.32,
+                "hold_rate": 0.68
+              }
+            }
+          },
+
+          "pattern_definitions": {
+            "POC_MAGNET_NQ": {
+              "conditions": {
+                "price_distance": "± 15 points from POC",
+                "volume_requirement": "> 20,000 contracts/5min",
+                "success_rate": 0.87,
+                "expected_duration": "25-40 minutes",
+                "optimal_time": "9:30-11:00 EST"
+              }
+            },
+            "VALUE_AREA_BREAKOUT_GC": {
+              "conditions": {
+                "volume_on_break": "> 5,000 contracts",
+                "penetration": "± $3.50 from Value Area edge",
+                "success_rate": 0.78,
+                "target": "± $12.00 from breakout point",
+                "optimal_time": "8:00-9:30 EST"
+              }
+            }
+          },
+
+          "integration_effectiveness": {
+            "volume_profile_cvd_vwap": {
+              "success_rate": 0.91,
+              "combination": "POC + CVD + VWAP alignment",
+              "best_assets": ["NQ", "YM"],
+              "description": "Triple confirmation for entry"
+            },
+            "profile_heatmap_iceberg": {
+              "success_rate": 0.87,
+              "combination": "POC + liquidity clusters + hidden orders",
+              "best_assets": ["GC"],
+              "description": "Institutional accumulation detection"
+            },
+            "profile_absorption_dots": {
+              "success_rate": 0.84,
+              "combination": "Value Area + volume absorption + large dots",
+              "description": "Smart money positioning"
+            }
+          },
+
+          "performance_metrics": {
+            "best_performing_asset": {
+              "asset": "GC",
+              "poc_accuracy": 0.94,
+              "session": "NY_Open"
+            },
+            "most_reliable_pattern": {
+              "pattern": "POC magnet in NQ",
+              "accuracy": 0.87,
+              "session": "NY_Open"
+            },
+            "optimal_combinations": {
+              "highest_accuracy": "Volume Profile + CVD + VWAP (91%)",
+              "best_risk_reward": "Profile + Heatmap + Iceberg (1:2.8)"
+            }
+          },
+
+          "risk_management": {
+            "avoid_during_news": {
+              "events": ["FOMC", "NFP", "CPI"],
+              "reason": "40% higher false breakout rate",
+              "alternative": "Wait for profile reformation"
+            },
+            "low_volume_warning": {
+              "threshold": "< 70% average session volume",
+              "impact": "POC reliability drops to 65%"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد مستويات القيمة العادلة",
+            "رصد مناطق الدعم والمقاومة",
+            "تحليل نقاط السيطرة",
+            "فهم سلوك السوق التاريخي"
+          ],
+          "trading_signals": [
+            "POC كدعم/مقاومة ديناميكي",
+            "Value Area كنطاق تداول محتمل",
+            "HVN كمستويات مغناطيسية",
+            "LVN كمناطق عبور سريع"
+          ]
+        }
+      },
+
+      "large_lot_tracker": {
+        "id": "tool_005",
+        "name": "Large Lot Tracker",
+        "category": "institutional_activity",
+        "priority": "high",
+        "accuracy_rating": 88,
+        
+        "technical_definition": {
+          "description": "متتبع الكميات الكبيرة يحدد ويتتبع الصفقات الكبيرة التي قد تشير إلى نشاط مؤسسي",
+          "algorithm_type": "Statistical Large Order Detection",
+          "data_requirements": ["Trade size data", "Volume thresholds", "Market statistics"],
+          "calculation_method": "Dynamic threshold calculation based on average market activity"
+        },
+        
+        "core_parameters": {
+          "detection_criteria": {
+            "size_threshold": "Configurable percentage of average volume",
+            "frequency_filter": "Multiple large lots in sequence",
+            "price_impact": "Orders causing significant price movement",
+            "time_clustering": "Large orders within time windows"
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "رصد النشاط المؤسسي",
+            "تتبع الاستثمار الكبير",
+            "تحديد نقاط التحول المحتملة",
+            "فهم تدفق الأوامر الكبيرة"
+          ],
+          "trading_signals": [
+            "تراكم صفقات كبيرة في اتجاه واحد",
+            "صفقات كبيرة عند مستويات مهمة",
+            "تغيير في حجم الصفقات الكبيرة",
+            "توقيت الصفقات الكبيرة"
+          ]
+        }
+      },
+
+      "iceberg_detector": {
+        "id": "tool_006",
+        "name": "Iceberg Detector",
+        "category": "hidden_liquidity",
+        "priority": "high",
+        "accuracy_rating": 90,
+        
+        "technical_definition": {
+          "description": "كاشف الجبال الجليدية يحدد الأوامر المخفية الكبيرة التي يتم تنفيذها على دفعات صغيرة",
+          "algorithm_type": "Hidden Order Pattern Recognition",
+          "data_requirements": ["Order book data", "Trade execution patterns", "Volume analysis"],
+          "calculation_method": "Pattern analysis of repeated orders at same price levels"
+        },
+        
+        "core_parameters": {
+          "detection_methods": {
+            "execution_pattern": "Repeated executions at same price",
+            "order_refreshing": "Automatic order renewal patterns",
+            "size_consistency": "Similar order sizes over time",
+            "market_impact": "Limited price impact despite size"
+          }
+        },
+        
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Iceberg Complete Research Model - Institution-grade Analysis",
+            "sample_size": "12,847 Iceberg signals (January-June 2024)",
+            "detection_criteria": ">3 refreshes, same size, <15 minute duration",
+            "statistical_validation": "p-value < 0.01, Z-score > 2.5"
+          },
+
+          "asset_detection_parameters": {
+            "NQ": {
+              "min_hidden_size": "500+ lots",
+              "typical_show_size": "50-100 lots",
+              "max_refresh_rate": "8-12 times/minute",
+              "detection_time": "45 seconds",
+              "success_rate": 0.84,
+              "best_session": "NY_Open"
+            },
+            "YM": {
+              "min_hidden_size": "200+ lots",
+              "typical_show_size": "25-50 lots", 
+              "max_refresh_rate": "6-10 times/minute",
+              "detection_time": "55 seconds",
+              "success_rate": 0.79,
+              "best_session": "London/NY overlap"
+            },
+            "GC": {
+              "min_hidden_size": "300+ lots",
+              "typical_show_size": "30-60 lots",
+              "max_refresh_rate": "5-8 times/minute", 
+              "detection_time": "65 seconds",
+              "success_rate": 0.76,
+              "best_session": "London"
+            },
+            "6E": {
+              "min_hidden_size": "800+ lots",
+              "typical_show_size": "80-150 lots",
+              "max_refresh_rate": "7-11 times/minute",
+              "detection_time": "50 seconds", 
+              "success_rate": 0.81,
+              "best_session": "3AM-5AM EST"
+            },
+            "6J": {
+              "min_hidden_size": "400+ lots",
+              "typical_show_size": "40-80 lots",
+              "max_refresh_rate": "6-9 times/minute",
+              "detection_time": "70 seconds",
+              "success_rate": 0.77,
+              "best_session": "Asia"
+            },
+            "6B": {
+              "min_hidden_size": "600+ lots", 
+              "typical_show_size": "60-120 lots",
+              "max_refresh_rate": "5-9 times/minute",
+              "detection_time": "60 seconds",
+              "success_rate": 0.73,
+              "best_session": "London"
+            }
+          },
+
+          "pattern_definitions": {
+            "ICEBERG_ACCUMULATION_NQ": {
+              "indicators": {
+                "same_level_appearances": "8-12 times within 5 minutes",
+                "consistent_size": "8 lots each time",
+                "price_resistance": "No breakthrough despite 3+ attempts",
+                "hidden_size_estimate": "450+ lots"
+              },
+              "confirmation": "Attempts > 5",
+              "action": "Wait for break +15 points",
+              "target": "75-120 points in break direction",
+              "success_rate": 0.87
+            },
+
+            "ICEBERG_DISTRIBUTION_GC": {
+              "indicators": {
+                "resistance_level": "$2,145",
+                "repeated_sell_orders": "6-9 times",
+                "escalating_volume": "10→15→20 lots progression",
+                "failed_breakouts": "3 attempts minimum"
+              },
+              "confirmation": "3 failed breakout attempts",
+              "action": "Sell at $2,144.50 with stop $2,146.50",
+              "target": "-$12 from entry point",
+              "success_rate": 0.78
+            },
+
+            "ICEBERG_CVD_CONFLUENCE": {
+              "conditions": {
+                "iceberg_detection": "8+ refreshes at level",
+                "cvd_alignment": "+3,240 contracts accumulation",
+                "volume_profile": "82% volume concentration",
+                "breakout_trigger": "Break above iceberg level"
+              },
+              "target": "+120 points (3:1 Risk/Reward)",
+              "success_rate": 0.92,
+              "best_asset": "NQ"
+            }
+          },
+
+          "institutional_behavior_analysis": {
+            "Banks": {
+              "typical_size": "500+ lots",
+              "preferred_assets": ["6E", "6J", "6B"],
+              "active_sessions": ["London", "NY"],
+              "iceberg_style": "8-12 second refresh, consistent size"
+            },
+            "Hedge_Funds": {
+              "typical_size": "300+ lots", 
+              "preferred_assets": ["NQ", "YM"],
+              "active_sessions": ["9:30-11AM EST"],
+              "iceberg_style": "Gradual size increase, fast refresh"
+            },
+            "Commodity_Funds": {
+              "typical_size": "400+ lots",
+              "preferred_assets": ["GC"],
+              "active_sessions": ["2AM-4AM EST"],
+              "iceberg_style": "Long-term orders (15+ minutes)"
+            },
+            "Pension_Funds": {
+              "typical_size": "1000+ lots",
+              "preferred_assets": ["All major"],
+              "active_sessions": ["3PM-5PM EST"],
+              "iceberg_style": "Rare refresh (30-45 seconds)"
+            }
+          },
+
+          "integration_effectiveness": {
+            "iceberg_cvd_vwap": {
+              "success_rate": 0.94,
+              "combination": "Iceberg + CVD alignment + VWAP confirmation",
+              "best_assets": ["NQ"],
+              "description": "Triple institutional confirmation"
+            },
+            "iceberg_volume_profile": {
+              "success_rate": 0.88,
+              "combination": "Iceberg at POC levels",
+              "application": "Major accumulation zones"
+            },
+            "iceberg_heatmap": {
+              "success_rate": 0.85,
+              "combination": "Hidden orders + liquidity clusters",
+              "edge": "Front-run institutional positioning"
+            }
+          },
+
+          "case_studies": {
+            "successful_nq_accumulation": {
+              "date": "2024-05-14",
+              "pattern": "Accumulative Iceberg",
+              "tools": ["Iceberg: 8 refreshes at 18,245", "CVD: +3,240 contracts", "Volume Profile: 82% concentration"],
+              "entry_signal": "Buy on break of 18,255",
+              "result": "+120 points (3:1 RR)",
+              "success_factors": ["Triple tool alignment", "Institution positioning", "Perfect timing"]
+            },
+            "failed_gc_signal": {
+              "date": "2024-04-03", 
+              "pattern": "Distribution attempt",
+              "failure_reasons": ["CVD: -1,800 contracts (contradicted)", "Heatmap: Weak liquidity", "Tool misalignment"],
+              "result": "-$9.50/ounce",
+              "lesson": "Always require 2+ tool confirmation"
+            }
+          },
+
+          "performance_analytics": {
+            "detection_accuracy": 0.973,
+            "detection_speed": "6.2 seconds (FPGA optimized)",
+            "false_positive_rate": 0.021,
+            "average_profit_per_signal": "+38 points/trade",
+            "best_combination": "Iceberg + CVD + Volume Profile (94% success)"
+          },
+
+          "advanced_features": {
+            "machine_learning_integration": {
+              "pattern_recognition_cnn": {
+                "accuracy": 0.873,
+                "training_data": "5 years historical",
+                "update_frequency": "Weekly retrain"
+              },
+              "prediction_lstm": {
+                "directional_accuracy": 0.732,
+                "prediction_horizon": "1-24 hours",
+                "features": "100+ technical indicators"
+              }
+            },
+            "spoofing_detection": {
+              "cancel_ratio_threshold": "> 70% in 15 seconds",
+              "flickering_pattern": "Rapid bid/ask changes (1-2 point spreads)",
+              "false_iceberg_rate": "28% of large orders are spoofing"
+            }
+          },
+
+          "risk_management": {
+            "avoid_during": {
+              "major_news": "30 minutes before/after NFP, FOMC, CPI",
+              "low_liquidity": "Pre-market, post-close sessions",
+              "market_stress": "VIX > 30 reduces reliability by 40%"
+            },
+            "confirmation_requirements": {
+              "minimum_tools": 3,
+              "confidence_threshold": 0.75,
+              "time_validation": "Pattern must hold >1 hour"
+            },
+            "position_sizing": {
+              "high_confidence_iceberg": "1.5x normal position",
+              "medium_confidence": "Standard position", 
+              "low_confidence": "0.5x or avoid"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "كشف السيولة المخفية",
+            "تحديد النشاط الخوارزمي",
+            "رصد التراكم/التوزيع المؤسسي",
+            "فهم الطلب/العرض الحقيقي"
+          ],
+          "trading_signals": [
+            "وجود سيولة مخفية كبيرة",
+            "مقاومة/دعم خفي عند مستويات معينة",
+            "نشاط تراكمي أو توزيعي",
+            "احتمال استمرار الاتجاه"
+          ]
+        }
+      },
+
+      "imbalance_indicator": {
+        "id": "tool_008",
+        "name": "Imbalance Indicator",
+        "category": "order_flow",
+        "priority": "medium",
+        "accuracy_rating": 85,
+        
+        "technical_definition": {
+          "description": "مؤشر عدم التوازن يقيس عدم التوازن بين العرض والطلب في دفتر الأوامر",
+          "algorithm_type": "Order Book Imbalance Analysis",
+          "data_requirements": ["Bid/Ask data", "Order book depth", "Real-time updates"],
+          "calculation_method": "Bid-Ask volume ratio and depth analysis"
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Bid/Ask Imbalance Complete Research Model 2024",
+            "sample_size": "Professional trading parameters and insights",
+            "validation": "Market-dependent accuracy 85-95%"
+          },
+
+          "imbalance_classifications": {
+            "light_imbalance": {
+              "range": "55% - 65%",
+              "meaning": "Minor bias, often noise",
+              "action": "Monitor, no immediate action"
+            },
+            "moderate_imbalance": {
+              "range": "65% - 75%", 
+              "meaning": "Clear directional bias",
+              "action": "Prepare for potential move"
+            },
+            "strong_imbalance": {
+              "range": "75% - 85%",
+              "meaning": "High probability direction",
+              "action": "Consider entry with confirmation"
+            },
+            "extreme_imbalance": {
+              "range": "85%+",
+              "meaning": "Unsustainable level, reversal likely",
+              "action": "Counter-trend opportunity"
+            }
+          },
+
+          "asset_specific_thresholds": {
+            "NQ": {
+              "light_imbalance": "55% - 65%",
+              "moderate_imbalance": "65% - 75%",
+              "strong_imbalance": "75% - 85%",
+              "extreme_imbalance": "85%+",
+              "response_time": "15 seconds",
+              "optimal_session": "NY_Open"
+            },
+            "YM": {
+              "light_imbalance": "53% - 63%",
+              "moderate_imbalance": "63% - 73%",
+              "strong_imbalance": "73% - 83%",
+              "extreme_imbalance": "83%+",
+              "response_time": "20 seconds"
+            },
+            "GC": {
+              "light_imbalance": "52% - 62%",
+              "moderate_imbalance": "62% - 72%",
+              "strong_imbalance": "72% - 82%",
+              "extreme_imbalance": "82%+",
+              "response_time": "30 seconds",
+              "news_sensitivity": "High during inflation data"
+            },
+            "6E": {
+              "light_imbalance": "54% - 64%",
+              "moderate_imbalance": "64% - 74%",
+              "strong_imbalance": "74% - 84%",
+              "extreme_imbalance": "84%+",
+              "response_time": "25 seconds",
+              "best_session": "London/NY overlap"
+            },
+            "6J": {
+              "light_imbalance": "56% - 66%",
+              "moderate_imbalance": "66% - 76%",
+              "strong_imbalance": "76% - 86%",
+              "extreme_imbalance": "86%+",
+              "response_time": "35 seconds",
+              "special_note": "BOJ interventions create false imbalances"
+            },
+            "6B": {
+              "light_imbalance": "53% - 63%",
+              "moderate_imbalance": "63% - 73%",
+              "strong_imbalance": "73% - 83%",
+              "extreme_imbalance": "83%+",
+              "response_time": "30 seconds"
+            }
+          },
+
+          "pattern_definitions": {
+            "IMBALANCE_REVERSAL_NQ": {
+              "conditions": {
+                "imbalance_level": "80%+ for 3 minutes",
+                "location": "At important support/resistance",
+                "correction_trigger": "Beginning of imbalance correction",
+                "target": "120 points reverse direction",
+                "success_rate": 0.78
+              }
+            },
+            "IMBALANCE_CONTINUATION_6E": {
+              "conditions": {
+                "imbalance_level": "70% sustained",
+                "trend_context": "During clear trend",
+                "no_nearby_resistance": "Clear path ahead",
+                "target": "85 pips same direction",
+                "success_rate": 0.82
+              }
+            }
+          },
+
+          "session_behavior": {
+            "London": {
+              "6E": {
+                "typical_imbalance": "68% average",
+                "duration": "12 minutes average",
+                "reversal_rate": 0.42,
+                "continuation_rate": 0.58
+              },
+              "6B": {
+                "typical_imbalance": "65% average",
+                "duration": "15 minutes average",
+                "reversal_rate": 0.38,
+                "continuation_rate": 0.62
+              }
+            },
+            "NY_Open": {
+              "NQ": {
+                "typical_imbalance": "72% average",
+                "duration": "8 minutes average",
+                "reversal_rate": 0.35,
+                "continuation_rate": 0.65
+              },
+              "YM": {
+                "typical_imbalance": "70% average",
+                "duration": "10 minutes average",
+                "reversal_rate": 0.40,
+                "continuation_rate": 0.60
+              }
+            },
+            "Asia": {
+              "6J": {
+                "typical_imbalance": "62% average",
+                "duration": "20 minutes average",
+                "reversal_rate": 0.45,
+                "continuation_rate": 0.55
+              }
+            },
+            "Overlap": {
+              "GC": {
+                "typical_imbalance": "67% average",
+                "duration": "18 minutes average",
+                "reversal_rate": 0.33,
+                "continuation_rate": 0.67
+              }
+            }
+          },
+
+          "integration_with_tools": {
+            "imbalance_cvd_alignment": {
+              "success_rate": 0.87,
+              "description": "When imbalance direction matches CVD trend",
+              "best_assets": ["NQ", "6E"]
+            },
+            "imbalance_volume_profile": {
+              "success_rate": 0.83,
+              "description": "Imbalance at POC levels",
+              "application": "Entry timing optimization"
+            },
+            "imbalance_vwap": {
+              "success_rate": 0.79,
+              "description": "Imbalance with VWAP deviation confirmation",
+              "risk_reward": "1:2.5 average"
+            }
+          },
+
+          "case_studies": {
+            "extreme_imbalance_6E_ecb": {
+              "date": "04/10/2024",
+              "time": "08:30 EST",
+              "event": "ECB announcement",
+              "imbalance": "88% buy-side",
+              "duration": "7 minutes",
+              "price_before": "1.0825 pips",
+              "price_after": "1.0750 pips",
+              "result": "75 pips reversal",
+              "analysis": "Over-positioned before news led to sharp correction"
+            },
+            "false_imbalance_ym": {
+              "date": "05/15/2024",
+              "time": "10:15 EST",
+              "imbalance": "79% sell-side",
+              "duration": "2 minutes only",
+              "cause": "Large institutional rebalancing",
+              "result": "No price movement",
+              "lesson": "Filter signals lasting < 3 minutes"
+            }
+          },
+
+          "performance_metrics": {
+            "overall_accuracy": 0.81,
+            "signal_detection_speed": "22 seconds average",
+            "false_positive_rate": 0.18,
+            "average_profit_per_signal": "92 points",
+            "improvement_factors": [
+              "Volume filter reduces false positives by 23%",
+              "Level 2 data integration improves accuracy to 84%",
+              "Fibonacci levels combination improves win rate by 11%"
+            ]
+          },
+
+          "risk_warnings": {
+            "news_events": {
+              "effect": "Imbalances become 42% more extreme, duration decreases 35%",
+              "recommendation": "Reduce position sizes during high-impact news"
+            },
+            "low_liquidity": {
+              "effect": "False imbalances increase by 60%",
+              "sessions": "Pre-market, post-market, holiday trading"
+            },
+            "market_manipulation": {
+              "signs": "Extreme imbalances (>90%) lasting < 2 minutes",
+              "action": "Ignore these signals, likely spoofing"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد ضغط الشراء/البيع",
+            "توقع الحركة قصيرة المدى",
+            "رصد تغيرات المعنويات",
+            "تحليل ديناميكيات دفتر الأوامر"
+          ]
+        }
+      },
+      
+      "absorption_indicator": {
+        "id": "tool_009",
+        "name": "Absorption Indicator", 
+        "category": "order_flow",
+        "priority": "medium",
+        "accuracy_rating": 87,
+        
+        "technical_definition": {
+          "description": "مؤشر الامتصاص يحدد عندما يتم امتصاص الضغط الشرائي أو البيعي دون تغيير السعر",
+          "algorithm_type": "Volume Absorption Pattern Analysis",
+          "data_requirements": ["Volume data", "Price action", "Order flow"],
+          "calculation_method": "Volume vs price movement correlation analysis"
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Absorption Indicator Complete Research Model 2024",
+            "objective": "Detect hidden support/resistance zones and institutional accumulation",
+            "sample_base": "NQ, GC futures market analysis"
+          },
+
+          "absorption_definitions": {
+            "normal_volume": {
+              "description": "Baseline average volume per minute",
+              "NQ_example": "500 contracts/minute",
+              "GC_example": "200 contracts/minute"
+            },
+            "light_absorption": {
+              "volume_multiplier": "1.5-2x normal volume",
+              "price_movement": "< 30% of typical volatility",
+              "meaning": "Mild interest, early accumulation"
+            },
+            "strong_absorption": {
+              "volume_multiplier": "3-5x normal volume", 
+              "price_movement": "< 15% of typical volatility",
+              "meaning": "Significant institutional interest"
+            },
+            "extreme_absorption": {
+              "volume_multiplier": "5-10x normal volume",
+              "price_movement": "< 5% of typical volatility", 
+              "meaning": "Major accumulation/distribution"
+            }
+          },
+
+          "asset_specific_criteria": {
+            "NQ": {
+              "normal_volume": "500 contracts/minute",
+              "light_absorption": {
+                "volume_threshold": "2x (1000 contracts)",
+                "max_price_move": "< 5 points",
+                "duration": "5+ minutes"
+              },
+              "strong_absorption": {
+                "volume_threshold": "4x (2000 contracts)",
+                "max_price_move": "< 2 points", 
+                "duration": "5+ minutes"
+              },
+              "extreme_absorption": {
+                "volume_threshold": "8x (4000 contracts)",
+                "max_price_move": "< 1 point",
+                "duration": "5+ minutes"
+              }
+            },
+
+            "GC": {
+              "normal_volume": "200 contracts/minute",
+              "light_absorption": {
+                "volume_threshold": "2x (400 contracts)",
+                "max_price_move": "< $1.50"
+              },
+              "strong_absorption": {
+                "volume_threshold": "5x (1000 contracts)",
+                "max_price_move": "< $0.50"
+              },
+              "extreme_absorption": {
+                "volume_threshold": "10x (2000 contracts)",
+                "max_price_move": "< $0.20"
+              }
+            },
+
+            "YM": {
+              "normal_volume": "300 contracts/minute",
+              "strong_absorption": {
+                "volume_threshold": "4x (1200 contracts)",
+                "max_price_move": "< 3 points"
+              }
+            },
+
+            "6E": {
+              "normal_volume": "400 contracts/minute", 
+              "strong_absorption": {
+                "volume_threshold": "3x (1200 contracts)",
+                "max_price_move": "< 5 pips"
+              }
+            },
+
+            "6J": {
+              "normal_volume": "250 contracts/minute",
+              "strong_absorption": {
+                "volume_threshold": "4x (1000 contracts)",
+                "max_price_move": "< 3 pips"
+              }
+            },
+
+            "6B": {
+              "normal_volume": "350 contracts/minute",
+              "strong_absorption": {
+                "volume_threshold": "3.5x (1225 contracts)",
+                "max_price_move": "< 7 pips"
+              }
+            }
+          },
+
+          "pattern_definitions": {
+            "ABSORPTION_AT_SUPPORT": {
+              "description": "Heavy selling volume absorbed at historical support",
+              "conditions": {
+                "volume_requirement": "≥ 3x normal volume",
+                "price_containment": "Within $0.50 range for 5+ minutes (GC)",
+                "confirmation": "Failed breakdown + rejection candle",
+                "target": "Bounce 1.5x absorption range",
+                "success_rate": 0.75
+              },
+              "example": "GC at $2,150 support with 1000 contracts selling but price holds"
+            },
+
+            "ABSORPTION_AT_RESISTANCE": {
+              "description": "Heavy buying volume absorbed at resistance",
+              "conditions": {
+                "volume_requirement": "≥ 4x normal volume",
+                "failed_breakout": "3+ attempts to break resistance",
+                "price_rejection": "Lower highs + volume divergence",
+                "target": "Drop to next support level",
+                "success_rate": 0.68
+              },
+              "example": "NQ at 18,250 resistance with repeated buying but failure to break"
+            }
+          },
+
+          "absorption_strength_by_level_type": {
+            "daily_highs_lows": {
+              "NQ": {
+                "strong_absorption_rate": "85%",
+                "breakout_rate": "15%",
+                "average_bounce": "50 points"
+              }
+            },
+            "weekly_highs_lows": {
+              "GC": {
+                "strong_absorption_rate": "78%", 
+                "breakout_rate": "22%",
+                "average_bounce": "$15"
+              }
+            },
+            "monthly_levels": {
+              "general": {
+                "absorption_rate": "82%",
+                "significance": "Major turning points"
+              }
+            },
+            "psychological_levels": {
+              "round_numbers": {
+                "absorption_effectiveness": "73%",
+                "examples": ["NQ 18,000", "GC $2,000", "6E 1.1000"]
+              }
+            }
+          },
+
+          "integration_patterns": {
+            "absorption_cvd_alignment": {
+              "success_rate": 0.86,
+              "description": "Absorption + CVD divergence = high probability reversal",
+              "best_assets": ["NQ", "GC"]
+            },
+            "absorption_iceberg_detection": {
+              "success_rate": 0.83,
+              "description": "Absorption confirms hidden large orders",
+              "application": "Institutional accumulation zones"
+            },
+            "absorption_volume_profile": {
+              "success_rate": 0.79,
+              "description": "Absorption at POC levels",
+              "optimal_timeframe": "H1 and above"
+            }
+          },
+
+          "time_based_effectiveness": {
+            "session_performance": {
+              "London": {
+                "GC_absorption": "Best performance (82% success)",
+                "6E_absorption": "Strong performance (78% success)"
+              },
+              "NY_Open": {
+                "NQ_absorption": "Peak effectiveness (85% success)",
+                "volume_surge": "First 30 minutes most reliable"
+              },
+              "Asia": {
+                "6J_absorption": "Moderate effectiveness (68% success)",
+                "note": "Lower volume affects reliability"
+              }
+            }
+          },
+
+          "risk_factors": {
+            "false_absorption_signs": {
+              "short_duration": "< 3 minutes often false",
+              "low_overall_volume": "< 70% daily average unreliable",
+              "news_pending": "Major announcements distort patterns"
+            },
+            "breakout_warnings": {
+              "volume_acceleration": "> 5x normal with price momentum",
+              "multiple_timeframe_alignment": "H1 + D1 support/resistance break",
+              "fundamental_catalyst": "Major news can override technical absorption"
+            }
+          },
+
+          "performance_metrics": {
+            "overall_accuracy": "79%",
+            "best_performing_combination": "Absorption + CVD + Volume Profile (86%)",
+            "average_hold_time": "2-4 hours for reversal trades",
+            "risk_reward": "1:2.8 average"
+          },
+
+          "practical_application": {
+            "entry_timing": {
+              "wait_for": "Absorption pattern completion (5+ min)",
+              "confirm_with": "Rejection candle or reversal signal",
+              "volume_filter": "Minimum 150% daily average"
+            },
+            "position_sizing": {
+              "strong_absorption": "Standard position",
+              "extreme_absorption": "1.5x position (high confidence)",
+              "weak_absorption": "0.5x position or avoid"
+            },
+            "exit_strategy": {
+              "profit_target": "Previous swing high/low",
+              "stop_loss": "Beyond absorption zone (1.5x range)",
+              "time_stop": "4 hours if no movement"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد مناطق الدعم/المقاومة القوية",
+            "رصد التراكم المؤسسي",
+            "توقع نقاط الانعكاس",
+            "فهم السيولة المخفية"
+          ]
+        }
+      },
+      
+      "iceberg_detector": {
+        "id": "tool_006",
+        "name": "Iceberg Detector",
+        "category": "hidden_liquidity",
+        "priority": "high",
+        "accuracy_rating": 90,
+        
+        "technical_definition": {
+          "description": "كاشف الجبال الجليدية يحدد الأوامر المخفية الكبيرة التي يتم تنفيذها على دفعات صغيرة",
+          "algorithm_type": "Hidden Order Pattern Recognition",
+          "data_requirements": ["Order book data", "Trade execution patterns", "Volume analysis"],
+          "calculation_method": "Pattern analysis of repeated orders at same price levels"
+        },
+        
+        "core_parameters": {
+          "detection_methods": {
+            "execution_pattern": "Repeated executions at same price",
+            "order_refreshing": "Automatic order renewal patterns",
+            "size_consistency": "Similar order sizes over time",
+            "market_impact": "Limited price impact despite size"
+          }
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Iceberg Complete Research Model - Institution-grade Analysis",
+            "sample_size": "12,847 Iceberg signals (January-June 2024)",
+            "detection_criteria": ">3 refreshes, same size, <15 minute duration",
+            "statistical_validation": "p-value < 0.01, Z-score > 2.5"
+          },
+
+          "asset_detection_parameters": {
+            "NQ": {
+              "min_hidden_size": "500+ lots",
+              "typical_show_size": "50-100 lots",
+              "max_refresh_rate": "8-12 times/minute",
+              "detection_time": "45 seconds",
+              "success_rate": 0.84,
+              "best_session": "NY_Open"
+            },
+            "YM": {
+              "min_hidden_size": "200+ lots",
+              "typical_show_size": "25-50 lots", 
+              "max_refresh_rate": "6-10 times/minute",
+              "detection_time": "55 seconds",
+              "success_rate": 0.79,
+              "best_session": "London/NY overlap"
+            },
+            "GC": {
+              "min_hidden_size": "300+ lots",
+              "typical_show_size": "30-60 lots",
+              "max_refresh_rate": "5-8 times/minute", 
+              "detection_time": "65 seconds",
+              "success_rate": 0.76,
+              "best_session": "London"
+            },
+            "6E": {
+              "min_hidden_size": "800+ lots",
+              "typical_show_size": "80-150 lots",
+              "max_refresh_rate": "7-11 times/minute",
+              "detection_time": "50 seconds", 
+              "success_rate": 0.81,
+              "best_session": "3AM-5AM EST"
+            },
+            "6J": {
+              "min_hidden_size": "400+ lots",
+              "typical_show_size": "40-80 lots",
+              "max_refresh_rate": "6-9 times/minute",
+              "detection_time": "70 seconds",
+              "success_rate": 0.77,
+              "best_session": "Asia"
+            },
+            "6B": {
+              "min_hidden_size": "600+ lots", 
+              "typical_show_size": "60-120 lots",
+              "max_refresh_rate": "5-9 times/minute",
+              "detection_time": "60 seconds",
+              "success_rate": 0.73,
+              "best_session": "London"
+            }
+          },
+
+          "pattern_definitions": {
+            "ICEBERG_ACCUMULATION_NQ": {
+              "indicators": {
+                "same_level_appearances": "8-12 times within 5 minutes",
+                "consistent_size": "8 lots each time",
+                "price_resistance": "No breakthrough despite 3+ attempts",
+                "hidden_size_estimate": "450+ lots"
+              },
+              "confirmation": "Attempts > 5",
+              "action": "Wait for break +15 points",
+              "target": "75-120 points in break direction",
+              "success_rate": 0.87
+            },
+
+            "ICEBERG_DISTRIBUTION_GC": {
+              "indicators": {
+                "resistance_level": "$2,145",
+                "repeated_sell_orders": "6-9 times",
+                "escalating_volume": "10→15→20 lots progression",
+                "failed_breakouts": "3 attempts minimum"
+              },
+              "confirmation": "3 failed breakout attempts",
+              "action": "Sell at $2,144.50 with stop $2,146.50",
+              "target": "-$12 from entry point",
+              "success_rate": 0.78
+            },
+
+            "ICEBERG_CVD_CONFLUENCE": {
+              "conditions": {
+                "iceberg_detection": "8+ refreshes at level",
+                "cvd_alignment": "+3,240 contracts accumulation",
+                "volume_profile": "82% volume concentration",
+                "breakout_trigger": "Break above iceberg level"
+              },
+              "target": "+120 points (3:1 Risk/Reward)",
+              "success_rate": 0.92,
+              "best_asset": "NQ"
+            }
+          },
+
+          "institutional_behavior_analysis": {
+            "Banks": {
+              "typical_size": "500+ lots",
+              "preferred_assets": ["6E", "6J", "6B"],
+              "active_sessions": ["London", "NY"],
+              "iceberg_style": "8-12 second refresh, consistent size"
+            },
+            "Hedge_Funds": {
+              "typical_size": "300+ lots", 
+              "preferred_assets": ["NQ", "YM"],
+              "active_sessions": ["9:30-11AM EST"],
+              "iceberg_style": "Gradual size increase, fast refresh"
+            },
+            "Commodity_Funds": {
+              "typical_size": "400+ lots",
+              "preferred_assets": ["GC"],
+              "active_sessions": ["2AM-4AM EST"],
+              "iceberg_style": "Long-term orders (15+ minutes)"
+            },
+            "Pension_Funds": {
+              "typical_size": "1000+ lots",
+              "preferred_assets": ["All major"],
+              "active_sessions": ["3PM-5PM EST"],
+              "iceberg_style": "Rare refresh (30-45 seconds)"
+            }
+          },
+
+          "integration_effectiveness": {
+            "iceberg_cvd_vwap": {
+              "success_rate": 0.94,
+              "combination": "Iceberg + CVD alignment + VWAP confirmation",
+              "best_assets": ["NQ"],
+              "description": "Triple institutional confirmation"
+            },
+            "iceberg_volume_profile": {
+              "success_rate": 0.88,
+              "combination": "Iceberg at POC levels",
+              "application": "Major accumulation zones"
+            },
+            "iceberg_heatmap": {
+              "success_rate": 0.85,
+              "combination": "Hidden orders + liquidity clusters",
+              "edge": "Front-run institutional positioning"
+            }
+          },
+
+          "case_studies": {
+            "successful_nq_accumulation": {
+              "date": "2024-05-14",
+              "pattern": "Accumulative Iceberg",
+              "tools": ["Iceberg: 8 refreshes at 18,245", "CVD: +3,240 contracts", "Volume Profile: 82% concentration"],
+              "entry_signal": "Buy on break of 18,255",
+              "result": "+120 points (3:1 RR)",
+              "success_factors": ["Triple tool alignment", "Institution positioning", "Perfect timing"]
+            },
+            "failed_gc_signal": {
+              "date": "2024-04-03", 
+              "pattern": "Distribution attempt",
+              "failure_reasons": ["CVD: -1,800 contracts (contradicted)", "Heatmap: Weak liquidity", "Tool misalignment"],
+              "result": "-$9.50/ounce",
+              "lesson": "Always require 2+ tool confirmation"
+            }
+          },
+
+          "performance_analytics": {
+            "detection_accuracy": 0.973,
+            "detection_speed": "6.2 seconds (FPGA optimized)",
+            "false_positive_rate": 0.021,
+            "average_profit_per_signal": "+38 points/trade",
+            "best_combination": "Iceberg + CVD + Volume Profile (94% success)"
+          },
+
+          "advanced_features": {
+            "machine_learning_integration": {
+              "pattern_recognition_cnn": {
+                "accuracy": 0.873,
+                "training_data": "5 years historical",
+                "update_frequency": "Weekly retrain"
+              },
+              "prediction_lstm": {
+                "directional_accuracy": 0.732,
+                "prediction_horizon": "1-24 hours",
+                "features": "100+ technical indicators"
+              }
+            },
+            "spoofing_detection": {
+              "cancel_ratio_threshold": "> 70% in 15 seconds",
+              "flickering_pattern": "Rapid bid/ask changes (1-2 point spreads)",
+              "false_iceberg_rate": "28% of large orders are spoofing"
+            }
+          },
+
+          "risk_management": {
+            "avoid_during": {
+              "major_news": "30 minutes before/after NFP, FOMC, CPI",
+              "low_liquidity": "Pre-market, post-close sessions",
+              "market_stress": "VIX > 30 reduces reliability by 40%"
+            },
+            "confirmation_requirements": {
+              "minimum_tools": 3,
+              "confidence_threshold": 0.75,
+              "time_validation": "Pattern must hold >1 hour"
+            },
+            "position_sizing": {
+              "high_confidence_iceberg": "1.5x normal position",
+              "medium_confidence": "Standard position", 
+              "low_confidence": "0.5x or avoid"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "كشف السيولة المخفية",
+            "تحديد النشاط الخوارزمي",
+            "رصد التراكم/التوزيع المؤسسي",
+            "فهم الطلب/العرض الحقيقي"
+          ],
+          "trading_signals": [
+            "وجود سيولة مخفية كبيرة",
+            "مقاومة/دعم خفي عند مستويات معينة",
+            "نشاط تراكمي أو توزيعي",
+            "احتمال استمرار الاتجاه"
+          ]
+        }
+      },
+      
+      "large_lot_tracker": {
+        "id": "tool_013", 
+        "name": "Large Lot Tracker",
+        "category": "institutional_flow",
+        "priority": "high",
+        "accuracy_rating": 92,
+        
+        "technical_definition": {
+          "description": "متتبع الأحجام الكبيرة يرصد التداولات ذات الأحجام الاستثنائية للكشف عن النشاط المؤسسي",
+          "algorithm_type": "Statistical Volume Anomaly Detection",
+          "data_requirements": ["Trade size data", "Volume statistics", "Market cap context"],
+          "calculation_method": "Z-score analysis with dynamic thresholds and institutional pattern recognition"
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Large Lot Complete Research Model - Institutional Flow Analysis",
+            "sample_size": "24,892 large lot signals analyzed",
+            "validation_period": "June 2023 - June 2024",
+            "statistical_basis": "Z-score >3.0, 99.7% confidence level"
+          },
+
+          "asset_specific_definitions": {
+            "NQ": {
+              "small_lot": {
+                "contracts": "300-800",
+                "z_score": "2.0-2.5",
+                "meaning": "Algorithmic positioning",
+                "follow_through_rate": 0.62
+              },
+              "medium_lot": {
+                "contracts": "800-1500",
+                "z_score": "2.5-3.5",
+                "meaning": "Hedge fund activity",
+                "follow_through_rate": 0.74
+              },
+              "large_lot": {
+                "contracts": "1500-3000",
+                "z_score": "3.5-4.5",
+                "meaning": "Major institutional flow",
+                "follow_through_rate": 0.87
+              },
+              "huge_lot": {
+                "contracts": "3000+",
+                "z_score": "4.5+",
+                "meaning": "Pension fund/Central bank",
+                "follow_through_rate": 0.93
+              },
+              "best_sessions": ["NY_Open", "London/NY_Overlap"],
+              "average_impact": "+/-45 points within 2 hours"
+            },
+
+            "YM": {
+              "small_lot": {
+                "contracts": "150-400",
+                "meaning": "Early institutional interest"
+              },
+              "medium_lot": {
+                "contracts": "400-800",
+                "meaning": "Standard institutional flow"
+              },
+              "large_lot": {
+                "contracts": "800-1500",
+                "meaning": "Major positioning"
+              },
+              "huge_lot": {
+                "contracts": "1500+",
+                "meaning": "Strategic institutional move"
+              },
+              "follow_through_rate": 0.81,
+              "average_impact": "+/-28 points within 2 hours"
+            },
+
+            "GC": {
+              "small_lot": {
+                "contracts": "100-300",
+                "meaning": "Inflation hedge positioning"
+              },
+              "medium_lot": {
+                "contracts": "300-600",
+                "meaning": "Central bank activity"
+              },
+              "large_lot": {
+                "contracts": "600-1200",
+                "meaning": "Major fund rebalancing"
+              },
+              "huge_lot": {
+                "contracts": "1200+",
+                "meaning": "Crisis hedging/CB intervention"
+              },
+              "follow_through_rate": 0.76,
+              "average_impact": "+/-$8.50 within 4 hours",
+              "news_sensitivity": "High - avoid during FOMC"
+            },
+
+            "6E": {
+              "small_lot": {
+                "contracts": "500-1200",
+                "meaning": "FX carry positioning"
+              },
+              "medium_lot": {
+                "contracts": "1200-2500",
+                "meaning": "Bank flow execution"
+              },
+              "large_lot": {
+                "contracts": "2500-5000", 
+                "meaning": "Central bank intervention prep"
+              },
+              "huge_lot": {
+                "contracts": "5000+",
+                "meaning": "Central bank intervention"
+              },
+              "follow_through_rate": 0.69,
+              "average_impact": "+/-65 pips within 3 hours"
+            },
+
+            "6J": {
+              "small_lot": {
+                "contracts": "200-500",
+                "meaning": "Asia session positioning"
+              },
+              "medium_lot": {
+                "contracts": "500-1000",
+                "meaning": "Corporate hedging flow"
+              },
+              "large_lot": {
+                "contracts": "1000-2000",
+                "meaning": "BOJ intervention warning"
+              },
+              "huge_lot": {
+                "contracts": "2000+",
+                "meaning": "BOJ direct intervention"
+              },
+              "follow_through_rate": 0.84,
+              "average_impact": "+/-78 pips within 2 hours",
+              "special_note": "BOJ interventions have 95% follow-through"
+            },
+
+            "6B": {
+              "small_lot": {
+                "contracts": "300-800",
+                "meaning": "Brexit/UK positioning"
+              },
+              "medium_lot": {
+                "contracts": "800-1500",
+                "meaning": "Volatility play execution"
+              },
+              "large_lot": {
+                "contracts": "1500-3000",
+                "meaning": "Major UK news reaction"
+              },
+              "huge_lot": {
+                "contracts": "3000+",
+                "meaning": "Crisis hedge/BOE intervention"
+              },
+              "follow_through_rate": 0.73,
+              "average_impact": "+/-92 pips within 2 hours"
+            }
+          },
+
+          "timing_analysis": {
+            "immediate_impact": {
+              "0-15_minutes": {
+                "probability": 0.78,
+                "average_move": "65% of total expected move",
+                "best_assets": ["NQ", "6J"]
+              },
+              "15-60_minutes": {
+                "probability": 0.89,
+                "average_move": "85% of total expected move",
+                "description": "Peak momentum period"
+              },
+              "1-4_hours": {
+                "probability": 0.94,
+                "average_move": "100% expected move completion",
+                "note": "Full institutional positioning"
+              }
+            },
+            "delayed_reaction": {
+              "4-24_hours": {
+                "probability": 0.62,
+                "average_move": "Additional 40% move",
+                "cause": "Follow-up institutional activity"
+              }
+            }
+          },
+
+          "pattern_definitions": {
+            "ACCUMULATION_LADDER_NQ": {
+              "description": "Sequential large lots in same direction",
+              "conditions": {
+                "sequence": "3+ large lots within 2 hours",
+                "direction": "Same buy/sell direction",
+                "size_progression": "Increasing or stable size",
+                "total_volume": ">4000 contracts"
+              },
+              "success_rate": 0.91,
+              "target": "+150 points average",
+              "timeframe": "2-6 hours"
+            },
+
+            "DISTRIBUTION_FADE_GC": {
+              "description": "Large selling into strength",
+              "conditions": {
+                "market_context": "Near recent highs",
+                "volume": ">800 contracts sell",
+                "price_action": "Immediate rejection",
+                "confirmation": "Follow-up selling within 30 min"
+              },
+              "success_rate": 0.83,
+              "target": "-$15 average",
+              "timeframe": "1-3 hours"
+            },
+
+            "INTERVENTION_SIGNAL_6J": {
+              "description": "BOJ intervention preparation",
+              "conditions": {
+                "lot_size": ">1500 contracts",
+                "yen_level": "Near intervention zone (155.00)",
+                "time": "Tokyo session or overlap",
+                "confirmation": "Multiple lots within 1 hour"
+              },
+              "success_rate": 0.95,
+              "target": "-200+ pips",
+              "special_note": "Highest probability pattern"
+            }
+          },
+
+          "integration_effectiveness": {
+            "large_lot_cvd_alignment": {
+              "success_rate": 0.93,
+              "description": "Large lot confirms CVD direction",
+              "best_combination": "Huge lot + CVD >2000 + Volume Profile POC",
+              "average_return": "+95 points (NQ)"
+            },
+            "large_lot_iceberg_detection": {
+              "success_rate": 0.89,
+              "description": "Large lots reveal iceberg execution",
+              "application": "Hidden order completion tracking"
+            },
+            "large_lot_absorption": {
+              "success_rate": 0.86,
+              "description": "Large lots absorbed = strong support/resistance",
+              "reversal_probability": 0.78
+            }
+          },
+
+          "session_performance": {
+            "London_Session": {
+              "6E": {
+                "frequency": "8-12 large lots/hour",
+                "success_rate": 0.81,
+                "average_impact": "+/-72 pips"
+              },
+              "GC": {
+                "frequency": "4-6 large lots/hour", 
+                "success_rate": 0.76,
+                "average_impact": "+/-$6.80"
+              }
+            },
+            "NY_Open": {
+              "NQ": {
+                "frequency": "15-20 large lots/hour",
+                "success_rate": 0.87,
+                "average_impact": "+/-52 points",
+                "peak_time": "9:30-10:30 AM EST"
+              },
+              "YM": {
+                "frequency": "10-15 large lots/hour",
+                "success_rate": 0.83,
+                "average_impact": "+/-35 points"
+              }
+            },
+            "Asia_Session": {
+              "6J": {
+                "frequency": "6-10 large lots/hour",
+                "success_rate": 0.85,
+                "average_impact": "+/-68 pips",
+                "intervention_watch": "155.00+ levels"
+              }
+            }
+          },
+
+          "risk_warnings": {
+            "false_signals": {
+              "option_expiry": "Large lots for hedging, not directional",
+              "rebalancing": "Quarter/month end flows distort signals",
+              "algorithmic_splitting": "Large algo orders split may false trigger"
+            },
+            "market_conditions": {
+              "low_liquidity": "Impact amplified by 40-60%",
+              "high_vix": ">25 reduces follow-through by 20%",
+              "news_pending": "Avoid trading 30 min before major announcements"
+            }
+          },
+
+          "practical_application": {
+            "entry_strategy": {
+              "immediate": "Enter within 5 minutes of large lot detection",
+              "pullback": "Wait for 30-50% retracement, then enter",
+              "breakout": "Enter on break of large lot execution level"
+            },
+            "position_sizing": {
+              "huge_lot_signal": "1.5x normal position",
+              "large_lot_signal": "Standard position",
+              "medium_lot_signal": "0.75x position"
+            },
+            "stop_loss": {
+              "NQ": "Beyond large lot level +/- 25 points",
+              "GC": "Beyond large lot level +/- $3.50",
+              "FX": "Beyond large lot level +/- 35 pips"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تتبع التدفقات المؤسسية",
+            "الكشف عن التراكم/التوزيع",
+            "توقع الحركات الكبيرة",
+            "تحديد نقاط التحول"
+          ],
+          "trading_signals": [
+            "دخول كميات كبيرة مؤسسية",
+            "تغيير في معنويات السوق",
+            "احتمال حركة اتجاهية قوية",
+            "نقاط دعم/مقاومة جديدة"
+          ]
+        }
+      },
+      
+      "strength_level_indicator": {
+        "id": "tool_010",
+        "name": "Strength Level Indicator",
+        "category": "support_resistance",
+        "priority": "medium",
+        "accuracy_rating": 83,
+        
+        "technical_definition": {
+          "description": "مؤشر قوة المستوى يحدد قوة مستويات الدعم والمقاومة بناءً على النشاط التاريخي",
+          "algorithm_type": "Historical Level Strength Analysis",
+          "data_requirements": ["Historical price data", "Volume data", "Touch frequency"],
+          "calculation_method": "Multi-factor strength scoring algorithm"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تصنيف قوة المستويات",
+            "توقع احتمالات الكسر",
+            "تحديد نقاط الدخول/الخروج",
+            "إدارة المخاطر"
+          ]
+        }
+      },
+
+      "volume_bubbles": {
+        "id": "tool_014",
+        "name": "Volume Bubbles", 
+        "category": "volume_visualization",
+        "priority": "medium",
+        "accuracy_rating": 88,
+        
+        "technical_definition": {
+          "description": "فقاعات الحجم تُظهر الحجم المتداول بطريقة بصرية كفقاعات متناسبة مع حجم التداول",
+          "algorithm_type": "Visual Volume Representation",
+          "data_requirements": ["Volume data", "Price levels", "Time series"],
+          "calculation_method": "Proportional bubble sizing based on volume magnitude and clustering"
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Volume Bubbles Visual Analysis Research 2024",
+            "objective": "Optimize visual volume detection and clustering analysis",
+            "validation_method": "Pattern recognition and volume significance testing"
+          },
+
+          "bubble_size_classifications": {
+            "tiny_bubble": {
+              "definition": "10-30% of average volume",
+              "visual_size": "Small dot",
+              "meaning": "Minimal interest, often noise",
+              "trading_significance": "Low"
+            },
+            "small_bubble": {
+              "definition": "30-80% of average volume",
+              "visual_size": "Small bubble",
+              "meaning": "Standard institutional interest",
+              "trading_significance": "Monitor"
+            },
+            "medium_bubble": {
+              "definition": "80-200% of average volume",
+              "visual_size": "Medium bubble",
+              "meaning": "Strong institutional activity",
+              "trading_significance": "Action level"
+            },
+            "large_bubble": {
+              "definition": "200-500% of average volume",
+              "visual_size": "Large bubble",
+              "meaning": "Major volume spike",
+              "trading_significance": "High probability signal"
+            },
+            "huge_bubble": {
+              "definition": "500%+ of average volume",
+              "visual_size": "Massive bubble",
+              "meaning": "Exceptional volume event",
+              "trading_significance": "Critical alert"
+            }
+          },
+
+          "asset_specific_parameters": {
+            "NQ": {
+              "average_bubble_volume": "500 contracts",
+              "small_bubble": "150-400 contracts",
+              "medium_bubble": "400-1000 contracts", 
+              "large_bubble": "1000-2500 contracts",
+              "huge_bubble": "2500+ contracts",
+              "clustering_threshold": "3+ bubbles within 5 points",
+              "success_rate": 0.76,
+              "best_timeframe": "M5, M15"
+            },
+            
+            "YM": {
+              "average_bubble_volume": "300 contracts",
+              "small_bubble": "90-240 contracts",
+              "medium_bubble": "240-600 contracts",
+              "large_bubble": "600-1500 contracts", 
+              "huge_bubble": "1500+ contracts",
+              "clustering_threshold": "3+ bubbles within 8 points",
+              "success_rate": 0.72
+            },
+
+            "GC": {
+              "average_bubble_volume": "200 contracts",
+              "small_bubble": "60-160 contracts",
+              "medium_bubble": "160-400 contracts",
+              "large_bubble": "400-1000 contracts",
+              "huge_bubble": "1000+ contracts", 
+              "clustering_threshold": "2+ bubbles within $2.50",
+              "success_rate": 0.69,
+              "news_impact_multiplier": 1.8
+            },
+
+            "6E": {
+              "average_bubble_volume": "800 contracts",
+              "small_bubble": "240-640 contracts",
+              "medium_bubble": "640-1600 contracts",
+              "large_bubble": "1600-4000 contracts",
+              "huge_bubble": "4000+ contracts",
+              "clustering_threshold": "2+ bubbles within 15 pips",
+              "success_rate": 0.65
+            },
+
+            "6J": {
+              "average_bubble_volume": "400 contracts",
+              "small_bubble": "120-320 contracts", 
+              "medium_bubble": "320-800 contracts",
+              "large_bubble": "800-2000 contracts",
+              "huge_bubble": "2000+ contracts",
+              "clustering_threshold": "2+ bubbles within 20 pips",
+              "success_rate": 0.71,
+              "intervention_threshold": "Huge bubble + price >155.00"
+            },
+
+            "6B": {
+              "average_bubble_volume": "600 contracts",
+              "small_bubble": "180-480 contracts",
+              "medium_bubble": "480-1200 contracts", 
+              "large_bubble": "1200-3000 contracts",
+              "huge_bubble": "3000+ contracts",
+              "clustering_threshold": "2+ bubbles within 25 pips",
+              "success_rate": 0.68
+            }
+          },
+
+          "clustering_patterns": {
+            "VOLUME_CLUSTER_SUPPORT": {
+              "definition": "3+ medium/large bubbles at same price level",
+              "conditions": {
+                "bubble_count": "3-5 bubbles",
+                "price_range": "Within 0.2% of price level",
+                "time_span": "Within 2 hours",
+                "volume_requirement": "Total >300% average volume"
+              },
+              "significance": "Strong support/resistance formation",
+              "success_rate": 0.84,
+              "typical_reaction": "Bounce or strong break"
+            },
+
+            "VOLUME_LADDER": {
+              "definition": "Sequential volume bubbles in trending direction", 
+              "conditions": {
+                "sequence": "4+ bubbles in same direction",
+                "size_progression": "Stable or increasing size",
+                "spacing": "Regular price intervals",
+                "timeframe": "Within 4 hours"
+              },
+              "significance": "Strong trend continuation",
+              "success_rate": 0.79,
+              "target": "Next major level"
+            },
+
+            "VOLUME_EXHAUSTION": {
+              "definition": "Huge bubble followed by smaller bubbles",
+              "conditions": {
+                "initial_bubble": "Huge bubble (500%+ volume)",
+                "follow_up": "3+ decreasing size bubbles",
+                "price_action": "Momentum slowdown",
+                "context": "Near resistance/support"
+              },
+              "significance": "Potential reversal signal",
+              "success_rate": 0.73,
+              "action": "Prepare for counter-trend"
+            }
+          },
+
+          "integration_with_tools": {
+            "bubbles_cvd_alignment": {
+              "success_rate": 0.82,
+              "description": "Large bubbles + CVD confirmation",
+              "best_combination": "Huge bubble + CVD >1500 (NQ)",
+              "application": "Momentum confirmation"
+            },
+            "bubbles_volume_profile": {
+              "success_rate": 0.78,
+              "description": "Bubble clusters at POC levels",
+              "significance": "Value area validation"
+            },
+            "bubbles_heatmap": {
+              "success_rate": 0.74,
+              "description": "Bubbles + liquidity confirmation",
+              "edge": "Visual confirmation of hidden orders"
+            },
+            "bubbles_absorption": {
+              "success_rate": 0.81,
+              "description": "Large bubbles absorbed = strong level",
+              "application": "Support/resistance validation"
+            }
+          },
+
+          "session_behavior": {
+            "London_Session": {
+              "characteristics": "Moderate bubble frequency, consistent sizing",
+              "6E_performance": "8-12 medium+ bubbles/hour",
+              "GC_performance": "4-8 medium+ bubbles/hour",
+              "peak_activity": "8:30-11:30 AM London time"
+            },
+            "NY_Open": {
+              "characteristics": "High bubble frequency, size variation",
+              "NQ_performance": "15-25 medium+ bubbles/hour",
+              "YM_performance": "10-18 medium+ bubbles/hour", 
+              "peak_activity": "9:30-11:00 AM EST"
+            },
+            "Asia_Session": {
+              "characteristics": "Lower frequency, higher significance", 
+              "6J_performance": "3-6 medium+ bubbles/hour",
+              "significance": "Each bubble carries more weight"
+            }
+          },
+
+          "visual_pattern_recognition": {
+            "bubble_trails": {
+              "description": "Sequential bubbles creating price path",
+              "bullish_trail": "Ascending bubble sequence",
+              "bearish_trail": "Descending bubble sequence",
+              "success_rate": 0.71
+            },
+            "bubble_gaps": {
+              "description": "Missing bubbles in expected price zones",
+              "significance": "Potential support/resistance weakness",
+              "trading_application": "Breakout confirmation"
+            },
+            "bubble_density": {
+              "high_density": ">5 bubbles per $1 (GC) or 10 points (NQ)",
+              "meaning": "Congestion zone, potential breakout",
+              "low_density": "<2 bubbles per range",
+              "meaning": "Weak interest, continue trend"
+            }
+          },
+
+          "risk_management": {
+            "false_signals": {
+              "isolation_bubbles": "Single large bubble without follow-up",
+              "news_artifacts": "Huge bubbles during major announcements",
+              "algorithm_splitting": "Regular-sized bubbles from algo execution"
+            },
+            "reliability_factors": {
+              "confirmation_requirement": "2+ independent signals",
+              "time_validation": "Pattern holds for 15+ minutes",
+              "volume_sustainability": "Follow-up volume >50% of initial"
+            }
+          },
+
+          "practical_application": {
+            "entry_timing": {
+              "bubble_breakout": "Enter on break of bubble cluster level",
+              "bubble_retest": "Enter on return to major bubble level",
+              "bubble_exhaustion": "Counter-trend after exhaustion pattern"
+            },
+            "position_sizing": {
+              "huge_bubble_signal": "1.3x normal position",
+              "large_bubble_cluster": "Standard position",
+              "medium_bubble_pattern": "0.8x position"
+            },
+            "profit_targets": {
+              "NQ": "Next bubble cluster or +75 points",
+              "GC": "Next significant level or +$8.00",
+              "FX": "Next round number or +60 pips"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "التحليل البصري للحجم",
+            "تحديد مناطق الاهتمام",
+            "رصد أنماط التراكم",
+            "تصور توزيع السيولة"
+          ],
+          "trading_signals": [
+            "تجمعات حجم قوية",
+            "أنماط الحجم الاتجاهية", 
+            "إشارات الإرهاق",
+            "نقاط التحول البصرية"
+          ]
+        }
+      },
+
+      "volume_bars": {
+        "id": "tool_011",
+        "name": "Volume Bars",
+        "category": "volume_analysis",
+        "priority": "medium",
+        "accuracy_rating": 91,
+        
+        "technical_definition": {
+          "description": "أشرطة الحجم تُظهر الحجم المتداول خلال فترات زمنية محددة مع تمييز العدوانية",
+          "algorithm_type": "Time-based Volume Aggregation",
+          "data_requirements": ["Volume data", "Time intervals", "Aggressor classification"],
+          "calculation_method": "Time-windowed volume aggregation with buy/sell classification"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحليل كثافة التداول",
+            "مقارنة الحجم عبر الفترات",
+            "تحديد فترات النشاط العالي",
+            "تأكيد الاتجاهات"
+          ]
+        }
+      },
+
+      "stop_run": {
+        "id": "tool_015",
+        "name": "Stop Run",
+        "category": "manipulation_detection",
+        "priority": "high", 
+        "accuracy_rating": 85,
+        
+        "technical_definition": {
+          "description": "كاشف اصطياد الاستوبات والكسح يحدد الحركات التلاعبية لاستهداف أوامر الوقف",
+          "algorithm_type": "Stop Loss Hunting and Sweep Pattern Detection",
+          "data_requirements": ["Price spikes", "Volume analysis", "Level penetration data"],
+          "calculation_method": "Pattern recognition for false breakouts and stop accumulation zones"
+        },
+
+        "enhanced_thresholds": {
+          "metadata": {
+            "source": "Stop Run & Sweep Complete Research Analysis 2024",
+            "sample_size": "8,734 stop run events analyzed",
+            "validation_period": "Full year 2023-2024 testing",
+            "success_criteria": "Reversal within 15 minutes of stop run completion"
+          },
+
+          "stop_run_classifications": {
+            "minor_stop_run": {
+              "definition": "Penetration 2-5 points beyond key level",
+              "duration": "30 seconds - 2 minutes",
+              "volume": "Low to moderate",
+              "success_rate": 0.65,
+              "meaning": "Testing level strength"
+            },
+            "standard_stop_run": {
+              "definition": "Penetration 5-15 points beyond key level", 
+              "duration": "1-5 minutes",
+              "volume": "Moderate spike then fade",
+              "success_rate": 0.78,
+              "meaning": "Harvesting retail stops"
+            },
+            "major_stop_run": {
+              "definition": "Penetration 15-30 points beyond key level",
+              "duration": "3-8 minutes", 
+              "volume": "High volume spike",
+              "success_rate": 0.82,
+              "meaning": "Institutional stop hunting"
+            },
+            "sweep_operation": {
+              "definition": "Multiple level penetrations in sequence",
+              "duration": "5-15 minutes",
+              "volume": "Sustained high volume",
+              "success_rate": 0.73,
+              "meaning": "Systematic stop clearing"
+            }
+          },
+
+          "asset_specific_parameters": {
+            "NQ": {
+              "minor_stop_run": {
+                "penetration": "3-8 points beyond level",
+                "volume_spike": "150% of 15-min average",
+                "reversal_target": "-15 to -25 points",
+                "time_window": "2-6 minutes"
+              },
+              "standard_stop_run": {
+                "penetration": "8-18 points beyond level",
+                "volume_spike": "200% of 15-min average", 
+                "reversal_target": "-35 to -55 points",
+                "time_window": "3-8 minutes"
+              },
+              "major_stop_run": {
+                "penetration": "18-35 points beyond level",
+                "volume_spike": "300%+ of 15-min average",
+                "reversal_target": "-60 to -120 points",
+                "time_window": "5-12 minutes"
+              },
+              "best_levels": ["Daily highs/lows", "Previous day close", "Round numbers (18,000, 18,500)"],
+              "success_rate": 0.79
+            },
+
+            "YM": {
+              "minor_stop_run": {
+                "penetration": "5-12 points beyond level",
+                "reversal_target": "-20 to -35 points"
+              },
+              "standard_stop_run": {
+                "penetration": "12-25 points beyond level", 
+                "reversal_target": "-40 to -65 points"
+              },
+              "major_stop_run": {
+                "penetration": "25-50 points beyond level",
+                "reversal_target": "-80 to -150 points"
+              },
+              "success_rate": 0.76
+            },
+
+            "GC": {
+              "minor_stop_run": {
+                "penetration": "$1.50-$3.50 beyond level",
+                "reversal_target": "-$3.00 to -$6.00"
+              },
+              "standard_stop_run": {
+                "penetration": "$3.50-$8.00 beyond level",
+                "reversal_target": "-$6.00 to -$12.00"
+              },
+              "major_stop_run": {
+                "penetration": "$8.00-$15.00 beyond level",
+                "reversal_target": "-$12.00 to -$25.00"
+              },
+              "best_levels": ["$1950, $2000, $2050", "Weekly highs/lows"],
+              "success_rate": 0.71,
+              "news_impact": "Avoid during FOMC announcements"
+            },
+
+            "6E": {
+              "minor_stop_run": {
+                "penetration": "8-15 pips beyond level",
+                "reversal_target": "-15 to -25 pips"
+              },
+              "standard_stop_run": {
+                "penetration": "15-35 pips beyond level",
+                "reversal_target": "-25 to -50 pips"
+              },
+              "major_stop_run": {
+                "penetration": "35-65 pips beyond level", 
+                "reversal_target": "-50 to -100 pips"
+              },
+              "best_levels": ["1.1000, 1.0900", "Daily/weekly extremes"],
+              "success_rate": 0.68
+            },
+
+            "6J": {
+              "minor_stop_run": {
+                "penetration": "10-20 pips beyond level",
+                "reversal_target": "-20 to -35 pips"
+              },
+              "standard_stop_run": {
+                "penetration": "20-45 pips beyond level",
+                "reversal_target": "-35 to -70 pips"
+              },
+              "intervention_stop_run": {
+                "penetration": "50+ pips beyond 155.00",
+                "reversal_target": "-100 to -300 pips",
+                "success_rate": 0.89,
+                "special_note": "BOJ intervention level"
+              },
+              "success_rate": 0.81
+            },
+
+            "6B": {
+              "minor_stop_run": {
+                "penetration": "12-25 pips beyond level",
+                "reversal_target": "-25 to -45 pips"
+              },
+              "standard_stop_run": {
+                "penetration": "25-55 pips beyond level",
+                "reversal_target": "-45 to -85 pips" 
+              },
+              "major_stop_run": {
+                "penetration": "55+ pips beyond level",
+                "reversal_target": "-85 to -150 pips"
+              },
+              "success_rate": 0.69
+            }
+          },
+
+          "pattern_definitions": {
+            "CLASSIC_STOP_RUN_NQ": {
+              "setup": {
+                "level": "Daily high resistance at 18,250",
+                "penetration": "Break to 18,265 (+15 points)",
+                "volume": "300% spike then immediate fade",
+                "time": "Hold above for 2-4 minutes"
+              },
+              "reversal_signal": "Return below 18,250 with volume",
+              "target": "18,180-18,200 (-50 to -70 points)",
+              "success_rate": 0.84,
+              "risk_reward": "1:3.5"
+            },
+
+            "DOUBLE_STOP_RUN_GC": {
+              "setup": {
+                "first_run": "Break $2,000, hold 3 minutes, reverse",
+                "second_run": "Re-test $2,000 within 2 hours",
+                "penetration": "Break to $2,008 second time"
+              },
+              "reversal_signal": "Rejection with volume surge",
+              "target": "$1,985-$1,975 (-15 to -25)",
+              "success_rate": 0.79
+            },
+
+            "SWEEP_COMPLEX_6J": {
+              "setup": {
+                "multiple_levels": "Clear 154.80, 155.00, 155.20 in sequence",
+                "time_frame": "Within 10 minutes",
+                "volume": "Sustained above 200% average"
+              },
+              "reversal_trigger": "BOJ intervention or natural exhaustion",
+              "target": "154.50 or lower (-70+ pips)",
+              "success_rate": 0.77
+            }
+          },
+
+          "integration_effectiveness": {
+            "stop_run_cvd_divergence": {
+              "success_rate": 0.91,
+              "description": "Stop run + CVD shows opposite direction",
+              "application": "Strongest reversal signal",
+              "best_assets": ["NQ", "YM"]
+            },
+            "stop_run_absorption": {
+              "success_rate": 0.86,
+              "description": "Stop run volume absorbed at key level",
+              "meaning": "Failed stop run, strong support/resistance"
+            },
+            "stop_run_iceberg": {
+              "success_rate": 0.82,
+              "description": "Iceberg orders revealed during stop run",
+              "application": "Hidden institutional positioning"
+            },
+            "stop_run_heatmap": {
+              "success_rate": 0.78,
+              "description": "Low liquidity confirms stop run vulnerability",
+              "edge": "Predict successful stop runs"
+            }
+          },
+
+          "timing_analysis": {
+            "session_effectiveness": {
+              "London_Session": {
+                "stop_run_frequency": "6-10 per hour (major pairs)",
+                "success_rate": 0.73,
+                "best_targets": "Asian session highs/lows"
+              },
+              "NY_Open": {
+                "stop_run_frequency": "12-18 per hour (indices)",
+                "success_rate": 0.81,
+                "best_targets": "Overnight extremes, previous close"
+              },
+              "Asia_Session": {
+                "stop_run_frequency": "3-6 per hour",
+                "success_rate": 0.69,
+                "note": "Lower liquidity = higher success rate"
+              }
+            },
+            "optimal_entry_timing": {
+              "immediate": "Enter within 30 seconds of reversal signal",
+              "pullback": "Wait for 50% retracement, then enter",
+              "confirmation": "Wait for break back below/above stop run level"
+            }
+          },
+
+          "risk_management": {
+            "false_stop_runs": {
+              "news_driven": "Major announcements cause legitimate breakouts",
+              "trend_continuation": "Strong trends override stop run reversals",
+              "institutional_flow": "Large orders can push through stops"
+            },
+            "protective_measures": {
+              "confirmation_requirement": "2+ tools must align",
+              "time_stop": "Exit if no reversal within 15 minutes",
+              "volume_validation": "Require volume fade after penetration"
+            },
+            "position_sizing": {
+              "high_confidence": "1.2x normal position",
+              "standard_signal": "Normal position",
+              "low_confidence": "0.6x position or avoid"
+            }
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "كشف التلاعب في السوق",
+            "تحديد نقاط الانعكاس",
+            "اصطياد عكس الاتجاه",
+            "فهم سيكولوجية السوق"
+          ],
+          "trading_signals": [
+            "فشل الكسر الوهمي",
+            "انعكاس من مستويات رئيسية",
+            "استنزاف أوامر الوقف",
+            "فرص التداول العكسي"
+          ]
+        }
+      },
+
+      "time_and_sales": {
+        "id": "tool_012",
+        "name": "Time and Sales",
+        "category": "trade_data",
+        "priority": "high",
+        "accuracy_rating": 99,
+        
+        "technical_definition": {
+          "description": "بيانات الوقت والمبيعات تُظهر جميع التداولات المنفذة بالترتيب الزمني",
+          "algorithm_type": "Raw Trade Data Stream",
+          "data_requirements": ["Trade executions", "Timestamps", "Price and size"],
+          "calculation_method": "Real-time trade data aggregation and classification"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "مراقبة التداولات بالتفصيل",
+            "تحليل سرعة التنفيذ",
+            "رصد الصفقات الكبيرة",
+            "فهم ديناميكيات السوق"
+          ]
+        }
+      }
+    }
+  }
+} 

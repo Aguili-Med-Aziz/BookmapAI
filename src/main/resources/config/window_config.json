@@ -1,0 +1,8 @@
+{
+  "default_window_minutes": 15,
+  "max_history_windows": 20,
+  "enable_pattern_carry": true,
+  "memory_optimization": true,
+  "csv_output_enabled": true,
+  "csv_output_path": "detection_results.csv"
+} 

@@ -1,0 +1,440 @@
+{
+  "bookmap_knowledge_base": {
+    "metadata": {
+      "version": "2.0",
+      "last_updated": "2025-01-20",
+      "total_tools": 11,
+      "data_sources": ["Official Bookmap Documentation", "CME Technical Specs", "Academic Research", "Professional Trading Analysis"],
+      "accuracy_levels": {
+        "high": ["heatmap", "volume_dots", "cvd", "volume_profile", "iceberg_detector", "vwap", "time_and_sales"],
+        "medium": ["volume_bars", "large_lot_tracker", "imbalance_indicator", "absorption_indicator", "strength_level_indicator"],
+        "developing": []
+      }
+    },
+    
+    "tools": {
+      "heatmap": {
+        "id": "tool_001",
+        "name": "Heatmap",
+        "category": "visualization",
+        "priority": "core",
+        "accuracy_rating": 98,
+        
+        "technical_definition": {
+          "description": "الخريطة الحرارية هي تمثيل بصري لدفتر الأوامر يُظهر كثافة السيولة والحجم عند كل مستوى سعري باستخدام نظام ألوان متدرج",
+          "algorithm_type": "Real-time Order Book Visualization",
+          "data_requirements": ["Level 2 Market Data", "Order Book Updates", "Volume Data"],
+          "calculation_method": "Aggregated volume intensity mapping with color gradient representation"
+        },
+        
+        "core_parameters": {
+          "color_mapping": {
+            "high_volume": "Red/Hot Colors",
+            "medium_volume": "Yellow/Warm Colors", 
+            "low_volume": "Blue/Cool Colors",
+            "no_volume": "Black/Neutral"
+          },
+          "time_aggregation": ["Real-time", "1-second", "5-second", "Custom"],
+          "volume_thresholds": "User-configurable percentile-based",
+          "price_resolution": "Tick-level precision"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد مناطق السيولة العالية",
+            "رصد تراكم الأوامر",
+            "تتبع تحركات السعر في الوقت الفعلي",
+            "تحليل عمق السوق"
+          ],
+          "trading_signals": [
+            "تراكم السيولة عند مستويات محددة",
+            "تكوين مناطق الدعم والمقاومة",
+            "نقاط الاختراق المحتملة",
+            "تغيرات في هيكل السوق"
+          ]
+        },
+        
+        "integration_points": {
+          "synergistic_tools": ["volume_dots", "volume_bars", "absorption_indicator"],
+          "complementary_analysis": ["order_flow", "market_depth", "liquidity_analysis"],
+          "data_feeds": ["Real-time", "Historical replay", "Simulation"]
+        }
+      },
+      
+      "volume_dots": {
+        "id": "tool_002", 
+        "name": "Volume Dots",
+        "category": "volume_analysis",
+        "priority": "core",
+        "accuracy_rating": 96,
+        
+        "technical_definition": {
+          "description": "نقاط الحجم تُظهر حجم التداول الفعلي عند كل مستوى سعري مع تمييز بين المشترين والبائعين العدوانيين",
+          "algorithm_type": "Footprint Analysis with Aggressive Order Detection",
+          "data_requirements": ["Tick-by-tick data", "Buy/Sell classification", "Volume information"],
+          "calculation_method": "Real-time volume aggregation with aggressive vs passive order identification"
+        },
+        
+        "core_parameters": {
+          "volume_representation": {
+            "buy_volume": "Green dots (buyers stepping up)",
+            "sell_volume": "Red dots (sellers stepping down)",
+            "size_scaling": "Proportional to volume magnitude",
+            "threshold_filtering": "Minimum volume requirements"
+          },
+          "aggregation_methods": ["Tick-based", "Time-based", "Volume-based"],
+          "display_modes": ["Dots", "Numbers", "Bars", "Histogram"]
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد اتجاه الضغط الشرائي/البيعي",
+            "رصد التداول العدواني",
+            "تحليل momentum السعري",
+            "تقييم قوة الحركة"
+          ],
+          "trading_signals": [
+            "تراكم الحجم العدواني في اتجاه واحد",
+            "تباعد بين السعر والحجم",
+            "نقاط تحول في الزخم",
+            "تأكيد الاختراقات"
+          ]
+        },
+        
+        "advanced_features": {
+          "clustering_algorithm": "Groups nearby volume events",
+          "momentum_calculation": "Directional volume accumulation",
+          "filtering_options": "Size, time, percentage-based filters"
+        }
+      },
+      
+      "cvd": {
+        "id": "tool_003",
+        "name": "Cumulative Volume Delta (CVD)",
+        "category": "volume_analysis", 
+        "priority": "core",
+        "accuracy_rating": 94,
+        
+        "technical_definition": {
+          "description": "دلتا الحجم التراكمي تقيس الفرق التراكمي بين أحجام الشراء والبيع عبر الزمن لتحديد الاتجاه الأساسي للسوق",
+          "algorithm_type": "Cumulative Net Volume Flow Analysis",
+          "data_requirements": ["Buy volume", "Sell volume", "Timestamp data"],
+          "calculation_method": "CVD = Σ(Buy_Volume - Sell_Volume) over time period"
+        },
+        
+        "core_parameters": {
+          "calculation_modes": {
+            "session_based": "Resets at session start",
+            "continuous": "Never resets, shows long-term trend", 
+            "custom_reset": "User-defined reset intervals",
+            "rolling_window": "Fixed time/volume window"
+          },
+          "volume_classification": {
+            "method": "Trade direction identification",
+            "accuracy": "Market-dependent (85-95%)",
+            "basis": "Aggressive vs passive order detection"
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد الاتجاه المؤسسي للسوق",
+            "رصد التباعد مع السعر",
+            "تحليل قوة الاتجاه",
+            "تحديد نقاط التحول"
+          ],
+          "signal_types": [
+            "اتجاه CVD مع السعر: تأكيد الاتجاه",
+            "تباعد CVD مع السعر: إشارة انعكاس محتملة",
+            "CVD مسطح مع حركة سعر: ضعف في الاتجاه",
+            "CVD قوي عكس السعر: احتمال تصحيح"
+          ]
+        },
+        
+        "advanced_analytics": {
+          "divergence_detection": "Automated price-CVD divergence identification",
+          "trend_strength": "CVD slope analysis for momentum measurement",
+          "volume_efficiency": "Price movement per unit of CVD change"
+        }
+      },
+      
+      "volume_profile": {
+        "id": "tool_004",
+        "name": "Volume Profile", 
+        "category": "volume_analysis",
+        "priority": "core",
+        "accuracy_rating": 92,
+        
+        "technical_definition": {
+          "description": "ملف الحجم يُظهر توزيع الحجم عبر مستويات الأسعار المختلفة خلال فترة زمنية محددة",
+          "algorithm_type": "Price-Volume Distribution Analysis",
+          "data_requirements": ["Historical volume data", "Price levels", "Time periods"],
+          "calculation_method": "Volume aggregation per price level with statistical distribution analysis"
+        },
+        
+        "core_parameters": {
+          "volume_nodes": {
+            "HVN": "High Volume Nodes - areas of high acceptance",
+            "LVN": "Low Volume Nodes - areas of rejection", 
+            "POC": "Point of Control - highest volume price level",
+            "value_area": "70% of total volume distribution"
+          },
+          "calculation_periods": ["Session", "Custom range", "Fixed bars", "Visible range"],
+          "display_modes": ["Histogram", "Profile", "Market profile"]
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد مستويات القيمة العادلة",
+            "رصد مناطق الدعم والمقاومة",
+            "تحليل نقاط السيطرة",
+            "فهم سلوك السوق التاريخي"
+          ],
+          "trading_signals": [
+            "POC كدعم/مقاومة ديناميكي",
+            "Value Area كنطاق تداول محتمل",
+            "HVN كمستويات مغناطيسية",
+            "LVN كمناطق عبور سريع"
+          ]
+        }
+      },
+
+      "large_lot_tracker": {
+        "id": "tool_005",
+        "name": "Large Lot Tracker",
+        "category": "institutional_activity",
+        "priority": "high",
+        "accuracy_rating": 88,
+        
+        "technical_definition": {
+          "description": "متتبع الكميات الكبيرة يحدد ويتتبع الصفقات الكبيرة التي قد تشير إلى نشاط مؤسسي",
+          "algorithm_type": "Statistical Large Order Detection",
+          "data_requirements": ["Trade size data", "Volume thresholds", "Market statistics"],
+          "calculation_method": "Dynamic threshold calculation based on average market activity"
+        },
+        
+        "core_parameters": {
+          "detection_criteria": {
+            "size_threshold": "Configurable percentage of average volume",
+            "frequency_filter": "Multiple large lots in sequence",
+            "price_impact": "Orders causing significant price movement",
+            "time_clustering": "Large orders within time windows"
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "رصد النشاط المؤسسي",
+            "تتبع الاستثمار الكبير",
+            "تحديد نقاط التحول المحتملة",
+            "فهم تدفق الأوامر الكبيرة"
+          ],
+          "trading_signals": [
+            "تراكم صفقات كبيرة في اتجاه واحد",
+            "صفقات كبيرة عند مستويات مهمة",
+            "تغيير في حجم الصفقات الكبيرة",
+            "توقيت الصفقات الكبيرة"
+          ]
+        }
+      },
+
+      "iceberg_detector": {
+        "id": "tool_006",
+        "name": "Iceberg Detector",
+        "category": "hidden_liquidity",
+        "priority": "high",
+        "accuracy_rating": 90,
+        
+        "technical_definition": {
+          "description": "كاشف الجبال الجليدية يحدد الأوامر المخفية الكبيرة التي يتم تنفيذها على دفعات صغيرة",
+          "algorithm_type": "Hidden Order Pattern Recognition",
+          "data_requirements": ["Order book data", "Trade execution patterns", "Volume analysis"],
+          "calculation_method": "Pattern analysis of repeated orders at same price levels"
+        },
+        
+        "core_parameters": {
+          "detection_methods": {
+            "execution_pattern": "Repeated executions at same price",
+            "order_refreshing": "Automatic order renewal patterns",
+            "size_consistency": "Similar order sizes over time",
+            "market_impact": "Limited price impact despite size"
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "كشف السيولة المخفية",
+            "تحديد النشاط الخوارزمي",
+            "رصد التراكم/التوزيع المؤسسي",
+            "فهم الطلب/العرض الحقيقي"
+          ],
+          "trading_signals": [
+            "وجود سيولة مخفية كبيرة",
+            "مقاومة/دعم خفي عند مستويات معينة",
+            "نشاط تراكمي أو توزيعي",
+            "احتمال استمرار الاتجاه"
+          ]
+        }
+      },
+
+      "vwap": {
+        "id": "tool_007",
+        "name": "VWAP (Volume Weighted Average Price)",
+        "category": "statistical_analysis",
+        "priority": "core",
+        "accuracy_rating": 95,
+        
+        "technical_definition": {
+          "description": "متوسط السعر المرجح بالحجم يحسب متوسط السعر مرجحاً بأحجام التداول",
+          "algorithm_type": "Volume-Weighted Statistical Analysis",
+          "data_requirements": ["Price data", "Volume data", "Time periods"],
+          "calculation_method": "VWAP = Σ(Price × Volume) / Σ(Volume)"
+        },
+        
+        "core_parameters": {
+          "calculation_types": {
+            "intraday_vwap": "Resets daily",
+            "anchored_vwap": "Fixed start point",
+            "rolling_vwap": "Moving time window",
+            "session_vwap": "Trading session based"
+          }
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد القيمة العادلة للسعر",
+            "مرجع لتقييم الأداء",
+            "دعم/مقاومة ديناميكي",
+            "مؤشر اتجاه السوق"
+          ],
+          "trading_signals": [
+            "السعر فوق VWAP: قوة صاعدة",
+            "السعر تحت VWAP: ضعف هابط",
+            "عودة السعر لـ VWAP: نقطة مغناطيسية",
+            "ميل VWAP: اتجاه السوق العام"
+          ]
+        }
+      },
+
+      "imbalance_indicator": {
+        "id": "tool_008",
+        "name": "Imbalance Indicator",
+        "category": "order_flow",
+        "priority": "medium",
+        "accuracy_rating": 85,
+        
+        "technical_definition": {
+          "description": "مؤشر عدم التوازن يقيس عدم التوازن بين العرض والطلب في دفتر الأوامر",
+          "algorithm_type": "Order Book Imbalance Analysis",
+          "data_requirements": ["Bid/Ask data", "Order book depth", "Real-time updates"],
+          "calculation_method": "Bid-Ask volume ratio and depth analysis"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد ضغط الشراء/البيع",
+            "توقع الحركة قصيرة المدى",
+            "رصد تغيرات المعنويات",
+            "تحليل ديناميكيات دفتر الأوامر"
+          ]
+        }
+      },
+      
+      "absorption_indicator": {
+        "id": "tool_009",
+        "name": "Absorption Indicator", 
+        "category": "order_flow",
+        "priority": "medium",
+        "accuracy_rating": 87,
+        
+        "technical_definition": {
+          "description": "مؤشر الامتصاص يحدد عندما يتم امتصاص الضغط الشرائي أو البيعي دون تغيير السعر",
+          "algorithm_type": "Volume Absorption Pattern Analysis",
+          "data_requirements": ["Volume data", "Price action", "Order flow"],
+          "calculation_method": "Volume vs price movement correlation analysis"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحديد مناطق الدعم/المقاومة القوية",
+            "رصد التراكم المؤسسي",
+            "توقع نقاط الانعكاس",
+            "فهم السيولة المخفية"
+          ]
+        }
+      },
+      
+      "strength_level_indicator": {
+        "id": "tool_010",
+        "name": "Strength Level Indicator",
+        "category": "support_resistance",
+        "priority": "medium",
+        "accuracy_rating": 83,
+        
+        "technical_definition": {
+          "description": "مؤشر قوة المستوى يحدد قوة مستويات الدعم والمقاومة بناءً على النشاط التاريخي",
+          "algorithm_type": "Historical Level Strength Analysis",
+          "data_requirements": ["Historical price data", "Volume data", "Touch frequency"],
+          "calculation_method": "Multi-factor strength scoring algorithm"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تصنيف قوة المستويات",
+            "توقع احتمالات الكسر",
+            "تحديد نقاط الدخول/الخروج",
+            "إدارة المخاطر"
+          ]
+        }
+      },
+
+      "volume_bars": {
+        "id": "tool_011",
+        "name": "Volume Bars",
+        "category": "volume_analysis",
+        "priority": "medium",
+        "accuracy_rating": 91,
+        
+        "technical_definition": {
+          "description": "أشرطة الحجم تُظهر الحجم المتداول خلال فترات زمنية محددة مع تمييز العدوانية",
+          "algorithm_type": "Time-based Volume Aggregation",
+          "data_requirements": ["Volume data", "Time intervals", "Aggressor classification"],
+          "calculation_method": "Time-windowed volume aggregation with buy/sell classification"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "تحليل كثافة التداول",
+            "مقارنة الحجم عبر الفترات",
+            "تحديد فترات النشاط العالي",
+            "تأكيد الاتجاهات"
+          ]
+        }
+      },
+
+      "time_and_sales": {
+        "id": "tool_012",
+        "name": "Time and Sales",
+        "category": "trade_data",
+        "priority": "high",
+        "accuracy_rating": 99,
+        
+        "technical_definition": {
+          "description": "بيانات الوقت والمبيعات تُظهر جميع التداولات المنفذة بالترتيب الزمني",
+          "algorithm_type": "Raw Trade Data Stream",
+          "data_requirements": ["Trade executions", "Timestamps", "Price and size"],
+          "calculation_method": "Real-time trade data aggregation and classification"
+        },
+        
+        "market_insights": {
+          "primary_uses": [
+            "مراقبة التداولات بالتفصيل",
+            "تحليل سرعة التنفيذ",
+            "رصد الصفقات الكبيرة",
+            "فهم ديناميكيات السوق"
+          ]
+        }
+      }
+    }
+  }
+} 

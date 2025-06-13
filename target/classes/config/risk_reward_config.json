@@ -1,0 +1,31 @@
+{
+  "PERFECT_STORM": 3.5,
+  "TRIPLE_CONFIRMATION": 2.8,
+  "STRONG_SIGNAL": 2.2,
+  "MEDIUM_SIGNAL": 1.8,
+  "WEAK_SIGNAL": 1.5,
+  "VOLUME_CONFIRMATION": 2.5,
+  "INSTITUTIONAL_ACCUMULATION": 3.0,
+  "VOLUME_DIVERGENCE": 2.0,
+  "EXHAUSTION_VOLUME": 2.3,
+  "ABSORPTION_PATTERN": 2.1,
+  "ICEBERG_BREAKOUT": 2.7,
+  "HEATMAP_CLUSTER": 2.0,
+  "CVD_MOMENTUM": 2.4,
+  "VWAP_REJECTION": 1.9,
+  "VOLUME_SPIKE": 2.2,
+  "LARGE_LOT_SIGNAL": 2.6,
+  "IMBALANCE_BREAKOUT": 2.0,
+  "STOP_RUN_REVERSAL": 1.8,
+  "STRENGTH_LEVEL_BREAK": 2.1,
+  "BUBBLE_CONFLUENCE": 2.3,
+  "default": 2.0,
+  "_metadata": {
+    "created": "2025-06-04T14:40:00Z",
+    "description": "Risk/Reward ratios optimized by Adaptive Learning System",
+    "update_frequency": "Real-time based on pattern performance",
+    "min_ratio": 1.0,
+    "max_ratio": 5.0,
+    "last_update": "Initial configuration"
+  }
+} 
