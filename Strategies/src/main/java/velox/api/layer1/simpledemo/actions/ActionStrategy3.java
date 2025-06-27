@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Additionally, this strategy requests Bookmap to execute built-in actions in the strategy window
  * by declaring {@link Layer1ExternalAction#ALLOW_EXECUTING_BUILTIN_ACTIONS} client property which is set to true.
  */
+
 @Layer1Attachable
 @Layer1Injectable
 @Layer1StrategyName("Action Strategy 3")

@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+BookMap-version: 7.6.0 build:20
+

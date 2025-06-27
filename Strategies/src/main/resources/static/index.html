@@ -1,0 +1,336 @@
+<div class="container">
+    <header class="header">
+        <h1 class="title">ICT Smart Analyzer</h1>
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-label">System</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-label">Data Feed</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-label">Analysis</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-label">AI Model</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="warning-banner">
+        <span class="warning-icon">⚠️</span>
+        <span class="warning-text">This is an advisory tool. Always verify signals with your own analysis.</span>
+    </div>
+
+    <div id="markets-container">
+        <!-- Market sections will be dynamically added here -->
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="last-updated">
+                <span class="label">Last Updated:</span>
+                <span id="last-updated-time">--:--:--</span>
+            </div>
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span class="status-label">System Online</span>
+            </div>
+            <div class="session-time">
+                <span class="label">Session Time:</span>
+                <span id="session-time">00:00:00</span>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+// ... existing script code ...
+
+// Add market section template
+function createMarketSection(marketId, marketName) {
+    return `
+        <div class="market-section" id="market-${marketId}">
+            <div class="market-header">
+                <h2 class="market-title">${marketName}</h2>
+                <div class="market-status">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Active</span>
+                </div>
+            </div>
+            
+            <div class="grid-container">
+                <div class="main-grid">
+                    <div class="card prediction-card">
+                        <h3>Market Prediction</h3>
+                        <div class="prediction-content">
+                            <div class="prediction-header">
+                                <div class="prediction-label">Bullish</div>
+                                <div class="prediction-value" id="bullish-${marketId}">--%</div>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="bullish-bar-${marketId}"></div>
+                            </div>
+                            <div class="prediction-header">
+                                <div class="prediction-label">Bearish</div>
+                                <div class="prediction-value" id="bearish-${marketId}">--%</div>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="bearish-bar-${marketId}"></div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="prediction-chart-${marketId}"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card advisory-card">
+                        <h3>Trading Advisory</h3>
+                        <div class="advisory-content">
+                            <div class="signal-strength">
+                                <div class="signal-label">Signal Strength</div>
+                                <div class="signal-value" id="signal-${marketId}">--</div>
+                            </div>
+                            <div class="targets">
+                                <div class="target">
+                                    <div class="target-label">Entry</div>
+                                    <div class="target-value" id="entry-${marketId}">--</div>
+                                </div>
+                                <div class="target">
+                                    <div class="target-label">Exit</div>
+                                    <div class="target-value" id="exit-${marketId}">--</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="advisory-chart-${marketId}"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="secondary-grid">
+                    <div class="card metrics-card">
+                        <h3>AI Performance</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-label">Accuracy</div>
+                                <div class="metric-value" id="accuracy-${marketId}">--%</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Success Rate</div>
+                                <div class="metric-value" id="success-${marketId}">--%</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Confidence</div>
+                                <div class="metric-value" id="confidence-${marketId}">--%</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Win Rate</div>
+                                <div class="metric-value" id="winrate-${marketId}">--%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card patterns-card">
+                        <h3>Pattern Detection</h3>
+                        <div class="patterns-list" id="patterns-${marketId}">
+                            <!-- Patterns will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="card overview-card">
+                        <h3>Market Overview</h3>
+                        <div class="overview-content">
+                            <div class="overview-item">
+                                <div class="overview-label">Current Price</div>
+                                <div class="overview-value" id="price-${marketId}">--</div>
+                            </div>
+                            <div class="overview-item">
+                                <div class="overview-label">VWAP</div>
+                                <div class="overview-value" id="vwap-${marketId}">--</div>
+                            </div>
+                            <div class="overview-item">
+                                <div class="overview-label">Market Bias</div>
+                                <div class="overview-value" id="bias-${marketId}">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Update fetchData function to handle multiple markets
+async function fetchData() {
+    try {
+        const response = await fetch('/api/market-data');
+        const data = await response.json();
+        
+        // Update each market's data
+        data.markets.forEach(market => {
+            const marketId = market.id;
+            
+            // Create market section if it doesn't exist
+            if (!document.getElementById(`market-${marketId}`)) {
+                const marketSection = createMarketSection(marketId, market.name);
+                document.getElementById('markets-container').insertAdjacentHTML('beforeend', marketSection);
+                initializeCharts(marketId);
+            }
+            
+            // Update market data
+            updateMarketData(marketId, market);
+        });
+        
+        updateLastUpdated();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+// Initialize charts for a market
+function initializeCharts(marketId) {
+    // Prediction chart
+    const predictionCtx = document.getElementById(`prediction-chart-${marketId}`).getContext('2d');
+    new Chart(predictionCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Bullish',
+                    data: [],
+                    borderColor: '#00ff00',
+                    tension: 0.4
+                },
+                {
+                    label: 'Bearish',
+                    data: [],
+                    borderColor: '#ff0000',
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Advisory chart
+    const advisoryCtx = document.getElementById(`advisory-chart-${marketId}`).getContext('2d');
+    new Chart(advisoryCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Signal Strength',
+                data: [],
+                borderColor: '#00ffff',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Update market data
+function updateMarketData(marketId, market) {
+    // Update prediction values
+    document.getElementById(`bullish-${marketId}`).textContent = `${market.bullish}%`;
+    document.getElementById(`bearish-${marketId}`).textContent = `${market.bearish}%`;
+    document.getElementById(`bullish-bar-${marketId}`).style.width = `${market.bullish}%`;
+    document.getElementById(`bearish-bar-${marketId}`).style.width = `${market.bearish}%`;
+    
+    // Update advisory values
+    document.getElementById(`signal-${marketId}`).textContent = market.signal;
+    document.getElementById(`entry-${marketId}`).textContent = market.entry;
+    document.getElementById(`exit-${marketId}`).textContent = market.exit;
+    
+    // Update metrics
+    document.getElementById(`accuracy-${marketId}`).textContent = `${market.accuracy}%`;
+    document.getElementById(`success-${marketId}`).textContent = `${market.success}%`;
+    document.getElementById(`confidence-${marketId}`).textContent = `${market.confidence}%`;
+    document.getElementById(`winrate-${marketId}`).textContent = `${market.winrate}%`;
+    
+    // Update patterns
+    const patternsList = document.getElementById(`patterns-${marketId}`);
+    patternsList.innerHTML = market.patterns.map(pattern => `
+        <div class="pattern-item">
+            <span class="pattern-name">${pattern.name}</span>
+            <span class="pattern-confidence">${pattern.confidence}%</span>
+        </div>
+    `).join('');
+    
+    // Update overview
+    document.getElementById(`price-${marketId}`).textContent = market.price;
+    document.getElementById(`vwap-${marketId}`).textContent = market.vwap;
+    document.getElementById(`bias-${marketId}`).textContent = market.bias;
+    
+    // Update charts
+    updateCharts(marketId, market);
+}
+
+// Update charts for a market
+function updateCharts(marketId, market) {
+    const predictionChart = Chart.getChart(`prediction-chart-${marketId}`);
+    const advisoryChart = Chart.getChart(`advisory-chart-${marketId}`);
+    
+    if (predictionChart) {
+        predictionChart.data.labels.push(new Date().toLocaleTimeString());
+        predictionChart.data.datasets[0].data.push(market.bullish);
+        predictionChart.data.datasets[1].data.push(market.bearish);
+        
+        if (predictionChart.data.labels.length > 20) {
+            predictionChart.data.labels.shift();
+            predictionChart.data.datasets[0].data.shift();
+            predictionChart.data.datasets[1].data.shift();
+        }
+        
+        predictionChart.update();
+    }
+    
+    if (advisoryChart) {
+        advisoryChart.data.labels.push(new Date().toLocaleTimeString());
+        advisoryChart.data.datasets[0].data.push(market.signalStrength);
+        
+        if (advisoryChart.data.labels.length > 20) {
+            advisoryChart.data.labels.shift();
+            advisoryChart.data.datasets[0].data.shift();
+        }
+        
+        advisoryChart.update();
+    }
+}
+
+// ... rest of existing script code ...
+</script> 

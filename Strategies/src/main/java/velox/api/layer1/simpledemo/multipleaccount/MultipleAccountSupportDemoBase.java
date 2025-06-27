@@ -71,7 +71,13 @@ public class MultipleAccountSupportDemoBase implements
     
     private final AccountListManager accountListManager = new AccountListManager();
     
-    private record AccountItem(AccountInfo accountInfo) {
+    private static class AccountItem {
+        private final AccountInfo accountInfo;
+        
+        public AccountItem(AccountInfo accountInfo) {
+            this.accountInfo = accountInfo;
+        }
+        
         @Override
         public String toString() {
             String text = accountInfo.summary;
@@ -361,7 +367,8 @@ public class MultipleAccountSupportDemoBase implements
             Log.info("Account list changed (accounts count = " + accountListManager.getAccounts().size() + ")");
         }
         
-        if (data instanceof TradingAccountsInfoMessage message) {
+        if (data instanceof TradingAccountsInfoMessage) {
+            TradingAccountsInfoMessage message = (TradingAccountsInfoMessage) data;
             Log.info("TradingAccountsInfoMessage: " + message);
         }
         
@@ -473,10 +480,11 @@ public class MultipleAccountSupportDemoBase implements
             
             @Override
             public void onUserMessage(Object data) {
-                if (data instanceof TradingAccountsInfoMessage message) {
-                    // TradingAccountsListMessage should be received here.
-                    Log.info("OnlineValueCalculatorAdapter#onUserMessage: " + message);
-                }
+                            if (data instanceof TradingAccountsInfoMessage) {
+                // TradingAccountsListMessage should be received here.
+                TradingAccountsInfoMessage message = (TradingAccountsInfoMessage) data;
+                Log.info("OnlineValueCalculatorAdapter#onUserMessage: " + message);
+            }
             }
             
         };
@@ -526,10 +534,11 @@ public class MultipleAccountSupportDemoBase implements
             
             @Override
             public void onUserMessage(Object data) {
-                if (data instanceof TradingAccountsInfoMessage message) {
-                    // TradingAccountsListMessage should be received here.
-                    Log.info("Layer1ApiUserMessageAddStrategyUpdateGenerator#onUserMessage: " + message);
-                }
+                            if (data instanceof TradingAccountsInfoMessage) {
+                // TradingAccountsListMessage should be received here.
+                TradingAccountsInfoMessage message = (TradingAccountsInfoMessage) data;
+                Log.info("Layer1ApiUserMessageAddStrategyUpdateGenerator#onUserMessage: " + message);
+            }
             }
             
             @Override
