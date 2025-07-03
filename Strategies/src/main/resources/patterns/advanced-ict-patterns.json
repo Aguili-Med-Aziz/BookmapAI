@@ -1,0 +1,283 @@
+{
+  "advanced_ict_patterns": {
+    "version": "2.1",
+    "created": "2024-12-30",
+    "smart_money_concepts": {
+      "fair_value_gaps": {
+        "name": "Fair Value Gap (FVG)",
+        "type": "imbalance_pattern",
+        "markets": ["FOREX", "INDICES", "CRYPTO"],
+        "timeframes": ["1M", "5M", "15M", "1H"],
+        "detection_criteria": {
+          "gap_size_minimum": 0.5,
+          "gap_validation": {
+            "three_candle_sequence": true,
+            "no_overlap_requirement": true,
+            "volume_confirmation": true
+          },
+          "gap_types": {
+            "bullish_fvg": {
+              "formation": "gap_between_candle1_high_and_candle3_low",
+              "direction": "upward",
+              "retest_probability": 0.78
+            },
+            "bearish_fvg": {
+              "formation": "gap_between_candle1_low_and_candle3_high",
+              "direction": "downward",
+              "retest_probability": 0.82
+            }
+          }
+        },
+        "trading_rules": {
+          "entry_method": "gap_retest",
+          "stop_loss": "opposite_side_of_gap",
+          "take_profit": "next_liquidity_level",
+          "risk_reward_min": 2.0
+        },
+        "success_rate": 85.7,
+        "avg_reward": 2.4
+      },
+      "order_blocks": {
+        "name": "Order Block Detection",
+        "type": "institutional_pattern",
+        "markets": ["ALL"],
+        "timeframes": ["15M", "1H", "4H"],
+        "detection_criteria": {
+          "strong_move_requirement": {
+            "minimum_pips": 20,
+            "minimum_candles": 3,
+            "volume_spike": 1.8
+          },
+          "consolidation_before": {
+            "max_range_percent": 0.3,
+            "minimum_time": 10
+          },
+          "block_validation": {
+            "last_opposite_candle": true,
+            "volume_analysis": true,
+            "structure_break": true
+          }
+        },
+        "block_types": {
+          "bullish_order_block": {
+            "formation": "last_down_candle_before_break_up",
+            "retest_success": 0.89,
+            "hold_rate": 0.73
+          },
+          "bearish_order_block": {
+            "formation": "last_up_candle_before_break_down",
+            "retest_success": 0.87,
+            "hold_rate": 0.71
+          }
+        },
+        "success_rate": 88.9,
+        "avg_reward": 2.8
+      },
+      "liquidity_sweeps": {
+        "name": "Liquidity Sweep Patterns",
+        "type": "manipulation_pattern",
+        "markets": ["ALL"],
+        "timeframes": ["5M", "15M", "1H"],
+        "detection_criteria": {
+          "sweep_identification": {
+            "equal_highs_lows": true,
+            "minimum_touches": 2,
+            "maximum_touches": 4,
+            "false_break_pips": 5
+          },
+          "volume_analysis": {
+            "sweep_volume_spike": 1.5,
+            "reversal_volume": 2.0,
+            "institutional_footprint": true
+          },
+          "market_structure": {
+            "higher_timeframe_bias": true,
+            "confluence_zones": true,
+            "fibonacci_levels": [0.5, 0.618, 0.786]
+          }
+        },
+        "sweep_types": {
+          "buy_side_liquidity_sweep": {
+            "target": "equal_highs_or_resistance",
+            "reversal_direction": "downward",
+            "success_probability": 0.84
+          },
+          "sell_side_liquidity_sweep": {
+            "target": "equal_lows_or_support",
+            "reversal_direction": "upward",
+            "success_probability": 0.81
+          }
+        },
+        "success_rate": 82.5,
+        "avg_reward": 3.1
+      },
+      "break_of_structure": {
+        "name": "Break of Structure (BOS)",
+        "type": "trend_change_pattern",
+        "markets": ["ALL"],
+        "timeframes": ["15M", "1H", "4H", "1D"],
+        "detection_criteria": {
+          "structure_identification": {
+            "swing_highs_lows": true,
+            "minimum_swing_distance": 15,
+            "structure_strength": "multiple_touches"
+          },
+          "break_confirmation": {
+            "close_beyond_structure": true,
+            "volume_confirmation": true,
+            "retest_failure": true
+          },
+          "trend_analysis": {
+            "higher_timeframe_alignment": true,
+            "momentum_confirmation": true,
+            "institutional_bias": true
+          }
+        },
+        "bos_types": {
+          "bullish_bos": {
+            "break_direction": "upward",
+            "previous_trend": "downward",
+            "continuation_probability": 0.79
+          },
+          "bearish_bos": {
+            "break_direction": "downward", 
+            "previous_trend": "upward",
+            "continuation_probability": 0.76
+          }
+        },
+        "success_rate": 77.8,
+        "avg_reward": 2.6
+      },
+      "change_of_character": {
+        "name": "Change of Character (CHOCH)",
+        "type": "momentum_shift_pattern",
+        "markets": ["ALL"],
+        "timeframes": ["1H", "4H", "1D"],
+        "detection_criteria": {
+          "momentum_shift": {
+            "velocity_change": true,
+            "volume_divergence": true,
+            "structure_failure": true
+          },
+          "character_analysis": {
+            "impulse_vs_correction": true,
+            "time_factor": true,
+            "market_sentiment": true
+          }
+        },
+        "success_rate": 74.2,
+        "avg_reward": 2.3
+      }
+    },
+    "market_maker_models": {
+      "accumulation_distribution": {
+        "name": "Wyckoff Accumulation/Distribution",
+        "phases": {
+          "accumulation": {
+            "phase_a": "selling_climax_identification",
+            "phase_b": "consolidation_range",
+            "phase_c": "spring_or_test",
+            "phase_d": "strength_signs",
+            "phase_e": "markup_breakout"
+          },
+          "distribution": {
+            "phase_a": "buying_climax_identification", 
+            "phase_b": "distribution_range",
+            "phase_c": "upthrust_test",
+            "phase_d": "weakness_signs",
+            "phase_e": "markdown_breakdown"
+          }
+        },
+        "success_rate": 79.4,
+        "avg_reward": 3.8
+      },
+      "market_maker_manipulation": {
+        "name": "Market Maker Manipulation Cycle",
+        "cycle_phases": {
+          "accumulation": "institutional_buying",
+          "manipulation": "retail_trap_setup",
+          "distribution": "institutional_selling",
+          "reaccumulation": "cycle_restart"
+        },
+        "detection_signals": {
+          "volume_profile_analysis": true,
+          "order_flow_imbalance": true,
+          "time_and_sales_pattern": true,
+          "options_flow": true
+        },
+        "success_rate": 83.6,
+        "avg_reward": 4.2
+      }
+    },
+    "advanced_algorithms": {
+      "multi_timeframe_confluence": {
+        "enabled": true,
+        "timeframes": ["1M", "5M", "15M", "1H", "4H", "1D"],
+        "confluence_scoring": {
+          "pattern_alignment": 0.4,
+          "trend_direction": 0.3,
+          "volume_confirmation": 0.2,
+          "fibonacci_levels": 0.1
+        },
+        "minimum_confluence_score": 0.75
+      },
+      "machine_learning_enhancement": {
+        "enabled": true,
+        "algorithms": {
+          "neural_network": {
+            "type": "LSTM",
+            "layers": 3,
+            "neurons_per_layer": 128,
+            "training_data_days": 730
+          },
+          "random_forest": {
+            "trees": 500,
+            "max_depth": 15,
+            "features": 45
+          },
+          "support_vector_machine": {
+            "kernel": "RBF",
+            "gamma": "auto",
+            "regularization": 1.0
+          }
+        },
+        "ensemble_voting": true,
+        "confidence_threshold": 0.82
+      },
+      "adaptive_learning": {
+        "enabled": true,
+        "learning_rate": 0.001,
+        "update_frequency": "daily",
+        "performance_feedback": true,
+        "parameter_optimization": true
+      }
+    },
+    "risk_management_enhanced": {
+      "dynamic_position_sizing": {
+        "volatility_adjusted": true,
+        "atr_multiplier": 2.0,
+        "market_condition_factor": true,
+        "correlation_adjustment": true
+      },
+      "advanced_stop_loss": {
+        "types": ["fixed", "trailing", "structure_based", "volatility_adjusted"],
+        "structure_based": {
+          "use_order_blocks": true,
+          "use_fair_value_gaps": true,
+          "buffer_pips": 3
+        },
+        "trailing_stop": {
+          "activation_profit": 1.5,
+          "trail_distance": 0.5,
+          "step_size": 0.25
+        }
+      },
+      "portfolio_heat": {
+        "maximum_risk": 0.06,
+        "correlation_limit": 0.7,
+        "sector_exposure_limit": 0.4,
+        "drawdown_protection": 0.15
+      }
+    }
+  }
+} 

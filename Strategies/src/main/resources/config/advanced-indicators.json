@@ -1,0 +1,329 @@
+{
+  "advanced_indicators": {
+    "version": "2.0",
+    "created": "2024-12-30",
+    "trend_indicators": {
+      "adaptive_moving_averages": {
+        "kaufman_ama": {
+          "enabled": true,
+          "period": 21,
+          "fast_sc": 2,
+          "slow_sc": 30,
+          "sensitivity": 0.1
+        },
+        "hull_moving_average": {
+          "enabled": true,
+          "period": 21,
+          "displacement": 0
+        },
+        "zero_lag_ema": {
+          "enabled": true,
+          "period": 21,
+          "gain_limit": 50
+        },
+        "linear_regression": {
+          "enabled": true,
+          "period": 14,
+          "deviation_bands": true,
+          "std_dev_multiplier": 2.0
+        }
+      },
+      "ichimoku_cloud_advanced": {
+        "enabled": true,
+        "tenkan_sen": 9,
+        "kijun_sen": 26,
+        "senkou_span_b": 52,
+        "chikou_span": 26,
+        "cloud_analysis": {
+          "cloud_twist_detection": true,
+          "price_cloud_interaction": true,
+          "future_cloud_projection": true,
+          "strength_measurement": true
+        }
+      },
+      "supertrend_multi": {
+        "enabled": true,
+        "configs": [
+          {"period": 10, "multiplier": 3.0},
+          {"period": 14, "multiplier": 2.5},
+          {"period": 21, "multiplier": 2.0}
+        ],
+        "confluence_required": 2
+      }
+    },
+    "momentum_indicators": {
+      "advanced_rsi": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 70,
+        "oversold": 30,
+        "divergence_detection": {
+          "enabled": true,
+          "lookback_periods": 50,
+          "min_divergence_bars": 5
+        },
+        "rsi_of_rsi": {
+          "enabled": true,
+          "period": 14
+        }
+      },
+      "stochastic_rsi": {
+        "enabled": true,
+        "rsi_period": 14,
+        "stoch_period": 14,
+        "k_period": 3,
+        "d_period": 3,
+        "overbought": 80,
+        "oversold": 20
+      },
+      "williams_r": {
+        "enabled": true,
+        "period": 14,
+        "overbought": -20,
+        "oversold": -80,
+        "divergence_analysis": true
+      },
+      "commodity_channel_index": {
+        "enabled": true,
+        "period": 20,
+        "overbought": 100,
+        "oversold": -100,
+        "extreme_levels": {
+          "upper": 200,
+          "lower": -200
+        }
+      },
+      "awesome_oscillator": {
+        "enabled": true,
+        "fast_period": 5,
+        "slow_period": 34,
+        "signal_line": true,
+        "zero_line_cross": true
+      }
+    },
+    "volume_indicators": {
+      "volume_weighted_average_price": {
+        "enabled": true,
+        "session_vwap": true,
+        "weekly_vwap": true,
+        "monthly_vwap": true,
+        "standard_deviations": [1.0, 1.5, 2.0, 2.5, 3.0],
+        "volume_profile": {
+          "enabled": true,
+          "value_area_percentage": 70,
+          "point_of_control": true
+        }
+      },
+      "on_balance_volume": {
+        "enabled": true,
+        "smoothing": {
+          "enabled": true,
+          "period": 21,
+          "method": "EMA"
+        },
+        "divergence_detection": true
+      },
+      "accumulation_distribution": {
+        "enabled": true,
+        "smoothing_period": 14,
+        "money_flow_multiplier": true
+      },
+      "money_flow_index": {
+        "enabled": true,
+        "period": 14,
+        "overbought": 80,
+        "oversold": 20,
+        "divergence_analysis": true
+      },
+      "klinger_oscillator": {
+        "enabled": true,
+        "fast_period": 34,
+        "slow_period": 55,
+        "signal_period": 13
+      }
+    },
+    "volatility_indicators": {
+      "bollinger_bands_advanced": {
+        "enabled": true,
+        "period": 20,
+        "std_dev": 2.0,
+        "bands_analysis": {
+          "squeeze_detection": true,
+          "expansion_detection": true,
+          "walk_the_bands": true,
+          "bollinger_band_width": true
+        },
+        "multiple_timeframes": ["15M", "1H", "4H"]
+      },
+      "average_true_range": {
+        "enabled": true,
+        "period": 14,
+        "atr_bands": {
+          "enabled": true,
+          "multiplier": 2.0
+        },
+        "volatility_ranking": true
+      },
+      "donchian_channels": {
+        "enabled": true,
+        "period": 20,
+        "middle_line": true,
+        "breakout_detection": true
+      },
+      "keltner_channels": {
+        "enabled": true,
+        "ema_period": 20,
+        "atr_period": 10,
+        "multiplier": 2.0,
+        "squeeze_with_bollinger": true
+      }
+    },
+    "cycle_indicators": {
+      "elliott_wave_analysis": {
+        "enabled": true,
+        "wave_counting": {
+          "impulse_waves": [1, 2, 3, 4, 5],
+          "corrective_waves": ["A", "B", "C"],
+          "fibonacci_ratios": [0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.618, 2.618]
+        },
+        "pattern_recognition": {
+          "ending_diagonal": true,
+          "leading_diagonal": true,
+          "expanded_flat": true,
+          "zigzag": true,
+          "triangle": true
+        }
+      },
+      "gann_analysis": {
+        "enabled": true,
+        "gann_angles": [
+          {"angle": 45, "ratio": "1x1"},
+          {"angle": 26.25, "ratio": "2x1"},
+          {"angle": 18.75, "ratio": "3x1"},
+          {"angle": 15, "ratio": "4x1"},
+          {"angle": 63.75, "ratio": "1x2"},
+          {"angle": 71.25, "ratio": "1x3"},
+          {"angle": 75, "ratio": "1x4"}
+        ],
+        "gann_squares": true,
+        "time_cycles": true
+      },
+      "fibonacci_advanced": {
+        "retracement_levels": [0.236, 0.382, 0.5, 0.618, 0.786],
+        "extension_levels": [1.272, 1.414, 1.618, 2.0, 2.618, 3.618, 4.236],
+        "time_zones": true,
+        "fibonacci_arcs": true,
+        "fibonacci_fans": true,
+        "auto_detection": {
+          "swing_detection": true,
+          "minimum_swing_size": 20,
+          "confluence_zones": true
+        }
+      }
+    },
+    "market_structure_analysis": {
+      "pivot_points_advanced": {
+        "enabled": true,
+        "calculation_methods": ["Standard", "Fibonacci", "Woodie", "Camarilla", "DeMark"],
+        "timeframes": ["Daily", "Weekly", "Monthly"],
+        "support_resistance_strength": true
+      },
+      "supply_demand_zones": {
+        "enabled": true,
+        "zone_identification": {
+          "volume_spike_threshold": 1.8,
+          "price_rejection_threshold": 0.7,
+          "time_factor": 10
+        },
+        "zone_strength": {
+          "strong": {"touches": 1, "volume": "high", "rejection": "strong"},
+          "medium": {"touches": 2, "volume": "medium", "rejection": "medium"},
+          "weak": {"touches": 3, "volume": "low", "rejection": "weak"}
+        },
+        "zone_expiry": {
+          "time_based": 48,
+          "touch_based": 3,
+          "break_based": true
+        }
+      },
+      "market_profile": {
+        "enabled": true,
+        "time_price_opportunity": true,
+        "value_area": {
+          "percentage": 70,
+          "high_value_area": true,
+          "low_value_area": true
+        },
+        "single_prints": true,
+        "poor_highs_lows": true,
+        "naked_point_of_control": true
+      }
+    },
+    "sentiment_indicators": {
+      "commitment_of_traders": {
+        "enabled": true,
+        "commercial_positioning": true,
+        "non_commercial_positioning": true,
+        "net_positioning": true,
+        "extreme_levels": {
+          "bullish_extreme": 80,
+          "bearish_extreme": 20
+        }
+      },
+      "put_call_ratio": {
+        "enabled": true,
+        "calculation_period": 10,
+        "extreme_levels": {
+          "high_fear": 1.2,
+          "high_greed": 0.7
+        }
+      },
+      "vix_analysis": {
+        "enabled": true,
+        "fear_greed_levels": {
+          "extreme_fear": 30,
+          "fear": 20,
+          "greed": 12,
+          "extreme_greed": 9
+        },
+        "term_structure": true
+      }
+    },
+    "multi_timeframe_analysis": {
+      "enabled": true,
+      "timeframe_hierarchy": ["1D", "4H", "1H", "15M", "5M", "1M"],
+      "trend_alignment": {
+        "required_alignment": 0.7,
+        "weight_distribution": {
+          "1D": 0.4,
+          "4H": 0.25,
+          "1H": 0.2,
+          "15M": 0.1,
+          "5M": 0.05
+        }
+      },
+      "confluence_detection": {
+        "minimum_confluences": 3,
+        "confluence_types": [
+          "trend_alignment",
+          "support_resistance",
+          "fibonacci_levels",
+          "moving_averages",
+          "pattern_completion"
+        ]
+      }
+    },
+    "performance_optimization": {
+      "calculation_efficiency": {
+        "parallel_processing": true,
+        "memory_optimization": true,
+        "real_time_updates": true
+      },
+      "adaptive_parameters": {
+        "market_condition_adjustment": true,
+        "volatility_based_optimization": true,
+        "performance_feedback": true
+      }
+    }
+  }
+} 
