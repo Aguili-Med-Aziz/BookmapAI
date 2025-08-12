@@ -1,0 +1,269 @@
+{
+  "ai_sentiment_analysis": {
+    "version": "3.0",
+    "created": "2024-12-30",
+    "data_sources": {
+      "news_feeds": {
+        "enabled": true,
+        "sources": [
+          {"name": "Reuters", "weight": 0.25, "credibility": 0.95, "latency": 60},
+          {"name": "Bloomberg", "weight": 0.25, "credibility": 0.95, "latency": 45},
+          {"name": "MarketWatch", "weight": 0.15, "credibility": 0.85, "latency": 120},
+          {"name": "Yahoo Finance", "weight": 0.15, "credibility": 0.80, "latency": 180},
+          {"name": "Financial Times", "weight": 0.20, "credibility": 0.90, "latency": 90}
+        ],
+        "keywords_tracking": {
+          "forex": ["USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD"],
+          "indices": ["SPX", "DJI", "NASDAQ", "DAX", "FTSE", "NIKKEI"],
+          "commodities": ["Gold", "Silver", "Oil", "Gas", "Copper"],
+          "crypto": ["Bitcoin", "Ethereum", "BTC", "ETH"],
+          "economic_indicators": ["GDP", "CPI", "NFP", "PMI", "FOMC", "ECB"]
+        },
+        "sentiment_analysis": {
+          "natural_language_processing": {
+            "model": "BERT_FinancialSentiment",
+            "confidence_threshold": 0.75,
+            "context_window": 512,
+            "emotion_detection": ["fear", "greed", "uncertainty", "optimism", "pessimism"]
+          },
+          "impact_scoring": {
+            "high_impact": {"score": 0.8, "keywords": ["Fed", "ECB", "BOJ", "crisis", "breakthrough"]},
+            "medium_impact": {"score": 0.5, "keywords": ["earnings", "guidance", "upgrade", "downgrade"]},
+            "low_impact": {"score": 0.2, "keywords": ["outlook", "comment", "statement"]}
+          }
+        }
+      },
+      "social_media": {
+        "enabled": true,
+        "platforms": {
+          "twitter": {
+            "enabled": true,
+            "influencers_tracking": {
+              "financial_analysts": ["@federalreserve", "@ecb", "@boj_en"],
+              "market_gurus": ["@elonmusk", "@chamath", "@balajis"],
+              "institutions": ["@GoldmanSachs", "@JPMorgan", "@BlackRock"]
+            },
+            "hashtag_monitoring": ["#forex", "#trading", "#bitcoin", "#stocks", "#fed"],
+            "sentiment_aggregation": {
+              "time_windows": ["1h", "4h", "24h"],
+              "volume_weighted": true,
+              "influence_weighted": true
+            }
+          },
+          "reddit": {
+            "enabled": true,
+            "subreddits": ["r/forex", "r/investing", "r/StockMarket", "r/CryptoCurrency"],
+            "sentiment_analysis": {
+              "post_sentiment": true,
+              "comment_sentiment": true,
+              "upvote_weighting": true
+            }
+          }
+        },
+        "real_time_monitoring": {
+          "update_frequency": 300,
+          "trending_detection": true,
+          "viral_content_alerts": true
+        }
+      },
+      "institutional_flows": {
+        "enabled": true,
+        "cot_reports": {
+          "commercial_positioning": true,
+          "non_commercial_positioning": true,
+          "retail_positioning": true,
+          "net_positioning_changes": true
+        },
+        "options_flow": {
+          "put_call_ratio": true,
+          "unusual_options_activity": true,
+          "dark_pool_activity": true,
+          "insider_trading": true
+        },
+        "central_bank_communications": {
+          "fed_minutes": true,
+          "ecb_communications": true,
+          "boj_statements": true,
+          "boe_communications": true
+        }
+      }
+    },
+    "sentiment_models": {
+      "market_fear_greed_index": {
+        "enabled": true,
+        "components": {
+          "volatility": {"weight": 0.25, "timeframe": "30d"},
+          "momentum": {"weight": 0.25, "timeframe": "125d"},
+          "volume": {"weight": 0.15, "timeframe": "50d"},
+          "surveys": {"weight": 0.15, "source": "AAII"},
+          "breadth": {"weight": 0.10, "metric": "McClellan"},
+          "safe_haven": {"weight": 0.10, "assets": ["Gold", "Bonds", "USD"]}
+        },
+        "scale": {
+          "extreme_fear": [0, 25],
+          "fear": [25, 45],
+          "neutral": [45, 55],
+          "greed": [55, 75],
+          "extreme_greed": [75, 100]
+        }
+      },
+      "currency_sentiment": {
+        "enabled": true,
+        "currencies": ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "NZD"],
+        "sentiment_factors": {
+          "economic_data": {"weight": 0.4},
+          "central_bank_policy": {"weight": 0.3},
+          "political_stability": {"weight": 0.2},
+          "market_flows": {"weight": 0.1}
+        },
+        "sentiment_updates": "real_time"
+      },
+      "sector_rotation": {
+        "enabled": true,
+        "sectors": [
+          "Technology", "Healthcare", "Financial", "Energy", "Materials",
+          "Industrials", "Consumer Discretionary", "Consumer Staples",
+          "Utilities", "Real Estate", "Communication Services"
+        ],
+        "rotation_signals": {
+          "relative_strength": true,
+          "money_flow": true,
+          "earnings_momentum": true,
+          "economic_sensitivity": true
+        }
+      }
+    },
+    "predictive_analytics": {
+      "machine_learning_models": {
+        "lstm_sentiment_predictor": {
+          "enabled": true,
+          "architecture": {
+            "input_features": 128,
+            "hidden_layers": 3,
+            "neurons_per_layer": 256,
+            "dropout_rate": 0.2,
+            "output_classes": 3
+          },
+          "training_data": {
+            "historical_days": 1095,
+            "features": [
+              "news_sentiment", "social_sentiment", "technical_indicators",
+              "economic_calendar", "market_flows", "volatility_measures"
+            ]
+          },
+          "prediction_horizon": ["1h", "4h", "1d", "1w"]
+        },
+        "transformer_model": {
+          "enabled": true,
+          "model_type": "FinBERT",
+          "attention_heads": 12,
+          "layers": 12,
+          "context_length": 512,
+          "fine_tuning": {
+            "domain_specific": true,
+            "continuous_learning": true
+          }
+        },
+        "ensemble_voting": {
+          "enabled": true,
+          "models": ["LSTM", "Transformer", "Random Forest", "XGBoost"],
+          "voting_method": "weighted_average",
+          "confidence_threshold": 0.85
+        }
+      },
+      "market_regime_detection": {
+        "enabled": true,
+        "regimes": {
+          "bull_market": {
+            "characteristics": ["rising_prices", "low_volatility", "high_confidence"],
+            "indicators": ["VIX < 20", "Trend > 0", "Sentiment > 60"]
+          },
+          "bear_market": {
+            "characteristics": ["falling_prices", "high_volatility", "fear"],
+            "indicators": ["VIX > 30", "Trend < 0", "Sentiment < 40"]
+          },
+          "sideways_market": {
+            "characteristics": ["range_bound", "medium_volatility", "uncertainty"],
+            "indicators": ["15 < VIX < 25", "Trend ≈ 0", "40 < Sentiment < 60"]
+          },
+          "crisis_mode": {
+            "characteristics": ["extreme_volatility", "panic_selling", "flight_to_quality"],
+            "indicators": ["VIX > 40", "Sentiment < 20", "Safe Haven Flow"]
+          }
+        },
+        "regime_transition_signals": {
+          "early_warning": true,
+          "confirmation_required": 3,
+          "false_signal_filter": true
+        }
+      }
+    },
+    "real_time_processing": {
+      "data_ingestion": {
+        "streaming_apis": true,
+        "webhook_support": true,
+        "batch_processing": true,
+        "data_validation": true
+      },
+      "processing_pipeline": {
+        "data_cleaning": {
+          "noise_reduction": true,
+          "duplicate_removal": true,
+          "relevance_filtering": true
+        },
+        "feature_extraction": {
+          "text_preprocessing": true,
+          "named_entity_recognition": true,
+          "topic_modeling": true,
+          "temporal_features": true
+        },
+        "sentiment_computation": {
+          "individual_scores": true,
+          "weighted_aggregation": true,
+          "confidence_intervals": true,
+          "trend_analysis": true
+        }
+      },
+      "output_generation": {
+        "sentiment_scores": {
+          "overall_market": true,
+          "currency_specific": true,
+          "sector_specific": true,
+          "instrument_specific": true
+        },
+        "alerts": {
+          "sentiment_extremes": true,
+          "rapid_changes": true,
+          "divergences": true,
+          "regime_changes": true
+        },
+        "recommendations": {
+          "market_bias": true,
+          "risk_level": true,
+          "opportunity_identification": true,
+          "timing_signals": true
+        }
+      }
+    },
+    "integration": {
+      "trading_system": {
+        "sentiment_overlay": true,
+        "risk_adjustment": true,
+        "position_sizing": true,
+        "entry_timing": true
+      },
+      "dashboard_integration": {
+        "real_time_widgets": true,
+        "historical_charts": true,
+        "alert_notifications": true,
+        "sentiment_heatmaps": true
+      },
+      "api_endpoints": {
+        "current_sentiment": "/api/sentiment/current",
+        "historical_sentiment": "/api/sentiment/historical",
+        "sentiment_alerts": "/api/sentiment/alerts",
+        "market_regime": "/api/sentiment/regime"
+      }
+    }
+  }
+} 

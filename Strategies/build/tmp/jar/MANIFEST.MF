@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Implementation-Title: BookmapAI Active Sessions Addon
+Implementation-Version: 5.4.0
+Built-Date: 2025-08-12 23:21:00
+Addon-Type: Strategy
+Layer1-Api-Version: 2
+Built-JDK: 1.8.0_451
+Bookmap-Addon: true
+Main-Class: com.bookmaai.web.SimpleRealDataServer
+Implementation-Vendor: BookmapAI Research Team
+Layer1-Strategy-Name: BookmapAI Complete Trading System
+

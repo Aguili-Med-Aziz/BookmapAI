@@ -1,18 +1,18 @@
 # Large artifacts and build outputs
-Strategies.zip
-Strategies/build/
-Strategies/.gradle/
-*.jar
-*.tar
-*.zip
-*.log
-*.tmp
+#Strategies.zip
+#Strategies/build/
+#Strategies/.gradle/
+#*.jar
+#*.tar
+#*.zip
+#*.log
+#*.tmp
 *.bak
 
 # IDE and OS files
-.vscode/
+#.vscode/
 .idea/
-*.iml
+#*.iml
 Thumbs.db
 Desktop.ini
 #*.class
