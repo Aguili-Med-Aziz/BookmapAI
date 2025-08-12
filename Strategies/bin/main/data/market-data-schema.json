@@ -1,0 +1,130 @@
+{
+  "market_data_schema": {
+    "version": "2.0",
+    "timestamp": "2024-12-30T14:50:00Z",
+    "data_sources": {
+      "bookmap": {
+        "enabled": true,
+        "priority": 1,
+        "latency_ms": 50,
+        "data_types": ["tick", "depth", "trades", "volume_profile"]
+      },
+      "mt5": {
+        "enabled": true,
+        "priority": 2,
+        "latency_ms": 100,
+        "data_types": ["ohlcv", "tick"]
+      }
+    },
+    "instruments": {
+      "EURUSD": {
+        "type": "forex",
+        "pip_value": 0.0001,
+        "spread_avg": 0.8,
+        "session_hours": "24/7",
+        "volatility": "medium"
+      },
+      "GBPUSD": {
+        "type": "forex", 
+        "pip_value": 0.0001,
+        "spread_avg": 1.2,
+        "session_hours": "24/7",
+        "volatility": "high"
+      },
+      "NQ": {
+        "type": "futures",
+        "tick_size": 0.25,
+        "contract_size": 20,
+        "session_hours": "09:30-16:00 EST",
+        "volatility": "high"
+      },
+      "ES": {
+        "type": "futures",
+        "tick_size": 0.25,
+        "contract_size": 50,
+        "session_hours": "09:30-16:00 EST", 
+        "volatility": "medium"
+      }
+    },
+    "real_time_data": {
+      "tick_data": {
+        "fields": ["timestamp", "symbol", "bid", "ask", "last", "volume"],
+        "frequency": "every_tick",
+        "buffer_size": 1000
+      },
+      "depth_data": {
+        "fields": ["timestamp", "symbol", "levels", "bid_volume", "ask_volume"],
+        "levels": 10,
+        "update_frequency": 100
+      },
+      "trade_data": {
+        "fields": ["timestamp", "symbol", "price", "volume", "side", "aggressor"],
+        "buffer_size": 5000,
+        "aggregation": "none"
+      },
+      "volume_profile": {
+        "fields": ["timestamp", "symbol", "price_levels", "volume_per_level"],
+        "resolution": "tick",
+        "period": "session"
+      }
+    },
+    "historical_data": {
+      "ohlcv": {
+        "timeframes": ["1M", "5M", "15M", "1H", "4H", "1D"],
+        "lookback_days": 365,
+        "fields": ["timestamp", "open", "high", "low", "close", "volume"]
+      },
+      "tick_history": {
+        "retention_days": 30,
+        "compression": "lz4",
+        "storage_format": "parquet"
+      }
+    },
+    "calculated_indicators": {
+      "order_flow": {
+        "cumulative_delta": {
+          "calculation": "running_sum",
+          "reset_period": "session"
+        },
+        "volume_imbalance": {
+          "threshold": 0.6,
+          "lookback_bars": 20
+        },
+        "footprint": {
+          "price_levels": 50,
+          "time_aggregation": "1M"
+        }
+      },
+      "technical_indicators": {
+        "moving_averages": [20, 50, 200],
+        "rsi": {
+          "period": 14,
+          "overbought": 70,
+          "oversold": 30
+        },
+        "macd": {
+          "fast": 12,
+          "slow": 26,
+          "signal": 9
+        }
+      }
+    },
+    "data_quality": {
+      "validation": {
+        "price_range_check": true,
+        "timestamp_validation": true,
+        "volume_sanity_check": true
+      },
+      "cleanup": {
+        "remove_outliers": true,
+        "fill_gaps": "interpolation",
+        "handle_splits": true
+      },
+      "monitoring": {
+        "latency_alerts": 200,
+        "missing_data_alerts": true,
+        "quality_score_threshold": 95
+      }
+    }
+  }
+} 

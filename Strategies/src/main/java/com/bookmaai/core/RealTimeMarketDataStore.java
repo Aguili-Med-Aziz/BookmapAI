@@ -29,6 +29,19 @@ public class RealTimeMarketDataStore {
     private volatile long windowsLastUpdate = 0;
     private volatile boolean hasRealDataConnections = false;
     
+    // Enhanced instrument tracking
+    private final Map<String, InstrumentDetails> instrumentDetails = new ConcurrentHashMap<>();
+    private final Map<String, InstrumentHealthStatus> instrumentHealth = new ConcurrentHashMap<>();
+    private final Map<String, Long> lastDataTimestamp = new ConcurrentHashMap<>();
+    private final Map<String, Integer> dataFlowCounts = new ConcurrentHashMap<>();
+    
+    // Performance caching
+    private volatile String cachedActiveWindowsJson = null;
+    private volatile long cacheTimestamp = 0;
+    private static final long CACHE_DURATION_MS = 1000; // 1 second cache
+    private volatile java.util.Set<String> cachedReallyActiveInstruments = null;
+    private volatile long activeInstrumentsCacheTimestamp = 0;
+    
     // Session-based data structures (REAL DATA)
     private final Map<String, TradingSession> activeSessions = new ConcurrentHashMap<>();
     private final Map<String, List<PatternDetection>> sessionPatterns = new ConcurrentHashMap<>();
@@ -65,6 +78,9 @@ public class RealTimeMarketDataStore {
         activeBookmapWindows.put(windowId, window);
         windowsLastUpdate = System.currentTimeMillis();
         hasRealDataConnections = true;
+        
+        // Invalidate caches on data change
+        invalidateCaches();
         
         System.out.println("📊 REAL Bookmap window opened: " + symbol + " (" + status + ")");
 
@@ -117,11 +133,156 @@ public class RealTimeMarketDataStore {
         if (removed != null) {
             notifyWindowClosed(windowId, removed.getSymbol());
         }
+        
+        // Clean up enhanced tracking data
+        instrumentDetails.remove(windowId);
+        instrumentHealth.remove(windowId);
+        lastDataTimestamp.remove(windowId);
+        dataFlowCounts.remove(windowId);
+        
+        // Invalidate caches on data change
+        invalidateCaches();
+        
         windowsLastUpdate = System.currentTimeMillis();
         if (activeBookmapWindows.isEmpty()) {
             hasRealDataConnections = false;
         }
         System.out.println("📊 REAL Bookmap window closed (by id): " + windowId);
+    }
+    
+    // ==================== ENHANCED INSTRUMENT TRACKING ====================
+    
+    /**
+     * Register comprehensive instrument details
+     */
+    public void registerInstrumentDetails(String alias, String symbol, String exchange, double pips) {
+        InstrumentDetails details = new InstrumentDetails(alias, symbol, exchange, pips, System.currentTimeMillis());
+        instrumentDetails.put(alias, details);
+        
+        // Initialize health tracking
+        instrumentHealth.put(alias, new InstrumentHealthStatus(alias, true, System.currentTimeMillis()));
+        lastDataTimestamp.put(alias, System.currentTimeMillis());
+        dataFlowCounts.put(alias, 0);
+        
+        System.out.println("📋 Registered instrument details: " + symbol + " (" + exchange + ")");
+    }
+    
+    /**
+     * Initialize tracking for an instrument
+     */
+    public void initializeInstrumentTracking(String alias) {
+        instrumentHealth.put(alias, new InstrumentHealthStatus(alias, true, System.currentTimeMillis()));
+        lastDataTimestamp.put(alias, System.currentTimeMillis());
+        dataFlowCounts.put(alias, 0);
+        
+        System.out.println("🎯 Initialized tracking for instrument: " + alias);
+    }
+    
+    /**
+     * Validate and track data flow for an instrument
+     */
+    public void validateInstrumentDataFlow(String alias, double price, int size, long timestamp) {
+        // Update data flow tracking
+        lastDataTimestamp.put(alias, timestamp);
+        dataFlowCounts.put(alias, dataFlowCounts.getOrDefault(alias, 0) + 1);
+        
+        // Update health status
+        InstrumentHealthStatus health = instrumentHealth.get(alias);
+        if (health != null) {
+            health.updateHealth(true, timestamp);
+            health.recordDataPoint(price, size);
+        }
+    }
+    
+    /**
+     * Check if instrument is really active with recent data flow
+     */
+    public boolean isInstrumentReallyActive(String alias) {
+        // 1. Check if registered in active windows
+        if (!activeBookmapWindows.containsKey(alias)) {
+            return false;
+        }
+        
+        // 2. Verify recent data flow (last 5 minutes)
+        Long lastData = lastDataTimestamp.get(alias);
+        if (lastData == null || (System.currentTimeMillis() - lastData) > (5 * 60 * 1000)) {
+            return false;
+        }
+        
+        // 3. Check health status
+        InstrumentHealthStatus health = instrumentHealth.get(alias);
+        if (health == null || !health.isHealthy()) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Get comprehensive instrument status
+     */
+    public Map<String, Object> getInstrumentStatus(String alias) {
+        Map<String, Object> status = new HashMap<>();
+        
+        // Basic info
+        status.put("alias", alias);
+        status.put("is_active", activeBookmapWindows.containsKey(alias));
+        status.put("is_really_active", isInstrumentReallyActive(alias));
+        
+        // Details
+        InstrumentDetails details = instrumentDetails.get(alias);
+        if (details != null) {
+            status.put("symbol", details.getSymbol());
+            status.put("exchange", details.getExchange());
+            status.put("pips", details.getPips());
+        }
+        
+        // Health and data flow
+        InstrumentHealthStatus health = instrumentHealth.get(alias);
+        if (health != null) {
+            status.put("health_status", health.isHealthy() ? "HEALTHY" : "UNHEALTHY");
+            status.put("last_health_check", health.getLastHealthCheck());
+            status.put("data_points_count", health.getDataPointsCount());
+        }
+        
+        status.put("last_data_timestamp", lastDataTimestamp.get(alias));
+        status.put("data_flow_count", dataFlowCounts.getOrDefault(alias, 0));
+        
+        return status;
+    }
+    
+    /**
+     * Get all really active instruments (with data flow validation and caching)
+     */
+    public java.util.Set<String> getReallyActiveInstruments() {
+        long now = System.currentTimeMillis();
+        
+        // Use cached result if still fresh
+        if (cachedReallyActiveInstruments != null && 
+            (now - activeInstrumentsCacheTimestamp) < CACHE_DURATION_MS) {
+            return cachedReallyActiveInstruments;
+        }
+        
+        // Compute fresh result
+        java.util.Set<String> result = activeBookmapWindows.keySet().stream()
+            .filter(this::isInstrumentReallyActive)
+            .collect(java.util.stream.Collectors.toSet());
+            
+        // Cache the result
+        cachedReallyActiveInstruments = result;
+        activeInstrumentsCacheTimestamp = now;
+        
+        return result;
+    }
+    
+    /**
+     * Invalidate performance caches when data changes
+     */
+    private void invalidateCaches() {
+        cachedActiveWindowsJson = null;
+        cacheTimestamp = 0;
+        cachedReallyActiveInstruments = null;
+        activeInstrumentsCacheTimestamp = 0;
     }
     
     /**
@@ -793,5 +954,69 @@ public class RealTimeMarketDataStore {
         public String getMarketPressure() { return marketPressure; }
         public String getVolatility() { return volatility; }
         public double getSessionScore() { return sessionScore; }
+    }
+    
+    // ==================== ENHANCED TRACKING CLASSES ====================
+    
+    /**
+     * Comprehensive instrument details
+     */
+    public static class InstrumentDetails {
+        private final String alias;
+        private final String symbol;
+        private final String exchange;
+        private final double pips;
+        private final long registrationTime;
+        
+        public InstrumentDetails(String alias, String symbol, String exchange, double pips, long registrationTime) {
+            this.alias = alias;
+            this.symbol = symbol;
+            this.exchange = exchange;
+            this.pips = pips;
+            this.registrationTime = registrationTime;
+        }
+        
+        public String getAlias() { return alias; }
+        public String getSymbol() { return symbol; }
+        public String getExchange() { return exchange; }
+        public double getPips() { return pips; }
+        public long getRegistrationTime() { return registrationTime; }
+    }
+    
+    /**
+     * Health status tracking for instruments
+     */
+    public static class InstrumentHealthStatus {
+        private final String alias;
+        private boolean isHealthy;
+        private long lastHealthCheck;
+        private int dataPointsCount;
+        private double lastPrice;
+        private int lastSize;
+        
+        public InstrumentHealthStatus(String alias, boolean isHealthy, long lastHealthCheck) {
+            this.alias = alias;
+            this.isHealthy = isHealthy;
+            this.lastHealthCheck = lastHealthCheck;
+            this.dataPointsCount = 0;
+        }
+        
+        public void updateHealth(boolean healthy, long timestamp) {
+            this.isHealthy = healthy;
+            this.lastHealthCheck = timestamp;
+        }
+        
+        public void recordDataPoint(double price, int size) {
+            this.lastPrice = price;
+            this.lastSize = size;
+            this.dataPointsCount++;
+        }
+        
+        public String getAlias() { return alias; }
+        public boolean isHealthy() { return isHealthy; }
+        public long getLastHealthCheck() { return lastHealthCheck; }
+        public int getDataPointsCount() { return dataPointsCount; }
+        public double getLastPrice() { return lastPrice; }
+        public int getLastSize() { return lastSize; }
     }
 }

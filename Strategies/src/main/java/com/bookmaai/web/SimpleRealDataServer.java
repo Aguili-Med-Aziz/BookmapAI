@@ -154,6 +154,10 @@ public class SimpleRealDataServer {
                     serveActiveSessions(writer);
                 } else if (path.startsWith("/api/bookmap/windows")) {
                     serveBookmapWindows(writer);
+                } else if (path.startsWith("/api/instruments/status")) {
+                    serveInstrumentStatus(writer, path);
+                } else if (path.startsWith("/api/instruments")) {
+                    serveInstrumentsAPI(writer);
                 } else if (path.startsWith("/api/system")) {
                     serveSystemAPI(writer);
                 } else if (path.startsWith("/api/components")) {
@@ -434,8 +438,8 @@ public class SimpleRealDataServer {
     }
 
     /**
-     * Serve Bookmap Windows API expected by the dashboard JS
-     * Returns JSON from RealTimeMarketDataStore.getActiveBookmapWindowsJson()
+     * Serve Enhanced Bookmap Windows API with comprehensive instrument tracking
+     * Returns detailed JSON with data flow validation and health status
      */
     private void serveBookmapWindows(PrintWriter writer) {
         writer.println("HTTP/1.1 200 OK");
@@ -443,8 +447,51 @@ public class SimpleRealDataServer {
         writer.println("Access-Control-Allow-Origin: *");
         writer.println();
 
-        String json = realDataStore.getActiveBookmapWindowsJson();
+        String json = getEnhancedBookmapWindowsJson();
         writer.println(json);
+    }
+    
+    private String getEnhancedBookmapWindowsJson() {
+        Map<String, Object> activeWindows = realDataStore.getActiveBookmapWindows();
+        java.util.Set<String> reallyActiveInstruments = realDataStore.getReallyActiveInstruments();
+        
+        StringBuilder json = new StringBuilder();
+        json.append("{\n");
+        json.append("  \"status\": \"").append(activeWindows.isEmpty() ? "NO_WINDOWS" : "ACTIVE_WINDOWS").append("\",\n");
+        json.append("  \"active_windows_count\": ").append(activeWindows.size()).append(",\n");
+        json.append("  \"really_active_count\": ").append(reallyActiveInstruments.size()).append(",\n");
+        json.append("  \"windows_last_update\": ").append(System.currentTimeMillis()).append(",\n");
+        json.append("  \"message\": \"").append(activeWindows.isEmpty() ? 
+            "No active Bookmap windows. Open charts in Bookmap to see real data." : 
+            "Real-time data from " + activeWindows.size() + " active Bookmap windows (" + reallyActiveInstruments.size() + " with active data flow)").append("\",\n");
+        json.append("  \"active_windows\": [\n");
+        
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : activeWindows.entrySet()) {
+            if (!first) json.append(",\n");
+            first = false;
+            
+            String alias = entry.getKey();
+            Map<String, Object> instrumentStatus = realDataStore.getInstrumentStatus(alias);
+            
+            json.append("    {\n");
+            json.append("      \"alias\": \"").append(alias).append("\",\n");
+            json.append("      \"symbol\": \"").append(instrumentStatus.getOrDefault("symbol", alias)).append("\",\n");
+            json.append("      \"exchange\": \"").append(instrumentStatus.getOrDefault("exchange", "UNKNOWN")).append("\",\n");
+            json.append("      \"status\": \"").append(instrumentStatus.getOrDefault("health_status", "ACTIVE")).append("\",\n");
+            json.append("      \"is_really_active\": ").append(instrumentStatus.getOrDefault("is_really_active", false)).append(",\n");
+            json.append("      \"data_flow_count\": ").append(instrumentStatus.getOrDefault("data_flow_count", 0)).append(",\n");
+            json.append("      \"last_data_timestamp\": ").append(instrumentStatus.getOrDefault("last_data_timestamp", 0)).append(",\n");
+            json.append("      \"data_feed\": \"LIVE\"\n");
+            json.append("    }");
+        }
+        
+        json.append("\n  ],\n");
+        json.append("  \"enhanced_tracking\": true,\n");
+        json.append("  \"tracking_features\": [\"data_flow_validation\", \"health_monitoring\", \"exchange_info\", \"real_time_status\"]\n");
+        json.append("}");
+        
+        return json.toString();
     }
 
     /**
@@ -582,6 +629,90 @@ public class SimpleRealDataServer {
         writer.println("Cache-Control: max-age=86400");
         writer.println();
         // No body
+    }
+    
+    /**
+     * Serve comprehensive instruments API
+     */
+    private void serveInstrumentsAPI(PrintWriter writer) {
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: application/json");
+        writer.println("Access-Control-Allow-Origin: *");
+        writer.println();
+
+        java.util.Set<String> reallyActive = realDataStore.getReallyActiveInstruments();
+        Map<String, Object> activeWindows = realDataStore.getActiveBookmapWindows();
+        
+        StringBuilder json = new StringBuilder();
+        json.append("{\n");
+        json.append("  \"timestamp\": ").append(System.currentTimeMillis()).append(",\n");
+        json.append("  \"total_instruments\": ").append(activeWindows.size()).append(",\n");
+        json.append("  \"active_instruments\": ").append(reallyActive.size()).append(",\n");
+        json.append("  \"instruments\": [\n");
+        
+        boolean first = true;
+        for (String alias : activeWindows.keySet()) {
+            if (!first) json.append(",\n");
+            first = false;
+            
+            Map<String, Object> status = realDataStore.getInstrumentStatus(alias);
+            json.append("    {\n");
+            json.append("      \"alias\": \"").append(alias).append("\",\n");
+            json.append("      \"symbol\": \"").append(status.getOrDefault("symbol", alias)).append("\",\n");
+            json.append("      \"exchange\": \"").append(status.getOrDefault("exchange", "UNKNOWN")).append("\",\n");
+            json.append("      \"is_really_active\": ").append(status.getOrDefault("is_really_active", false)).append(",\n");
+            json.append("      \"health_status\": \"").append(status.getOrDefault("health_status", "UNKNOWN")).append("\",\n");
+            json.append("      \"data_flow_count\": ").append(status.getOrDefault("data_flow_count", 0)).append("\n");
+            json.append("    }");
+        }
+        
+        json.append("\n  ]\n");
+        json.append("}");
+        
+        writer.println(json.toString());
+    }
+    
+    /**
+     * Serve specific instrument status API
+     */
+    private void serveInstrumentStatus(PrintWriter writer, String path) {
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: application/json");
+        writer.println("Access-Control-Allow-Origin: *");
+        writer.println();
+
+        // Extract alias from path like /api/instruments/status/ALIAS
+        String[] pathParts = path.split("/");
+        if (pathParts.length >= 5) {
+            String alias = pathParts[4];
+            Map<String, Object> status = realDataStore.getInstrumentStatus(alias);
+            
+            StringBuilder json = new StringBuilder();
+            json.append("{\n");
+            json.append("  \"alias\": \"").append(alias).append("\",\n");
+            json.append("  \"timestamp\": ").append(System.currentTimeMillis()).append(",\n");
+            
+            for (Map.Entry<String, Object> entry : status.entrySet()) {
+                json.append("  \"").append(entry.getKey()).append("\": ");
+                if (entry.getValue() instanceof String) {
+                    json.append("\"").append(entry.getValue()).append("\"");
+                } else {
+                    json.append(entry.getValue());
+                }
+                json.append(",\n");
+            }
+            
+            // Remove last comma
+            if (json.length() > 2) {
+                json.setLength(json.length() - 2);
+                json.append("\n");
+            }
+            
+            json.append("}");
+            writer.println(json.toString());
+        } else {
+            writer.println("{\"error\": \"Invalid path format. Use /api/instruments/status/ALIAS\"}");
+        }
     }
     
     /**

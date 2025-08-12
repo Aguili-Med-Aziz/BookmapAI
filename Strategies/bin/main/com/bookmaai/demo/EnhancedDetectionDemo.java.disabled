@@ -1,0 +1,394 @@
+package com.bookmaai.demo;
+
+import com.bookmaai.core.enhanced.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+/**
+ * 🎯 Enhanced Detection Capabilities Demo v2.0
+ * 
+ * Demonstration of all enhanced detection capabilities:
+ * - Enhanced Iceberg Order Detection
+ * - Advanced Absorption Pattern Analysis  
+ * - Comprehensive Market Imbalance Detection
+ * - Composite Signal Generation
+ * 
+ * This demo shows how to use the new enhanced detection system
+ * with real-time market data processing.
+ */
+public class EnhancedDetectionDemo {
+    
+    private final EnhancedDetectionEngine detectionEngine;
+    
+    public EnhancedDetectionDemo() {
+        this.detectionEngine = new EnhancedDetectionEngine();
+    }
+    
+    /**
+     * Main Demo Method
+     */
+    public void demonstrateEnhancedCapabilities() {
+        System.out.println("🚀 Starting Enhanced Detection Capabilities Demo");
+        System.out.println("=".repeat(60));
+        
+        // Demo 1: Enhanced Iceberg Detection
+        demonstrateIcebergDetection();
+        
+        // Demo 2: Advanced Absorption Patterns
+        demonstrateAbsorptionPatterns();
+        
+        // Demo 3: Market Imbalance Detection
+        demonstrateMarketImbalances();
+        
+        // Demo 4: Composite Signals
+        demonstrateCompositeSignals();
+        
+        // Demo 5: Real-time Processing
+        demonstrateRealTimeProcessing();
+        
+        System.out.println("✅ Enhanced Detection Demo Completed Successfully!");
+    }
+    
+    /**
+     * Demo 1: Enhanced Iceberg Detection
+     */
+    private void demonstrateIcebergDetection() {
+        System.out.println("\n🎯 DEMO 1: Enhanced Iceberg Detection");
+        System.out.println("-".repeat(40));
+        
+        // Simulate iceberg order data
+        String symbol = "NQ";
+        double price = 15500.25;
+        double volume = 500.0; // Consistent iceberg slice size
+        
+        Map<String, Double> orderBookData = new HashMap<>();
+        orderBookData.put("MarketDepth", 25000.0);
+        orderBookData.put("AvgTradeSize", 150.0);
+        orderBookData.put("BidLevel1Volume", 1200.0);
+        orderBookData.put("AskLevel1Volume", 800.0);
+        
+        try {
+            // Process through enhanced detection
+            CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult> future = 
+                detectionEngine.processEnhancedMarketData(symbol, price, volume, 600.0, 400.0, 
+                                                        orderBookData, createVolumeData(volume));
+            
+            EnhancedDetectionEngine.EnhancedDetectionResult result = future.get(1, TimeUnit.SECONDS);
+            
+            if (result.getIcebergResult() != null && result.getIcebergResult().isDetected()) {
+                IcebergDetectionResult iceberg = result.getIcebergResult();
+                System.out.println("✅ Iceberg Order Detected!");
+                System.out.println("   Confidence: " + String.format("%.1f%%", iceberg.getConfidence() * 100));
+                System.out.println("   Estimated Total Size: " + String.format("%.0f", 
+                    iceberg.getHiddenSizeAnalysis().getEstimatedTotalSize()));
+                System.out.println("   Hidden Ratio: " + String.format("%.1f%%", 
+                    iceberg.getHiddenSizeAnalysis().getHiddenRatio() * 100));
+                System.out.println("   Pattern Strength: " + String.format("%.1f", 
+                    iceberg.getVolumePatternAnalysis().getPatternStrength()));
+            } else {
+                System.out.println("❌ No Iceberg Pattern Detected");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error in iceberg detection demo: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Demo 2: Advanced Absorption Patterns
+     */
+    private void demonstrateAbsorptionPatterns() {
+        System.out.println("\n🎯 DEMO 2: Advanced Absorption Patterns");
+        System.out.println("-".repeat(40));
+        
+        String symbol = "ES";
+        double price = 4525.75;
+        double bidVolume = 2500.0; // Strong bid absorption
+        double askVolume = 800.0;  // Weak ask volume
+        
+        Map<String, Double> orderBookData = new HashMap<>();
+        orderBookData.put("MarketDepth", 15000.0);
+        orderBookData.put("BidLevel1Volume", bidVolume);
+        orderBookData.put("BidLevel2Volume", 1800.0);
+        orderBookData.put("BidLevel3Volume", 1200.0);
+        orderBookData.put("AskLevel1Volume", askVolume);
+        orderBookData.put("AskLevel2Volume", 900.0);
+        orderBookData.put("AskLevel3Volume", 600.0);
+        
+        try {
+            CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult> future = 
+                detectionEngine.processEnhancedMarketData(symbol, price, bidVolume + askVolume, 
+                                                        bidVolume, askVolume, orderBookData, 
+                                                        createVolumeData(bidVolume + askVolume));
+            
+            EnhancedDetectionEngine.EnhancedDetectionResult result = future.get(1, TimeUnit.SECONDS);
+            
+            if (result.getAbsorptionResult() != null && result.getAbsorptionResult().isAbsorptionDetected()) {
+                AbsorptionAnalysisResult absorption = result.getAbsorptionResult();
+                System.out.println("✅ Absorption Pattern Detected!");
+                System.out.println("   Confidence: " + String.format("%.1f%%", absorption.getConfidence() * 100));
+                System.out.println("   Strength: " + absorption.getAbsorptionStrength().getDisplayName());
+                System.out.println("   Direction: " + absorption.getStrengthAnalysis().getAbsorptionDirection().getDisplayName());
+                System.out.println("   Market Maker: " + (absorption.getParticipantClassification().isMarketMakerAbsorption() ? "Yes" : "No"));
+                System.out.println("   Weighted Absorption: " + String.format("%.3f", 
+                    absorption.getVolumeWeightedAbsorption().getWeightedAbsorption()));
+            } else {
+                System.out.println("❌ No Absorption Pattern Detected");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error in absorption detection demo: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Demo 3: Market Imbalance Detection
+     */
+    private void demonstrateMarketImbalances() {
+        System.out.println("\n🎯 DEMO 3: Market Imbalance Detection");
+        System.out.println("-".repeat(40));
+        
+        String symbol = "EURUSD";
+        double price = 1.0875;
+        
+        // Create imbalanced order book
+        Map<String, Double> orderBookData = new HashMap<>();
+        orderBookData.put("BidLevel1Volume", 5000.0);  // Heavy bid side
+        orderBookData.put("BidLevel2Volume", 3500.0);
+        orderBookData.put("BidLevel3Volume", 2800.0);
+        orderBookData.put("BidLevel4Volume", 2200.0);
+        orderBookData.put("BidLevel5Volume", 1800.0);
+        orderBookData.put("AskLevel1Volume", 1200.0);  // Light ask side
+        orderBookData.put("AskLevel2Volume", 900.0);
+        orderBookData.put("AskLevel3Volume", 700.0);
+        orderBookData.put("AskLevel4Volume", 500.0);
+        orderBookData.put("AskLevel5Volume", 300.0);
+        orderBookData.put("MarketDepth", 18900.0);
+        
+        Map<String, Double> volumeData = new HashMap<>();
+        volumeData.put("BuyVolume", 3500.0);   // Buy-heavy volume
+        volumeData.put("SellVolume", 1500.0);
+        
+        try {
+            CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult> future = 
+                detectionEngine.processEnhancedMarketData(symbol, price, 5000.0, 3500.0, 1500.0, 
+                                                        orderBookData, volumeData);
+            
+            EnhancedDetectionEngine.EnhancedDetectionResult result = future.get(1, TimeUnit.SECONDS);
+            
+            if (result.getImbalanceResult() != null && result.getImbalanceResult().isImbalanceDetected()) {
+                MarketImbalanceResult imbalance = result.getImbalanceResult();
+                System.out.println("✅ Market Imbalance Detected!");
+                System.out.println("   Confidence: " + String.format("%.1f%%", imbalance.getOverallConfidence() * 100));
+                System.out.println("   Strength: " + imbalance.getImbalanceStrength().getDisplayName());
+                System.out.println("   Direction: " + imbalance.getImbalanceDirection().getDisplayName());
+                System.out.println("   Order Book Imbalance: " + String.format("%.3f", 
+                    imbalance.getOrderBookImbalance().getWeightedImbalance()));
+                System.out.println("   Volume Imbalance: " + String.format("%.3f", 
+                    imbalance.getVolumeImbalanceAnalysis().getVolumeImbalanceRatio()));
+                System.out.println("   Persistent: " + (imbalance.getCumulativeImbalanceAnalysis().isPersistentImbalance() ? "Yes" : "No"));
+            } else {
+                System.out.println("❌ No Market Imbalance Detected");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error in imbalance detection demo: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Demo 4: Composite Signals
+     */
+    private void demonstrateCompositeSignals() {
+        System.out.println("\n🎯 DEMO 4: Composite Signal Generation");
+        System.out.println("-".repeat(40));
+        
+        String symbol = "BTC";
+        double price = 43250.50;
+        double volume = 1500.0;
+        
+        // Create data that should trigger multiple detections
+        Map<String, Double> orderBookData = new HashMap<>();
+        orderBookData.put("MarketDepth", 35000.0);
+        orderBookData.put("AvgTradeSize", 200.0);
+        orderBookData.put("BidLevel1Volume", 3000.0);
+        orderBookData.put("BidLevel2Volume", 2500.0);
+        orderBookData.put("BidLevel3Volume", 2000.0);
+        orderBookData.put("AskLevel1Volume", 1000.0);
+        orderBookData.put("AskLevel2Volume", 800.0);
+        orderBookData.put("AskLevel3Volume", 600.0);
+        
+        Map<String, Double> volumeData = new HashMap<>();
+        volumeData.put("BuyVolume", 2200.0);
+        volumeData.put("SellVolume", 800.0);
+        
+        try {
+            CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult> future = 
+                detectionEngine.processEnhancedMarketData(symbol, price, volume, 2200.0, 800.0, 
+                                                        orderBookData, volumeData);
+            
+            EnhancedDetectionEngine.EnhancedDetectionResult result = future.get(1, TimeUnit.SECONDS);
+            
+            System.out.println("📊 Individual Detection Results:");
+            System.out.println("   Iceberg: " + (result.getIcebergResult() != null && result.getIcebergResult().isDetected() ? "✅" : "❌"));
+            System.out.println("   Absorption: " + (result.getAbsorptionResult() != null && result.getAbsorptionResult().isAbsorptionDetected() ? "✅" : "❌"));
+            System.out.println("   Imbalance: " + (result.getImbalanceResult() != null && result.getImbalanceResult().isImbalanceDetected() ? "✅" : "❌"));
+            
+            if (result.getCompositeResult() != null) {
+                CompositeSignalResult composite = result.getCompositeResult();
+                CompositeSignalDecision decision = composite.getCompositeSignalDecision();
+                
+                System.out.println("\n🎯 Composite Signal:");
+                System.out.println("   Final Confidence: " + String.format("%.1f%%", decision.getFinalConfidence() * 100));
+                System.out.println("   Signal Strength: " + decision.getSignalStrength().getDisplayName());
+                System.out.println("   Signal Direction: " + decision.getSignalDirection().getDisplayName());
+                System.out.println("   Recommended Action: " + decision.getRecommendedAction().getDisplayName());
+                System.out.println("   Risk Level: " + String.format("%.1f%%", decision.getRiskLevel() * 100));
+                System.out.println("   Quality Score: " + String.format("%.1f%%", decision.getQualityScore() * 100));
+                
+                // Show signal correlations
+                if (composite.getSignalCorrelationAnalysis() != null) {
+                    SignalCorrelationAnalysis correlation = composite.getSignalCorrelationAnalysis();
+                    System.out.println("\n📈 Signal Correlations:");
+                    System.out.println("   Overall Correlation: " + String.format("%.3f", correlation.getOverallCorrelation()));
+                    System.out.println("   Iceberg-Absorption: " + String.format("%.3f", correlation.getIcebergAbsorptionCorrelation()));
+                    System.out.println("   Correlation Trend: " + correlation.getCorrelationTrend());
+                }
+            } else {
+                System.out.println("❌ No Composite Signal Generated");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error in composite signal demo: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Demo 5: Real-time Processing
+     */
+    private void demonstrateRealTimeProcessing() {
+        System.out.println("\n🎯 DEMO 5: Real-time Processing");
+        System.out.println("-".repeat(40));
+        
+        System.out.println("Processing 10 market data ticks...");
+        
+        String[] symbols = {"NQ", "ES", "EURUSD", "BTC", "GBPUSD"};
+        List<CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult>> futures = new ArrayList<>();
+        
+        // Submit multiple concurrent processing tasks
+        for (int i = 0; i < 10; i++) {
+            String symbol = symbols[i % symbols.length];
+            double price = 1000 + (Math.random() * 50000);
+            double volume = 100 + (Math.random() * 2000);
+            
+            Map<String, Double> orderBookData = createRandomOrderBookData();
+            Map<String, Double> volumeData = createVolumeData(volume);
+            
+            CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult> future = 
+                detectionEngine.processEnhancedMarketData(symbol, price, volume, 
+                                                        volume * 0.7, volume * 0.3, 
+                                                        orderBookData, volumeData);
+            futures.add(future);
+        }
+        
+        // Wait for all to complete and count results
+        int totalDetections = 0;
+        int icebergDetections = 0;
+        int absorptionDetections = 0;
+        int imbalanceDetections = 0;
+        int compositeSignals = 0;
+        
+        try {
+            for (CompletableFuture<EnhancedDetectionEngine.EnhancedDetectionResult> future : futures) {
+                EnhancedDetectionEngine.EnhancedDetectionResult result = future.get(2, TimeUnit.SECONDS);
+                
+                if (result.hasAnyDetection()) totalDetections++;
+                if (result.getIcebergResult() != null && result.getIcebergResult().isDetected()) icebergDetections++;
+                if (result.getAbsorptionResult() != null && result.getAbsorptionResult().isAbsorptionDetected()) absorptionDetections++;
+                if (result.getImbalanceResult() != null && result.getImbalanceResult().isImbalanceDetected()) imbalanceDetections++;
+                if (result.getCompositeResult() != null && 
+                    result.getCompositeResult().getCompositeSignalDecision().getSignalStrength() != CompositeSignalStrength.NONE) {
+                    compositeSignals++;
+                }
+            }
+            
+            System.out.println("✅ Real-time Processing Results:");
+            System.out.println("   Total Ticks Processed: 10");
+            System.out.println("   Patterns Detected: " + totalDetections);
+            System.out.println("   Iceberg Detections: " + icebergDetections);
+            System.out.println("   Absorption Detections: " + absorptionDetections);
+            System.out.println("   Imbalance Detections: " + imbalanceDetections);
+            System.out.println("   Composite Signals: " + compositeSignals);
+            
+        } catch (Exception e) {
+            System.err.println("Error in real-time processing demo: " + e.getMessage());
+        }
+    }
+    
+    // ==================== HELPER METHODS ====================
+    
+    private Map<String, Double> createVolumeData(double totalVolume) {
+        Map<String, Double> volumeData = new HashMap<>();
+        double buyRatio = 0.4 + (Math.random() * 0.4); // 40-80% buy volume
+        volumeData.put("BuyVolume", totalVolume * buyRatio);
+        volumeData.put("SellVolume", totalVolume * (1.0 - buyRatio));
+        return volumeData;
+    }
+    
+    private Map<String, Double> createRandomOrderBookData() {
+        Map<String, Double> data = new HashMap<>();
+        
+        // Generate random but realistic order book data
+        double baseBidVolume = 500 + (Math.random() * 2000);
+        double baseAskVolume = 500 + (Math.random() * 2000);
+        
+        for (int i = 1; i <= 5; i++) {
+            double bidDecay = Math.pow(0.8, i - 1);
+            double askDecay = Math.pow(0.8, i - 1);
+            
+            data.put("BidLevel" + i + "Volume", baseBidVolume * bidDecay);
+            data.put("AskLevel" + i + "Volume", baseAskVolume * askDecay);
+        }
+        
+        data.put("MarketDepth", baseBidVolume + baseAskVolume);
+        data.put("AvgTradeSize", 50 + (Math.random() * 200));
+        data.put("Spread", 0.1 + (Math.random() * 2.0));
+        
+        return data;
+    }
+    
+    /**
+     * Main method to run the demo
+     */
+    public static void main(String[] args) {
+        EnhancedDetectionDemo demo = new EnhancedDetectionDemo();
+        
+        try {
+            demo.demonstrateEnhancedCapabilities();
+            
+            // Show final statistics
+            System.out.println("\n📊 Final Detection Engine Statistics:");
+            Map<String, Object> stats = demo.detectionEngine.getStatistics();
+            stats.forEach((key, value) -> 
+                System.out.println("   " + key + ": " + value));
+                
+        } catch (Exception e) {
+            System.err.println("Demo failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Get enhanced detection engine statistics
+     */
+    public Map<String, Object> getStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("total_detections", detectionEngine.getTotalDetections());
+        stats.put("iceberg_detections", detectionEngine.getIcebergDetections());
+        stats.put("absorption_detections", detectionEngine.getAbsorptionDetections());
+        stats.put("imbalance_detections", detectionEngine.getImbalanceDetections());
+        stats.put("composite_signals", detectionEngine.getCompositeSignals());
+        
+        return stats;
+    }
+}

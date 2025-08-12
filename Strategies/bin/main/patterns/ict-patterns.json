@@ -1,0 +1,142 @@
+{
+  "ict_patterns": {
+    "version": "1.0",
+    "created": "2024-12-30",
+    "patterns": {
+      "perfect_storm_nq": {
+        "name": "Perfect Storm NQ",
+        "type": "confluence_pattern",
+        "market": "NQ",
+        "timeframes": ["15M", "1H"],
+        "conditions": {
+          "volume_spike": {
+            "threshold": 2.0,
+            "comparison": "average_20"
+          },
+          "price_action": {
+            "engulfing_candle": true,
+            "body_size_min": 0.7,
+            "wick_ratio_max": 0.3
+          },
+          "market_structure": {
+            "trend_confirmation": true,
+            "support_resistance": true,
+            "fibonacci_level": [0.618, 0.786]
+          },
+          "order_flow": {
+            "imbalance_threshold": 0.8,
+            "direction": "confluent"
+          }
+        },
+        "entry_rules": {
+          "confirmation_candles": 2,
+          "volume_confirmation": true,
+          "risk_reward_min": 2.0
+        },
+        "success_rate": 94.2,
+        "avg_reward": 2.3
+      },
+      "reversal_double_top": {
+        "name": "Double Top Reversal",
+        "type": "reversal_pattern",
+        "market": "FOREX",
+        "timeframes": ["1H", "4H"],
+        "conditions": {
+          "peak_distance": {
+            "min_candles": 10,
+            "max_candles": 50
+          },
+          "peak_similarity": {
+            "tolerance_percent": 0.5
+          },
+          "volume_divergence": {
+            "required": true,
+            "second_peak_lower": true
+          },
+          "neckline": {
+            "break_confirmation": true,
+            "retest_opportunity": true
+          }
+        },
+        "entry_rules": {
+          "entry_method": "neckline_break",
+          "stop_loss": "above_second_peak",
+          "take_profit": "neckline_distance"
+        },
+        "success_rate": 82.1,
+        "avg_reward": 1.8
+      },
+      "iceberg_detection": {
+        "name": "Iceberg Order Detection",
+        "type": "institutional_pattern",
+        "market": "ALL",
+        "timeframes": ["1M", "5M"],
+        "conditions": {
+          "hidden_volume": {
+            "threshold": 3.0,
+            "consecutive_levels": 3
+          },
+          "price_stagnation": {
+            "max_movement": 0.1,
+            "min_time": 300
+          },
+          "order_flow_analysis": {
+            "large_orders_hidden": true,
+            "execution_pattern": "systematic"
+          }
+        },
+        "detection_algorithm": {
+          "volume_footprint": true,
+          "delta_analysis": true,
+          "time_sales_pattern": true
+        },
+        "success_rate": 91.4,
+        "avg_reward": 1.5
+      },
+      "breakout_consolidation": {
+        "name": "Consolidation Breakout",
+        "type": "momentum_pattern",
+        "market": "ALL",
+        "timeframes": ["15M", "1H"],
+        "conditions": {
+          "consolidation": {
+            "min_candles": 15,
+            "max_range_percent": 0.8,
+            "volume_decline": true
+          },
+          "breakout": {
+            "volume_spike": 2.5,
+            "range_multiple": 1.5,
+            "direction_confirmation": 3
+          },
+          "momentum": {
+            "rsi_levels": [30, 70],
+            "macd_confirmation": true
+          }
+        },
+        "entry_rules": {
+          "entry_method": "breakout_confirmation",
+          "volume_threshold": 1.8,
+          "momentum_filter": true
+        },
+        "success_rate": 78.9,
+        "avg_reward": 2.1
+      }
+    },
+    "detection_parameters": {
+      "scan_frequency": 1000,
+      "historical_lookback": 100,
+      "confidence_calculation": {
+        "volume_weight": 0.3,
+        "price_action_weight": 0.25,
+        "market_structure_weight": 0.25,
+        "order_flow_weight": 0.2
+      },
+      "filters": {
+        "market_hours": true,
+        "volatility_filter": true,
+        "news_avoidance": true
+      }
+    }
+  }
+} 

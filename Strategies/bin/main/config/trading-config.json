@@ -1,0 +1,137 @@
+{
+  "version": "2.0",
+  "system": {
+    "name": "BookmapAI Enhanced Trading System",
+    "environment": "production",
+    "debug": false,
+    "logging_level": "INFO"
+  },
+  "trading": {
+    "enabled": true,
+    "symbols": ["EURUSD", "GBPUSD", "NQ", "ES", "BTCUSD"],
+    "timeframes": ["1M", "5M", "15M", "1H", "4H", "1D"],
+    "max_positions": 5,
+    "position_size": {
+      "default_percent": 2.0,
+      "max_percent": 5.0,
+      "min_amount": 100.0
+    }
+  },
+  "risk_management": {
+    "stop_loss": {
+      "enabled": true,
+      "default_pips": 20,
+      "max_risk_percent": 2.0
+    },
+    "take_profit": {
+      "enabled": true,
+      "risk_reward_ratio": 2.1,
+      "partial_close": {
+        "enabled": true,
+        "levels": [50, 80]
+      }
+    },
+    "daily_loss_limit": {
+      "enabled": true,
+      "max_loss_percent": 5.0,
+      "max_loss_amount": 500.0
+    }
+  },
+  "ict_patterns": {
+    "enabled": true,
+    "patterns": {
+      "perfect_storm": {
+        "enabled": true,
+        "confidence_threshold": 85,
+        "timeframes": ["15M", "1H"],
+        "parameters": {
+          "volume_spike": 1.5,
+          "price_action_strength": 0.8,
+          "market_structure": true
+        }
+      },
+      "reversal_patterns": {
+        "enabled": true,
+        "confidence_threshold": 75,
+        "types": ["double_top", "double_bottom", "head_shoulders"],
+        "validation_candles": 3
+      },
+      "iceberg_orders": {
+        "enabled": true,
+        "detection_threshold": 0.7,
+        "volume_analysis": true,
+        "depth_levels": 5
+      },
+      "breakout_patterns": {
+        "enabled": true,
+        "validation_method": "volume_confirmation",
+        "minimum_consolidation": 10,
+        "breakout_strength": 1.2
+      }
+    }
+  },
+  "ai_model": {
+    "enabled": true,
+    "model_version": "v2.1",
+    "confidence_threshold": 70,
+    "learning": {
+      "enabled": true,
+      "update_frequency": "daily",
+      "historical_days": 365
+    },
+    "features": {
+      "order_flow": {
+        "enabled": true,
+        "weight": 0.3,
+        "lookback_periods": 20
+      },
+      "volume_imbalance": {
+        "enabled": true,
+        "weight": 0.25,
+        "threshold": 0.6
+      },
+      "cumulative_delta": {
+        "enabled": true,
+        "weight": 0.2,
+        "divergence_detection": true
+      },
+      "market_microstructure": {
+        "enabled": true,
+        "weight": 0.25,
+        "tick_analysis": true
+      }
+    }
+  },
+  "data_feeds": {
+    "primary": "bookmap",
+    "backup": "mt5",
+    "update_frequency": 1000,
+    "historical_data": {
+      "source": "bookmap_historical",
+      "cache_days": 30
+    }
+  },
+  "notifications": {
+    "telegram": {
+      "enabled": true,
+      "bot_token": "",
+      "chat_id": "",
+      "alerts": ["pattern_detected", "position_opened", "risk_alert"]
+    },
+    "email": {
+      "enabled": false,
+      "smtp_server": "",
+      "alerts": ["daily_summary", "critical_errors"]
+    }
+  },
+  "dashboard": {
+    "enabled": true,
+    "port": 8080,
+    "refresh_interval": 5000,
+    "charts": {
+      "accuracy_trend": true,
+      "component_performance": true,
+      "pattern_analysis": true
+    }
+  }
+} 

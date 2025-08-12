@@ -62,9 +62,19 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         String instrumentAddedData = "event=instrumentAdded,symbol=" + instrumentInfo.symbol + ",name=" + instrumentInfo.symbol + ",alias=" + alias + ",pips=" + instrumentInfo.pips;
         BookmapDataProcessor.processBookmapData(instrumentAddedData);
 
-        // Register active window in RealTimeMarketDataStore to make detection authoritative
+        // Enhanced registration with comprehensive instrument tracking
         try {
-            com.bookmaai.core.RealTimeMarketDataStore.getInstance().addActiveWindow(alias, "ACTIVE", alias);
+            com.bookmaai.core.RealTimeMarketDataStore dataStore = com.bookmaai.core.RealTimeMarketDataStore.getInstance();
+            
+            // Register with full instrument details
+            dataStore.addActiveWindow(alias, "ACTIVE", alias);
+            dataStore.registerInstrumentDetails(alias, instrumentInfo.getSymbol(), instrumentInfo.getExchange(), 0.01);
+            
+            // Initialize data validation tracking
+            dataStore.initializeInstrumentTracking(alias);
+            
+            System.out.println("✅ [BookMapICTAddon] Enhanced registration complete for: " + instrumentInfo.getSymbol());
+            
         } catch (Throwable t) {
             System.err.println("[BookMapICTAddon] Failed to register active window: " + t.getMessage());
         }
@@ -108,19 +118,23 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         // Update dashboard with market metrics if available
         updateDashboardMetrics(symbolForData, price, size, isBid);
 
-        // Feed sliding window manager and real-time store for CSV snapshots and charts
+        // Enhanced data flow validation and tracking
         try {
-            com.bookmaai.core.RealTimeMarketDataStore.getInstance().ensureWindowRegistered(symbolForData);
+            com.bookmaai.core.RealTimeMarketDataStore dataStore = com.bookmaai.core.RealTimeMarketDataStore.getInstance();
+            
+            // Ensure window is registered and validate data flow
+            dataStore.ensureWindowRegistered(symbolForData);
+            dataStore.validateInstrumentDataFlow(symbolForData, price, size, System.currentTimeMillis());
+            
+            // Process with sliding window manager
             com.bookmaai.core.sliding.EnhancedSlidingWindowManager.getInstance()
                 .processTick(symbolForData, price, size, System.currentTimeMillis(), isBid);
+                
+            // Update market data with enhanced tracking
+            dataStore.updateMarketData(symbolForData, price, size, isBid ? "BID" : "ASK");
+            
         } catch (Throwable t) {
-            System.err.println("[BookMapICTAddon] Failed to process tick for sliding window: " + t.getMessage());
-        }
-        try {
-            com.bookmaai.core.RealTimeMarketDataStore.getInstance()
-                .updateMarketData(symbolForData, price, size, isBid ? "BID" : "ASK");
-        } catch (Throwable t) {
-            System.err.println("[BookMapICTAddon] Failed to update market data: " + t.getMessage());
+            System.err.println("[BookMapICTAddon] Failed to process enhanced trade data: " + t.getMessage());
         }
     }
 
