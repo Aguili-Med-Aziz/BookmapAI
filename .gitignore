@@ -1,3 +1,20 @@
+# Large artifacts and build outputs
+Strategies.zip
+Strategies/build/
+Strategies/.gradle/
+*.jar
+*.tar
+*.zip
+*.log
+*.tmp
+*.bak
+
+# IDE and OS files
+.vscode/
+.idea/
+*.iml
+Thumbs.db
+Desktop.ini
 #*.class
 
 # Mobile Tools for Java (J2ME)
