@@ -334,24 +334,10 @@ public class SimpleRealDataServer {
             }
         }
 
-        // Always include a pinned demo session so it persists across refreshes
-        if (!first) json.append(",");
-        json.append("{")
-            .append("\"id\": \"DEMO_SESSION\",")
-            .append("\"symbol\": \"NQ\",")
-            .append("\"price\": \"15487.25\",")
-            .append("\"status\": \"DEMO_PINNED\",")
-            .append("\"patterns\": [")
-            .append("{\"type\": \"Iceberg\", \"confidence\": 94.2, \"detected_at\": \"")
-            .append(java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")))
-            .append("\"}]")
-            .append(",\"predictions\": [")
-            .append("{\"direction\": \"UP\", \"confidence\": 91.7, \"target\": \"15520.00\"}]")
-            .append(",\"analytics\": {\"order_flow\": \"Bullish\", \"pressure\": \"Strong Buy\", \"volatility\": \"Normal\", \"score\": 89.5}")
-            .append("}");
+        // No demo sessions - only real Bookmap data
 
         json.append("]");
-        json.append(",\"demo_pinned\": true");
+        json.append(",\"demo_pinned\": false");
         json.append(",\"timestamp\": \"")
             .append(java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")))
             .append("\"");
@@ -417,28 +403,13 @@ public class SimpleRealDataServer {
 
         boolean hasRealData = realDataStore.hasRealData();
 
-        if (hasRealData) {
-            // Return real pattern data when available
-            String json = "{" +
-                    "\"patterns\": []," +
-                    "\"last_scan\": \"" + java.time.LocalDateTime.now() + "\"," +
-                    "\"mode\": \"REAL_DATA\"" +
-                    "}";
-            writer.println(json);
-        } else {
-            // Return demo patterns for display
-            String json = "{" +
-                    "\"patterns\": [" +
-                    "{\"type\": \"Iceberg\", \"symbol\": \"NQ\", \"confidence\": 94.2, \"detected_at\": \"" +
-                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + "\"}," +
-                    "{\"type\": \"Volume Spike\", \"symbol\": \"ES\", \"confidence\": 87.3, \"detected_at\": \"" +
-                    java.time.LocalDateTime.now().minusMinutes(2).format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + "\"}" +
-                    "]," +
-                    "\"last_scan\": \"" + java.time.LocalDateTime.now() + "\"," +
-                    "\"mode\": \"DEMO_DATA\"" +
-                    "}";
-            writer.println(json);
-        }
+        // Only return real pattern data from Bookmap - no demo/simulated patterns
+        String json = "{" +
+                "\"patterns\": []," +
+                "\"last_scan\": \"" + java.time.LocalDateTime.now() + "\"," +
+                "\"mode\": \"REAL_DATA_ONLY\"" +
+                "}";
+        writer.println(json);
     }
 
     /**
@@ -542,35 +513,23 @@ public class SimpleRealDataServer {
 
         boolean hasRealData = realDataStore.hasRealData();
 
-        if (hasRealData) {
-            // Return real market data when available
-            Map<String, RealTimeMarketDataStore.TradingSession> sessions = realDataStore.getActiveSessions();
-            StringBuilder json = new StringBuilder();
-            json.append("{\"markets\": [");
-            boolean first = true;
-            for (RealTimeMarketDataStore.TradingSession session : sessions.values()) {
-                if (!first) json.append(",");
-                json.append("{")
-                    .append("\"symbol\": \"").append(session.getSymbol()).append("\",")
-                    .append("\"price\": ").append(session.getCurrentPrice()).append(",")
-                    .append("\"change\": 0.0,")
-                    .append("\"volume\": \"").append(session.getVolume()).append("\"")
-                    .append("}");
-                first = false;
-            }
-            json.append("],\"mode\": \"REAL_DATA\"}");
-            writer.println(json.toString());
-        } else {
-            // Return demo market data
-            String json = "{" +
-                    "\"markets\": [" +
-                    "{\"symbol\": \"NQ\", \"price\": 15487.25, \"change\": 12.75, \"volume\": 45230}," +
-                    "{\"symbol\": \"ES\", \"price\": 4523.50, \"change\": -3.25, \"volume\": 78940}" +
-                    "]," +
-                    "\"mode\": \"DEMO_DATA\"" +
-                    "}";
-            writer.println(json);
+        // Only return real market data from Bookmap sessions - no demo/simulated data
+        Map<String, RealTimeMarketDataStore.TradingSession> sessions = realDataStore.getActiveSessions();
+        StringBuilder json = new StringBuilder();
+        json.append("{\"markets\": [");
+        boolean first = true;
+        for (RealTimeMarketDataStore.TradingSession session : sessions.values()) {
+            if (!first) json.append(",");
+            json.append("{")
+                .append("\"symbol\": \"").append(session.getSymbol()).append("\",")
+                .append("\"price\": ").append(session.getCurrentPrice()).append(",")
+                .append("\"change\": 0.0,")
+                .append("\"volume\": \"").append(session.getVolume()).append("\"")
+                .append("}");
+            first = false;
         }
+        json.append("],\"mode\": \"REAL_DATA_ONLY\"}");
+        writer.println(json.toString());
     }
 
     /**
@@ -589,7 +548,7 @@ public class SimpleRealDataServer {
         RealTimeMarketDataStore.TradingSession session = sessions.get(sessionId);
 
         if (session != null) {
-            // Return real session data
+            // Return real session data only
             String json = "{" +
                     "\"id\": \"" + sessionId + "\"," +
                     "\"symbol\": \"" + session.getSymbol() + "\"," +
@@ -599,27 +558,9 @@ public class SimpleRealDataServer {
                     "\"analytics\": {\"order_flow\": \"Analyzing\", \"volatility\": \"Normal\", \"score\": 0}" +
                     "}";
             writer.println(json);
-        } else if (sessionId.startsWith("DEMO_") || sessionId.startsWith("MAIN_DEMO_")) {
-            // Return demo session data for demo sessions
-            String symbol = sessionId.contains("NQ") ? "NQ" : "ES";
-            double price = symbol.equals("NQ") ? 15487.25 : 4523.50;
-            
-            String json = "{" +
-                    "\"id\": \"" + sessionId + "\"," +
-                    "\"symbol\": \"" + symbol + "\"," +
-                    "\"price\": " + price + "," +
-                    "\"volume\": 12450," +
-                    "\"status\": \"DEMO\"," +
-                    "\"patterns\": [" +
-                    "{\"type\": \"Iceberg\", \"confidence\": 94.2, \"detected_at\": \"" +
-                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + "\"}" +
-                    "]," +
-                    "\"analytics\": {\"order_flow\": \"Bullish\", \"volatility\": \"Normal\", \"score\": 89.5}" +
-                    "}";
-            writer.println(json);
         } else {
-            // Session not found
-            String json = "{\"error\": \"Session not found\", \"id\": \"" + sessionId + "\"}";
+            // Session not found - no demo sessions supported
+            String json = "{\"error\": \"Session not found - only real Bookmap sessions supported\", \"id\": \"" + sessionId + "\"}";
             writer.println(json);
         }
     }
