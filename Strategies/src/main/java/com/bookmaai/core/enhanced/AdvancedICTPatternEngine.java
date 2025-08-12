@@ -566,6 +566,8 @@ public class AdvancedICTPatternEngine {
         protected String symbol, patternType;
         protected double strength, confidence;
         protected LocalDateTime timestamp;
+        protected Double entryPrice, targetPrice, stopPrice, volume;
+        protected String timeframe;
         
         public PatternResult(String symbol, String patternType, double strength) {
             this.symbol = symbol;
@@ -580,6 +582,17 @@ public class AdvancedICTPatternEngine {
         public double getStrength() { return strength; }
         public double getConfidence() { return confidence; }
         public LocalDateTime getTimestamp() { return timestamp; }
+        public Double getEntryPrice() { return entryPrice; }
+        public Double getTargetPrice() { return targetPrice; }
+        public Double getStopPrice() { return stopPrice; }
+        public Double getVolume() { return volume; }
+        public String getTimeframe() { return timeframe; }
+        
+        public void setEntryPrice(Double entryPrice) { this.entryPrice = entryPrice; }
+        public void setTargetPrice(Double targetPrice) { this.targetPrice = targetPrice; }
+        public void setStopPrice(Double stopPrice) { this.stopPrice = stopPrice; }
+        public void setVolume(Double volume) { this.volume = volume; }
+        public void setTimeframe(String timeframe) { this.timeframe = timeframe; }
     }
     
     public static class FairValueGap extends PatternResult {

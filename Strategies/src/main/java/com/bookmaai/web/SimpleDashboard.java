@@ -2,6 +2,7 @@ package com.bookmaai.web;
 
 import com.bookmaai.core.AccuracyDashboardManager;
 import com.bookmaai.config.ConfigurationManager;
+import com.bookmaai.core.RealTimeMarketDataStore;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -20,7 +21,7 @@ public class SimpleDashboard {
     private AccuracyDashboardManager dashboardManager;
     private final int port;
     private volatile boolean isRunning = false;
-
+    
     public SimpleDashboard(int port, AccuracyDashboardManager dashboardManager) {
         this.port = port;
         this.dashboardManager = dashboardManager;
@@ -40,8 +41,16 @@ public class SimpleDashboard {
             server.createContext("/api/patterns", new PatternDataHandler());
             server.createContext("/api/config", new ConfigurationDataHandler());
             server.createContext("/api/bookmap", new BookmapIntegrationHandler());
+            // Active Bookmap windows endpoint expected by dashboard JS
+            server.createContext("/api/bookmap/windows", new ActiveWindowsHandler());
             server.createContext("/api/advanced", new AdvancedFeaturesHandler());
             server.createContext("/api/ai", new AIAnalysisHandler());
+            server.createContext("/api/chat", new ChatHandler());
+            // Additive endpoints for sessions and sliding windows
+            server.createContext("/api/active-sessions", new ActiveSessionsHandler());
+            server.createContext("/api/sliding-window", new SlidingWindowHandler());
+            // Prevent noisy 404s for favicon
+            server.createContext("/favicon.ico", new FaviconHandler());
             
             server.setExecutor(null);
             server.start();
@@ -83,7 +92,7 @@ public class SimpleDashboard {
             if ("GET".equals(exchange.getRequestMethod())) {
                 String html = generateAdvancedDashboard();
                 sendResponse(exchange, html, "text/html");
-            } else {
+                            } else {
                 sendErrorResponse(exchange, 405, "Method Not Allowed");
             }
         }
@@ -95,7 +104,7 @@ public class SimpleDashboard {
             if ("GET".equals(exchange.getRequestMethod())) {
                 Map<String, Object> data = dashboardManager.getDashboardData();
                 String json = mapToJson(data);
-                sendResponse(exchange, json, "application/json");
+                    sendResponse(exchange, json, "application/json");
             } else {
                 sendErrorResponse(exchange, 405, "Method Not Allowed");
             }
@@ -107,8 +116,8 @@ public class SimpleDashboard {
         public void handle(HttpExchange exchange) throws IOException {
             if ("GET".equals(exchange.getRequestMethod())) {
                 Map<String, Object> data = dashboardManager.getComponentAccuracyDetails();
-                String json = mapToJson(data);
-                sendResponse(exchange, json, "application/json");
+                    String json = mapToJson(data);
+                    sendResponse(exchange, json, "application/json");
             } else {
                 sendErrorResponse(exchange, 405, "Method Not Allowed");
             }
@@ -120,7 +129,7 @@ public class SimpleDashboard {
         public void handle(HttpExchange exchange) throws IOException {
             if ("GET".equals(exchange.getRequestMethod())) {
                 String json = generateMarketData();
-                sendResponse(exchange, json, "application/json");
+                    sendResponse(exchange, json, "application/json");
             } else {
                 sendErrorResponse(exchange, 405, "Method Not Allowed");
             }
@@ -163,6 +172,22 @@ public class SimpleDashboard {
         }
     }
 
+    private class ActiveWindowsHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if (!"GET".equals(exchange.getRequestMethod())) {
+                sendErrorResponse(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            try {
+                String json = RealTimeMarketDataStore.getInstance().getActiveBookmapWindowsJson();
+                sendResponse(exchange, json, "application/json");
+            } catch (Throwable t) {
+                sendErrorResponse(exchange, 500, t.getMessage());
+            }
+        }
+    }
+
     private class AdvancedFeaturesHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -187,20 +212,141 @@ public class SimpleDashboard {
         }
     }
 
-    private void sendResponse(HttpExchange exchange, String response, String contentType) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", contentType);
-        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        exchange.sendResponseHeaders(200, response.length());
-        
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response.getBytes("UTF-8"));
+    private class ChatHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("POST".equals(exchange.getRequestMethod())) {
+                java.io.InputStream is = exchange.getRequestBody();
+                java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[4096];
+                int n;
+                while ((n = is.read(buf)) > 0) { baos.write(buf, 0, n); }
+                String msg = new String(baos.toByteArray(), "UTF-8");
+                String response = com.bookmaai.core.ai.ChatService.getInstance().respond(msg);
+                sendResponse(exchange, "{\"response\":\"" + response.replace("\"", "\\\"") + "\"}", "application/json");
+            } else {
+                sendErrorResponse(exchange, 405, "Method Not Allowed");
+            }
         }
     }
 
-    private void sendErrorResponse(HttpExchange exchange, int code, String message) throws IOException {
-        exchange.sendResponseHeaders(code, message.length());
+    private class ActiveSessionsHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("GET".equals(exchange.getRequestMethod())) {
+                try {
+                    java.util.List<com.bookmaai.core.session.BookmapWindowSessionManager.WindowSession> sessions =
+                        com.bookmaai.core.session.BookmapWindowSessionManager.getInstance().getActiveSessions();
+                    StringBuilder json = new StringBuilder("[");
+                    boolean first = true;
+                    for (com.bookmaai.core.session.BookmapWindowSessionManager.WindowSession s : sessions) {
+                        if (!first) json.append(',');
+                        json.append("{")
+                            .append("\"symbol\":\"").append(s.symbol).append("\",")
+                            .append("\"windowId\":\"").append(s.windowId).append("\",")
+                            .append("\"createdTime\":").append(s.createdAt.toEpochMilli()).append(",")
+                            .append("\"status\":\"").append(s.status).append("\"")
+                            .append("}");
+                        first = false;
+                    }
+                    json.append("]");
+                    sendResponse(exchange, json.toString(), "application/json");
+                } catch (Throwable t) {
+                    sendErrorResponse(exchange, 500, t.getMessage());
+                }
+            } else {
+                sendErrorResponse(exchange, 405, "Method Not Allowed");
+            }
+        }
+    }
+
+    private class SlidingWindowHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if (!"GET".equals(exchange.getRequestMethod())) {
+                sendErrorResponse(exchange, 405, "Method Not Allowed");
+                return;
+            }
+            try {
+                java.util.Map<String, String> params = parseQuery(exchange.getRequestURI().getRawQuery());
+                String symbol = params.getOrDefault("symbol", "");
+                String timeframe = params.getOrDefault("timeframe", "1M");
+                java.util.Optional<com.bookmaai.core.sliding.SlidingWindow.OHLCVData> d =
+                    com.bookmaai.core.sliding.EnhancedSlidingWindowManager.getInstance().getAggregatedData(symbol, timeframe);
+                String resp = d.map(v -> "{" +
+                    "\"symbol\":\"" + v.symbol + "\"," +
+                    "\"timeframe\":\"" + v.timeframe + "\"," +
+                    "\"open\":" + v.open + "," +
+                    "\"high\":" + v.high + "," +
+                    "\"low\":" + v.low + "," +
+                    "\"close\":" + v.close + "," +
+                    "\"volume\":" + v.volume + "," +
+                    "\"priceChange\":" + v.priceChange + "," +
+                    "\"timestamp\":" + v.timestamp +
+                    "}").orElse("{}");
+                sendResponse(exchange, resp, "application/json");
+            } catch (Throwable t) {
+                sendErrorResponse(exchange, 500, t.getMessage());
+            }
+        }
+    }
+
+    private class FaviconHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            // Return empty 200 to suppress 404 errors in the browser console
+            sendResponse(exchange, "", "image/x-icon");
+        }
+    }
+
+    private java.util.Map<String, String> parseQuery(String rawQuery) {
+        java.util.Map<String, String> map = new java.util.HashMap<>();
+        if (rawQuery == null || rawQuery.isEmpty()) return map;
+        for (String pair : rawQuery.split("&")) {
+            int idx = pair.indexOf('=');
+            if (idx > 0) {
+                String k;
+                String v;
+                try {
+                    k = java.net.URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                } catch (java.io.UnsupportedEncodingException e) {
+                    k = pair.substring(0, idx);
+                }
+                try {
+                    v = java.net.URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                } catch (java.io.UnsupportedEncodingException e) {
+                    v = pair.substring(idx + 1);
+                }
+                map.put(k, v);
+            }
+        }
+        return map;
+    }
+
+    private void sendResponse(HttpExchange exchange, String response, String contentType) throws IOException {
+        byte[] responseBytes = response.getBytes("UTF-8");
+        exchange.getResponseHeaders().set("Content-Type", contentType + "; charset=UTF-8");
+        exchange.getResponseHeaders().set("Cache-Control", "no-cache, no-store, must-revalidate");
+        exchange.getResponseHeaders().set("Pragma", "no-cache");
+        exchange.getResponseHeaders().set("Expires", "0");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Connection", "close");
+        exchange.sendResponseHeaders(200, responseBytes.length);
+        
         try (OutputStream os = exchange.getResponseBody()) {
-            os.write(message.getBytes());
+            os.write(responseBytes);
+            os.flush();
+        }
+        System.out.println("📡 Response sent: " + contentType + " (" + responseBytes.length + " bytes)");
+    }
+
+    private void sendErrorResponse(HttpExchange exchange, int code, String message) throws IOException {
+        byte[] messageBytes = message.getBytes("UTF-8");
+        exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+        exchange.sendResponseHeaders(code, messageBytes.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(messageBytes);
+            os.flush();
         }
     }
 
@@ -243,12 +389,12 @@ public class SimpleDashboard {
     }
 
     private String generatePatternData() {
-        return "{" +
-               "\"storm\": {\"detection\": 94.2, \"success\": 87.5, \"confidence\": 96.1}," +
-               "\"reversal\": {\"detection\": 82.1, \"success\": 79.3, \"confidence\": 85.7}," +
-               "\"iceberg\": {\"detection\": 91.4, \"success\": 88.2, \"confidence\": 92.8}," +
-               "\"breakout\": {\"detection\": 78.9, \"success\": 75.1, \"confidence\": 81.3}," +
-               "\"recent\": [" +
+            return "{" +
+                   "\"storm\": {\"detection\": 94.2, \"success\": 87.5, \"confidence\": 96.1}," +
+                   "\"reversal\": {\"detection\": 82.1, \"success\": 79.3, \"confidence\": 85.7}," +
+                   "\"iceberg\": {\"detection\": 91.4, \"success\": 88.2, \"confidence\": 92.8}," +
+                   "\"breakout\": {\"detection\": 78.9, \"success\": 75.1, \"confidence\": 81.3}," +
+                   "\"recent\": [" +
                "{\"time\": " + System.currentTimeMillis() + ", \"symbol\": \"EURUSD\", \"pattern\": \"Perfect Storm\", \"confidence\": 94, \"timeframe\": \"15M\", \"status\": \"status-online\"}," +
                "{\"time\": " + (System.currentTimeMillis() - 300000) + ", \"symbol\": \"GBPUSD\", \"pattern\": \"Reversal\", \"confidence\": 87, \"timeframe\": \"1H\", \"status\": \"status-warning\"}" +
                "]" +
@@ -436,6 +582,8 @@ public class SimpleDashboard {
                generateOverviewSection() +
                generateAnalyticsSection() +
                generatePatternsSection() +
+               generateSessionsSection() +
+               generateInstrumentSection() +
                generateMarketsSection() +
                generateAIChatSection() +
                "</div>" +
@@ -454,11 +602,51 @@ public class SimpleDashboard {
                "<div class=\"nav-item\" data-section=\"patterns\">" +
                "<i class=\"fas fa-search\"></i> Patterns" +
                "</div>" +
+               "<div class=\"nav-item\" data-section=\"sessions\">" +
+               "<i class=\"fas fa-window-restore\"></i> Sessions" +
+               "</div>" +
+               "<div class=\"nav-item\" data-section=\"instrument\">" +
+               "<i class=\"fas fa-chart-line\"></i> Instrument" +
+               "</div>" +
                "<div class=\"nav-item\" data-section=\"markets\">" +
                "<i class=\"fas fa-globe\"></i> Markets" +
                "</div>" +
                "<div class=\"nav-item\" data-section=\"ai-chat\">" +
                "<i class=\"fas fa-robot\"></i> AI Assistant" +
+               "</div>" +
+               "</div>" +
+               "</div>";
+    }
+
+    private String generateSessionsSection() {
+        return "<div class=\"section\" id=\"sessions\">" +
+               "<div class=\"grid grid-3\">" +
+               "<div class=\"panel\">" +
+               "<h3><i class=\\\"fas fa-window-restore\\\"></i> Active Sessions</h3>" +
+               "<div id=\\\"sessions-container\\\"></div>" +
+               "</div>" +
+               "<div class=\"panel\">" +
+               "<h3><i class=\\\"fas fa-info-circle\\\"></i> How it works</h3>" +
+               "<p>Select a session card to focus an instrument. The Instrument section shows its charts and metrics.</p>" +
+               "</div>" +
+               "</div>" +
+               "</div>";
+    }
+
+    private String generateInstrumentSection() {
+        return "<div class=\"section\" id=\"instrument\">" +
+               "<div class=\"panel\">" +
+               "<h3><i class=\\\"fas fa-chart-line\\\"></i> Instrument View</h3>" +
+               "<div class=\\\"metric\\\"><span>Selected:</span> <span id=\\\"selected-instrument\\\" class=\\\"metric-value\\\">None</span></div>" +
+               "<div class=\\\"timeframe-selector\\\" id=\\\"timeframe-btns\\\">" +
+               "<button class=\\\"timeframe-btn\\\" data-tf=\\\"1M\\\">1M</button>" +
+               "<button class=\\\"timeframe-btn\\\" data-tf=\\\"5M\\\">5M</button>" +
+               "<button class=\\\"timeframe-btn\\\" data-tf=\\\"15M\\\">15M</button>" +
+               "<button class=\\\"timeframe-btn\\\" data-tf=\\\"1H\\\">1H</button>" +
+               "</div>" +
+               "<div class=\\\"grid grid-2\\\">" +
+               "<div class=\\\"panel\\\"><h4>Price</h4><div class=\\\"chart-container\\\"><canvas id=\\\"inst-price-chart\\\"></canvas></div></div>" +
+               "<div class=\\\"panel\\\"><h4>Volume</h4><div class=\\\"chart-container\\\"><canvas id=\\\"inst-volume-chart\\\"></canvas></div></div>" +
                "</div>" +
                "</div>" +
                "</div>";
@@ -654,14 +842,8 @@ public class SimpleDashboard {
                "</div>" +
                "</div>" +
                "<div class=\"panel\">" +
-               "<h3><i class=\"fas fa-clock\"></i> Market Sessions</h3>" +
-               "<div class=\"market-card\">" +
-               "<div class=\"market-name\">New York</div>" +
-               "<div class=\"market-status\">" +
-               "<span class=\"status-indicator status-online\"></span>" +
-               "Open: 09:30 - 16:00 EST" +
-               "</div>" +
-               "</div>" +
+               "<h3><i class=\"fas fa-window-restore\"></i> Active Sessions</h3>" +
+               "<div id=\"sessions-container\"></div>" +
                "</div>" +
                "</div>" +
                "</div>";
@@ -773,11 +955,11 @@ public class SimpleDashboard {
     }
 
     private String getAdvancedJavaScript() {
-        return "let charts = {}; let currentSection = 'overview'; let dataUpdateInterval;" +
-               "document.addEventListener('DOMContentLoaded', function() { initializeNavigation(); initializeCharts(); startDataUpdates(); initializeChat(); });" +
+        return "let charts = {}; let currentSection = 'overview'; let dataUpdateInterval; let selectedInstrument=null; let currentTimeframe='1M';" +
+               "document.addEventListener('DOMContentLoaded', function() { initializeNavigation(); initializeCharts(); startDataUpdates(); initializeChat(); startRealtimeSessions(); });" +
                "function initializeNavigation() { const navItems = document.querySelectorAll('.nav-item'); navItems.forEach(item => { item.addEventListener('click', function() { const section = this.getAttribute('data-section'); switchSection(section); }); }); }" +
                "function switchSection(sectionId) { document.querySelectorAll('.section').forEach(section => { section.classList.remove('active'); }); document.getElementById(sectionId).classList.add('active'); document.querySelectorAll('.nav-item').forEach(item => { item.classList.remove('active'); }); document.querySelector('[data-section=\"' + sectionId + '\"]').classList.add('active'); currentSection = sectionId; }" +
-               "function initializeCharts() { const accuracyCtx = document.getElementById('accuracyChart'); if (accuracyCtx) { charts.accuracy = new Chart(accuracyCtx, { type: 'line', data: { labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'], datasets: [{ label: 'System Accuracy', data: [85, 87, 89, 92, 88, 90], borderColor: '#4fc3f7', backgroundColor: 'rgba(79, 195, 247, 0.1)', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#ffffff' } } }, scales: { x: { ticks: { color: '#ffffff' }, grid: { color: '#2a3441' } }, y: { ticks: { color: '#ffffff' }, grid: { color: '#2a3441' }, min: 0, max: 100 } } } }); } const componentCtx = document.getElementById('componentChart'); if (componentCtx) { charts.component = new Chart(componentCtx, { type: 'doughnut', data: { labels: ['Order Flow', 'Volume Imbalance', 'Cumulative Delta', 'Pattern Engine', 'Risk Calculator', 'Others'], datasets: [{ data: [92, 81, 78, 95, 88, 85], backgroundColor: ['#4fc3f7', '#4caf50', '#ff9800', '#e91e63', '#9c27b0', '#607d8b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#ffffff' } } } } }); } }" +
+               "function initializeCharts() { const accuracyCtx = document.getElementById('accuracyChart'); if (accuracyCtx) { charts.accuracy = new Chart(accuracyCtx, { type: 'line', data: { labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'], datasets: [{ label: 'System Accuracy', data: [85, 87, 89, 92, 88, 90], borderColor: '#4fc3f7', backgroundColor: 'rgba(79, 195, 247, 0.1)', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#ffffff' } } }, scales: { x: { ticks: { color: '#ffffff' }, grid: { color: '#2a3441' } }, y: { ticks: { color: '#ffffff' }, grid: { color: '#2a3441' }, min: 0, max: 100 } } } }); } const componentCtx = document.getElementById('componentChart'); if (componentCtx) { charts.component = new Chart(componentCtx, { type: 'doughnut', data: { labels: ['Order Flow', 'Volume Imbalance', 'Cumulative Delta', 'Pattern Engine', 'Risk Calculator', 'Others'], datasets: [{ data: [92, 81, 78, 95, 88, 85], backgroundColor: ['#4fc3f7', '#4caf50', '#ff9800', '#e91e63', '#9c27b0', '#607d8b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#ffffff' } } } } }); } ensureInstrumentCharts(); attachTimeframeHandlers(); }" +
                "function startDataUpdates() { updateAllData(); dataUpdateInterval = setInterval(updateAllData, 30000); }" +
                "function updateAllData() { updateSystemStats(); updateComponentStats(); updateMarketData(); }" +
                "function updateSystemStats() { fetch('/api/system').then(r => r.json()).then(data => { updateElement('overall-accuracy', (data.overall_accuracy || 87.3).toFixed(1) + '%'); updateElement('total-signals', data.total_signals || 247); updateElement('active-positions', data.active_positions || 3); updateElement('daily-pnl', '+$' + (data.daily_pnl || 1250)); updateElement('cpu-usage', (data.cpu_usage || 12.3).toFixed(1) + '%'); updateElement('memory-usage', (data.memory_usage || 89) + ' MB'); }).catch(error => console.log('Using demo data')); }" +
@@ -789,6 +971,14 @@ public class SimpleDashboard {
                "function generateAIResponse(userMessage) { const message = userMessage.toLowerCase(); if (message.includes('marché') || message.includes('market')) { return 'Les marchés montrent actuellement une tendance haussière modérée. Le EURUSD présente des signaux d\\'achat avec un pattern Perfect Storm détecté à 94% de confiance. Je recommande de surveiller les niveaux de support à 1.0850.'; } else if (message.includes('pattern') || message.includes('signal')) { return 'Actuellement, j\\'ai détecté 3 patterns actifs: Perfect Storm NQ (94% confiance), Reversal Pattern sur GBPUSD (87% confiance), et un Iceberg Pattern sur ES futures (91% confiance). Voulez-vous plus de détails sur l\\'un d\\'eux?'; } else if (message.includes('risque') || message.includes('risk')) { return 'La gestion des risques est cruciale. Actuellement, le système recommande une exposition maximale de 2% par trade avec un ratio risque/récompense de 1:2.1. La volatilité est modérée, permettant des positions standard.'; } else if (message.includes('stratégie') || message.includes('strategy')) { return 'Basé sur l\\'analyse actuelle, je recommande une stratégie de breakout sur les paires majeures. Les timeframes 15M et 1H montrent les meilleures performances (92% et 89% de précision respectivement).'; } else { return 'Je peux vous aider avec l\\'analyse des marchés, la détection de patterns, les stratégies de trading et la gestion des risques. Pouvez-vous être plus spécifique sur ce que vous souhaitez savoir?'; } }" +
                "function updateElement(id, value) { const element = document.getElementById(id); if (element) { element.textContent = value; } }" +
                "function updateOpenMarkets(markets) { const container = document.getElementById('open-markets-container'); if (container && markets.length > 0) { container.innerHTML = markets.map(market => '<div class=\"market-card\"><div class=\"market-name\">' + market.name + '</div><div class=\"market-status\"><span class=\"status-indicator ' + market.status + '\"></span>' + market.session_info + '</div></div>').join(''); } }" +
-               "function updateActiveSymbols(symbols) { const container = document.getElementById('active-symbols-container'); if (container && symbols.length > 0) { container.innerHTML = symbols.map(symbol => '<div class=\"market-card\"><div class=\"market-name\">' + symbol.name + '</div><div class=\"market-status\">Price: ' + symbol.price + ' | Vol: ' + symbol.volume + '</div></div>').join(''); } }";
+               "function updateActiveSymbols(symbols) { const container = document.getElementById('active-symbols-container'); if (container && symbols.length > 0) { container.innerHTML = symbols.map(symbol => '<div class=\"market-card\"><div class=\"market-name\">' + symbol.name + '</div><div class=\"market-status\">Price: ' + symbol.price + ' | Vol: ' + symbol.volume + '</div></div>').join(''); } }" +
+               "function startRealtimeSessions(){ updateSessions(); setInterval(updateSessions, 2000); setInterval(refreshInstrumentData, 1500);}" +
+               "function updateSessions(){ fetch('/api/active-sessions').then(r=>r.json()).then(renderSessionCards).catch(()=>{}); }" +
+               "function renderSessionCards(sessions){ const c=document.getElementById('sessions-container'); if(!c) return; c.innerHTML = sessions.map(s=> '<div class=\"market-card\" data-symbol=\"'+s.symbol+'\" onclick=\"selectInstrument(\\''+s.symbol+'\\')\">'+ '<div class=\"market-name\">'+s.symbol+'</div>' + '<div class=\"market-status\">'+s.status+' | '+ new Date(s.createdTime).toLocaleTimeString() +'</div>' + '</div>').join(''); }" +
+               "function selectInstrument(symbol){ selectedInstrument=symbol; updateElement('selected-instrument', symbol); switchSection('instrument'); refreshInstrumentData(); }" +
+               "function refreshInstrumentData(){ if(!selectedInstrument) return; fetch('/api/sliding-window?symbol='+encodeURIComponent(selectedInstrument)+'&timeframe='+encodeURIComponent(currentTimeframe)).then(r=>r.json()).then(updateInstrumentCharts).catch(()=>{});}" +
+               "function ensureInstrumentCharts(){ const pctx=document.getElementById('inst-price-chart'); const vctx=document.getElementById('inst-volume-chart'); if(pctx && !charts.instPrice){ charts.instPrice = new Chart(pctx, { type:'line', data:{ labels:[], datasets:[{label:'Price', data:[], borderColor:'#4fc3f7', backgroundColor:'rgba(79,195,247,0.1)', tension:0.3}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}, grid:{color:'#2a3441'}}, y:{ticks:{color:'#fff'}, grid:{color:'#2a3441'}}}}}); } if(vctx && !charts.instVol){ charts.instVol = new Chart(vctx, { type:'bar', data:{ labels:[], datasets:[{label:'Volume', data:[], backgroundColor:'rgba(76,175,80,0.4)', borderColor:'#4caf50'}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}, grid:{color:'#2a3441'}}, y:{ticks:{color:'#fff'}, grid:{color:'#2a3441'}}}}}); } }" +
+               "function updateInstrumentCharts(ohlcv){ if(!ohlcv || !charts.instPrice || !charts.instVol) return; const ts = new Date(ohlcv.timestamp).toLocaleTimeString(); const pc = charts.instPrice; const vc = charts.instVol; if(pc.data.labels.length>60){ pc.data.labels.shift(); pc.data.datasets[0].data.shift(); vc.data.labels.shift(); vc.data.datasets[0].data.shift(); } pc.data.labels.push(ts); pc.data.datasets[0].data.push(ohlcv.close || 0); vc.data.labels.push(ts); vc.data.datasets[0].data.push(ohlcv.volume || 0); pc.update(); vc.update(); }" +
+               "function attachTimeframeHandlers(){ const tf=document.getElementById('timeframe-btns'); if(!tf) return; tf.addEventListener('click', (e)=>{ const btn=e.target.closest('button[data-tf]'); if(!btn) return; currentTimeframe = btn.getAttribute('data-tf'); document.querySelectorAll('#timeframe-btns button').forEach(b=>b.classList.toggle('active', b===btn)); refreshInstrumentData(); }); }";
     }
 } 

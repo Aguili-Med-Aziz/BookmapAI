@@ -104,6 +104,102 @@ public class BookmapAddonIntegration {
     }
     
     /**
+     * Process real-time trade data from Bookmap
+     */
+    public void processTradeData(double price, int size, Object tradeInfo) {
+        if (!isRunning) return;
+        
+        try {
+            // Convert trade info to market data format
+            Map<String, Double> tradeData = new HashMap<>();
+            tradeData.put("price", price);
+            tradeData.put("volume", (double) size);
+            tradeData.put("timestamp", (double) System.currentTimeMillis());
+            
+            // Process through existing market data pipeline
+            String symbol = "ACTIVE"; // Default symbol for active instrument
+            onMarketData(symbol, price, size, System.currentTimeMillis(), tradeData);
+            
+        } catch (Exception e) {
+            System.err.println("Error processing trade data: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Process real-time depth data from Bookmap
+     */
+    public void processDepthData(boolean isBid, int price, int size) {
+        if (!isRunning) return;
+        
+        try {
+            // Convert depth data to market data format
+            Map<String, Double> depthData = new HashMap<>();
+            depthData.put("price", (double) price);
+            depthData.put("size", (double) size);
+            depthData.put("is_bid", isBid ? 1.0 : 0.0);
+            depthData.put("timestamp", (double) System.currentTimeMillis());
+            
+            // Process depth data through order book analysis
+            if (aiCore != null) {
+                String symbol = "ACTIVE"; // Default symbol for active instrument
+                aiCore.processMarketData(symbol, price, size, price, depthData);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error processing depth data: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Add new instrument to the system
+     */
+    public void addInstrument(String alias, Object instrumentInfo) {
+        try {
+            System.out.println("📈 Adding instrument: " + alias);
+            
+            // Initialize sliding windows for this instrument
+            if (windowManager != null) {
+                Map<String, Double> initialData = new HashMap<>();
+                initialData.put("timestamp", (double) System.currentTimeMillis());
+                windowManager.addDataPoint(alias, 0.0, 0.0, System.currentTimeMillis(), initialData);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error adding instrument " + alias + ": " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Remove instrument from the system
+     */
+    public void removeInstrument(String alias) {
+        try {
+            System.out.println("📉 Removing instrument: " + alias);
+            
+            // Clean up any resources for this instrument
+            // Additional cleanup can be added here as needed
+            
+        } catch (Exception e) {
+            System.err.println("Error removing instrument " + alias + ": " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handle existing instrument subscription
+     */
+    public void handleExistingInstrument(String alias, String fullName, String feedName) {
+        try {
+            System.out.println("📊 Handling existing instrument: " + alias + " (" + fullName + ")");
+            
+            // Treat as new instrument if not already tracked
+            addInstrument(alias, null);
+            
+        } catch (Exception e) {
+            System.err.println("Error handling existing instrument " + alias + ": " + e.getMessage());
+        }
+    }
+    
+    /**
      * Get system status for Bookmap
      */
     public Map<String, Object> getSystemStatus() {
@@ -200,17 +296,106 @@ public class BookmapAddonIntegration {
     }
     
     private void openDashboardInBrowser() {
+        String dashboardUrl = "http://localhost:" + DASHBOARD_PORT;
+        
+        System.out.println("🔌 [BookmapAddon] 🌐 Opening dashboard in Microsoft Edge...");
+        
         try {
+            // Try to open Microsoft Edge specifically
+            if (openInMicrosoftEdge(dashboardUrl)) {
+                System.out.println("🔌 [BookmapAddon] ✅ Dashboard opened in Microsoft Edge");
+                return;
+            }
+            
+            // Fallback to default browser if Edge not available
             if (Desktop.isDesktopSupported()) {
                 Desktop desktop = Desktop.getDesktop();
                 if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                    desktop.browse(new URI("http://localhost:" + DASHBOARD_PORT));
-                    System.out.println("🔌 [BookmapAddon] 🌐 Dashboard opened in browser");
+                    desktop.browse(new URI(dashboardUrl));
+                    System.out.println("🔌 [BookmapAddon] 🌐 Dashboard opened in default browser");
+                    return;
                 }
             }
+            
         } catch (Exception e) {
-            System.out.println("🔌 [BookmapAddon] Could not auto-open browser. Please visit: http://localhost:" + DASHBOARD_PORT);
+            System.out.println("🔌 [BookmapAddon] Could not auto-open browser. Please visit: " + dashboardUrl);
         }
+    }
+    
+    /**
+     * Attempts to open URL in Microsoft Edge specifically
+     * @param url The URL to open
+     * @return true if successfully launched Edge, false otherwise
+     */
+    private boolean openInMicrosoftEdge(String url) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            
+            if (os.contains("windows")) {
+                // Try multiple Edge executable paths/commands for Windows
+                String[] edgeCommands = {
+                    "msedge.exe",                                    // Modern Edge command
+                    "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",  // Standard 32-bit path
+                    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",        // Standard 64-bit path
+                    "cmd /c start msedge",                           // Through cmd
+                    "powershell -command \"Start-Process msedge -ArgumentList '" + url + "'\""  // Through PowerShell
+                };
+                
+                for (String command : edgeCommands) {
+                    try {
+                        ProcessBuilder pb;
+                        if (command.contains("powershell")) {
+                            pb = new ProcessBuilder("powershell", "-command", "Start-Process", "msedge", "-ArgumentList", url);
+                        } else if (command.contains("cmd")) {
+                            pb = new ProcessBuilder("cmd", "/c", "start", "msedge", url);
+                        } else {
+                            pb = new ProcessBuilder(command, url);
+                        }
+                        
+                        Process process = pb.start();
+                        
+                        // Wait a short time to see if the process started successfully
+                        Thread.sleep(1500);
+                        
+                        // If process is still alive or exited normally, consider it successful
+                        if (process.isAlive() || process.exitValue() == 0) {
+                            System.out.println("🔌 [BookmapAddon] ✅ Successfully launched Microsoft Edge with: " + command);
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        // Continue to next command
+                        continue;
+                    }
+                }
+            } else if (os.contains("mac")) {
+                // macOS Edge launch
+                ProcessBuilder pb = new ProcessBuilder("open", "-a", "Microsoft Edge", url);
+                Process process = pb.start();
+                Thread.sleep(1000);
+                return process.isAlive() || process.exitValue() == 0;
+                
+            } else if (os.contains("linux")) {
+                // Linux Edge launch
+                String[] commands = {"microsoft-edge", "microsoft-edge-stable", "microsoft-edge-dev"};
+                for (String command : commands) {
+                    try {
+                        ProcessBuilder pb = new ProcessBuilder(command, url);
+                        Process process = pb.start();
+                        Thread.sleep(1000);
+                        if (process.isAlive() || process.exitValue() == 0) {
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            System.out.println("🔌 [BookmapAddon] Edge launch attempt failed: " + e.getMessage());
+        }
+        
+        return false;
     }
     
     private void startSystemMonitoring() {

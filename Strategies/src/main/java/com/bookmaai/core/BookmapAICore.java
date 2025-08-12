@@ -46,8 +46,8 @@ public class BookmapAICore {
         this.patternEngine = new AdvancedPatternEngine();
         this.learningSystem = new AdaptiveLearningSystem();
         this.telegramService = new TelegramNotificationService(
-            System.getProperty("telegram.bot.token", ""), 
-            System.getProperty("telegram.chat.id", "")
+            com.bookmaai.config.TelegramConfig.BOT_TOKEN, 
+            com.bookmaai.config.TelegramConfig.CHAT_ID
         );
         this.riskRewardCalculator = new RiskRewardCalculator();
         this.windowAggregator = new SlidingWindowAggregator();

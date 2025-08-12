@@ -44,6 +44,12 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
             System.out.println("[BookMapICTAddon] Initialized for alias: " + alias + ", Instrument: " + instrumentInfo.symbol);
             String initialMarketData = "event=initialize,symbol=" + instrumentInfo.symbol + ",name=" + instrumentInfo.symbol + ",alias=" + alias + ",pips=" + instrumentInfo.pips;
             BookmapDataProcessor.processBookmapData(initialMarketData);
+            try {
+                // Register window as ACTIVE using alias as windowId; use alias as symbol for consistency
+                com.bookmaai.core.RealTimeMarketDataStore.getInstance().addActiveWindow(alias, "ACTIVE", alias);
+            } catch (Throwable t) {
+                System.err.println("[BookMapICTAddon] Failed to register active window on initialize: " + t.getMessage());
+            }
         } else {
             System.out.println("[BookMapICTAddon] Initialized (instrumentInfo is null) for alias: " + alias);
         }
@@ -55,12 +61,25 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         System.out.println("[BookMapICTAddon] Instrument added: " + alias + ", Symbol: " + instrumentInfo.symbol);
         String instrumentAddedData = "event=instrumentAdded,symbol=" + instrumentInfo.symbol + ",name=" + instrumentInfo.symbol + ",alias=" + alias + ",pips=" + instrumentInfo.pips;
         BookmapDataProcessor.processBookmapData(instrumentAddedData);
+
+        // Register active window in RealTimeMarketDataStore to make detection authoritative
+        try {
+            com.bookmaai.core.RealTimeMarketDataStore.getInstance().addActiveWindow(alias, "ACTIVE", alias);
+        } catch (Throwable t) {
+            System.err.println("[BookMapICTAddon] Failed to register active window: " + t.getMessage());
+        }
     }
 
     @Override
     public void onInstrumentRemoved(String alias) {
         activeAliases.remove(alias);
         System.out.println("[BookMapICTAddon] Instrument removed: " + alias);
+        try {
+            // Remove window by alias/windowId for precise lifecycle tracking
+            com.bookmaai.core.RealTimeMarketDataStore.getInstance().removeActiveWindowById(alias);
+        } catch (Throwable t) {
+            System.err.println("[BookMapICTAddon] Failed to remove active window: " + t.getMessage());
+        }
     }
 
     @Override
@@ -88,6 +107,21 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         
         // Update dashboard with market metrics if available
         updateDashboardMetrics(symbolForData, price, size, isBid);
+
+        // Feed sliding window manager and real-time store for CSV snapshots and charts
+        try {
+            com.bookmaai.core.RealTimeMarketDataStore.getInstance().ensureWindowRegistered(symbolForData);
+            com.bookmaai.core.sliding.EnhancedSlidingWindowManager.getInstance()
+                .processTick(symbolForData, price, size, System.currentTimeMillis(), isBid);
+        } catch (Throwable t) {
+            System.err.println("[BookMapICTAddon] Failed to process tick for sliding window: " + t.getMessage());
+        }
+        try {
+            com.bookmaai.core.RealTimeMarketDataStore.getInstance()
+                .updateMarketData(symbolForData, price, size, isBid ? "BID" : "ASK");
+        } catch (Throwable t) {
+            System.err.println("[BookMapICTAddon] Failed to update market data: " + t.getMessage());
+        }
     }
 
     @Override
@@ -96,6 +130,14 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         String depthDataString = String.format("event=depth,symbol=%s,isBid=%b,price=%d,size=%d,timestamp=%d",
                                 symbolForData, isBid, price, size, System.currentTimeMillis());
         BookmapDataProcessor.processBookmapData(depthDataString);
+
+        // Feed sliding window (convert depth price to double for consistency)
+        try {
+            com.bookmaai.core.sliding.EnhancedSlidingWindowManager.getInstance()
+                .processTick(symbolForData, (double) price, size, System.currentTimeMillis(), isBid);
+        } catch (Throwable t) {
+            System.err.println("[BookMapICTAddon] Failed to process depth tick for sliding window: " + t.getMessage());
+        }
     }
     
     @Override
@@ -116,6 +158,9 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         
         // Close all market-specific CSV writers
         try {
+            // Close pattern recorders first
+            com.bookmaai.core.PatternRecorder.getInstance().closeAll();
+            // Then any legacy writers (if present)
             BookmapDataProcessor.closeAllWriters();
             System.out.println("[BookMapICTAddon] All market CSV writers closed successfully.");
         } catch (Exception e) {

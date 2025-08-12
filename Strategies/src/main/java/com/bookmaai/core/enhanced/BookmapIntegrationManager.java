@@ -4,10 +4,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.time.LocalDateTime;
+import com.bookmaai.core.RealTimeMarketDataStore;
 
 /**
  * Bookmap Integration Manager v3.0
  * Analyzes all opened market windows and coordinates enhanced features
+ * ENHANCED: Now updates RealTimeMarketDataStore with active window data
  */
 public class BookmapIntegrationManager {
     
@@ -24,6 +26,9 @@ public class BookmapIntegrationManager {
     private final AdvancedAlertsManager alertsManager;
     private final AdvancedICTPatternEngine patternEngine;
     
+    // Dashboard integration
+    private final RealTimeMarketDataStore dataStore;
+    
     // Analysis tracking
     private final Map<String, WindowAnalysis> analysisResults = new ConcurrentHashMap<>();
     private final AtomicLong totalAnalysisCount = new AtomicLong(0);
@@ -36,6 +41,9 @@ public class BookmapIntegrationManager {
         this.alertsManager = new AdvancedAlertsManager();
         this.patternEngine = new AdvancedICTPatternEngine();
         
+        // ENHANCED: Connect to dashboard data store for active windows
+        this.dataStore = RealTimeMarketDataStore.getInstance();
+        
         initializeIntegration();
         startContinuousAnalysis();
     }
@@ -44,8 +52,16 @@ public class BookmapIntegrationManager {
     
     public void scanForOpenWindows() {
         try {
-            // Detect all open Bookmap windows
-            List<String> openSymbols = detectOpenBookmapWindows();
+            // Detect all open Bookmap windows using RealTimeMarketDataStore (authoritative)
+            Map<String, Object> windows = dataStore.getActiveBookmapWindows();
+            List<String> openSymbols = new ArrayList<>();
+            for (Object obj : windows.values()) {
+                if (obj instanceof com.bookmaai.core.RealTimeMarketDataStore.BookmapWindow) {
+                    com.bookmaai.core.RealTimeMarketDataStore.BookmapWindow w =
+                        (com.bookmaai.core.RealTimeMarketDataStore.BookmapWindow) obj;
+                    openSymbols.add(w.getSymbol());
+                }
+            }
             
             for (String symbol : openSymbols) {
                 if (!activeWindows.containsKey(symbol)) {
@@ -59,35 +75,35 @@ public class BookmapIntegrationManager {
             // Remove closed windows
             activeWindows.keySet().removeIf(symbol -> !openSymbols.contains(symbol));
             
+            // ENHANCED: Update dashboard with active windows
+            updateDashboardActiveWindows();
+            
         } catch (Exception e) {
             System.err.println("Error scanning windows: " + e.getMessage());
         }
     }
     
-    private List<String> detectOpenBookmapWindows() {
-        // Enhanced detection of open Bookmap windows
+    // Deprecated: legacy simulated detection removed in favor of RealTimeMarketDataStore
+    
+    /**
+     * ENHANCED: Update dashboard with current active windows
+     */
+    private void updateDashboardActiveWindows() {
         try {
-            // In a real implementation, this would use Bookmap API to detect open windows
-            // For now, simulate realistic market detection
-            List<String> detectedSymbols = new ArrayList<>();
+            Map<String, String> windowData = new HashMap<>();
+            for (Map.Entry<String, MarketWindow> entry : activeWindows.entrySet()) {
+                String symbol = entry.getKey();
+                MarketWindow window = entry.getValue();
+                String status = window.isActive() ? "ACTIVE" : "INACTIVE";
+                windowData.put(symbol, status);
+            }
             
-            // Major forex pairs
-            detectedSymbols.addAll(Arrays.asList("EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD"));
-            
-            // Crypto pairs
-            detectedSymbols.addAll(Arrays.asList("BTCUSDT", "ETHUSDT", "ADAUSDT"));
-            
-            // Indices
-            detectedSymbols.addAll(Arrays.asList("ES", "NQ", "YM"));
-            
-            // Commodities
-            detectedSymbols.addAll(Arrays.asList("GC", "CL"));
-            
-            return detectedSymbols;
+            // Push to dashboard data store
+            dataStore.updateActiveBookmapWindows(windowData);
+            System.out.println("📊 Dashboard updated with " + windowData.size() + " active windows");
             
         } catch (Exception e) {
-            System.err.println("Error detecting Bookmap windows: " + e.getMessage());
-            return Arrays.asList("EURUSD", "GBPUSD", "USDJPY"); // Fallback
+            System.err.println("Error updating dashboard active windows: " + e.getMessage());
         }
     }
     
@@ -105,12 +121,36 @@ public class BookmapIntegrationManager {
             // 1. Real-time data collection
             RealTimeDataEngine.MarketData marketData = collectMarketData(symbol);
             
+            // Convert to enhanced MarketData for AI analysis
+            com.bookmaai.core.enhanced.MarketData aiMarketData = new com.bookmaai.core.enhanced.MarketData(
+                marketData.getSymbol(), marketData.getPrice(), marketData.getVolume()
+            );
+            
             // 2. Pattern detection
             List<AdvancedICTPatternEngine.PatternResult> patterns = detectPatterns(symbol, marketData);
+
+            // Export detected patterns per instrument
+            if (!patterns.isEmpty()) {
+                for (AdvancedICTPatternEngine.PatternResult pr : patterns) {
+                    String detailsJson = "{\"timeframe\":\"" + (pr.getTimeframe() == null ? "LIVE" : pr.getTimeframe()) +
+                            "\",\"strength\":" + String.format(java.util.Locale.US, "%.4f", pr.getStrength()) +
+                            ",\"entry\":" + String.valueOf(pr.getEntryPrice()) +
+                            ",\"target\":" + String.valueOf(pr.getTargetPrice()) +
+                            ",\"stop\":" + String.valueOf(pr.getStopPrice()) + "}";
+                    com.bookmaai.core.PatternRecorder.getInstance().writePattern(
+                            symbol, pr.getPatternType(), pr.getConfidence(), detailsJson);
+                }
+            }
+            
+            // Convert patterns to List<Pattern> for AI analysis
+            List<Pattern> aiPatterns = new ArrayList<>();
+            for (AdvancedICTPatternEngine.PatternResult pr : patterns) {
+                aiPatterns.add(new Pattern(pr.getPatternType(), pr.getConfidence(), pr.getSymbol()));
+            }
             
             // 3. AI analysis
             CompletableFuture<GPT4AnalysisEngine.MarketAnalysis> aiAnalysis = 
-                CompletableFuture.supplyAsync(() -> gpt4Engine.analyzeMarketConditions(marketData, patterns));
+                gpt4Engine.analyzeMarketConditions(aiMarketData, aiPatterns);
             
             // 4. Risk assessment
             RiskAssessment risk = assessRisk(symbol, marketData);
@@ -332,9 +372,13 @@ public class BookmapIntegrationManager {
     }
     
     private AdvancedICTPatternEngine.PatternResult createPatternFromOpportunity(TradingOpportunity opp) {
-        return new AdvancedICTPatternEngine.PatternResult(
-            opp.getSymbol(), opp.getPatternType(), opp.getConfidence(), 85.0, LocalDateTime.now()
+        AdvancedICTPatternEngine.PatternResult pattern = new AdvancedICTPatternEngine.PatternResult(
+            opp.getSymbol(), opp.getPatternType(), opp.getConfidence()
         );
+        pattern.setEntryPrice(opp.getEntryPrice());
+        pattern.setTargetPrice(opp.getTakeProfit());
+        pattern.setStopPrice(opp.getStopLoss());
+        return pattern;
     }
     
     private void updateDashboard(WindowAnalysis analysis) {

@@ -429,11 +429,11 @@ public class ProfessionalBacktester {
         return riskAmount / stopDistance;
     }
     
-    private double calculateMean(double[] values) {
+    private static double calculateMean(double[] values) {
         return Arrays.stream(values).average().orElse(0.0);
     }
     
-    private double calculateStdDev(double[] values) {
+    private static double calculateStdDev(double[] values) {
         double mean = calculateMean(values);
         double variance = Arrays.stream(values)
             .map(val -> Math.pow(val - mean, 2))
@@ -441,14 +441,14 @@ public class ProfessionalBacktester {
         return Math.sqrt(variance);
     }
     
-    private double calculatePercentile(double[] values, double percentile) {
+    private static double calculatePercentile(double[] values, double percentile) {
         double[] sorted = Arrays.copyOf(values, values.length);
         Arrays.sort(sorted);
         int index = (int) Math.ceil(percentile / 100.0 * sorted.length) - 1;
         return sorted[Math.max(0, Math.min(index, sorted.length - 1))];
     }
     
-    private double calculateSharpeRatio(double[] returns) {
+    private static double calculateSharpeRatio(double[] returns) {
         double mean = calculateMean(returns);
         double stdDev = calculateStdDev(returns);
         return stdDev > 0 ? mean / stdDev : 0;
@@ -475,7 +475,7 @@ public class ProfessionalBacktester {
             .average().orElse(0.0);
     }
     
-    private int calculateMaxConsecutiveLosses(List<WalkForwardPeriod> periods) {
+    private static int calculateMaxConsecutiveLosses(List<WalkForwardPeriod> periods) {
         int maxConsecutive = 0;
         int current = 0;
         

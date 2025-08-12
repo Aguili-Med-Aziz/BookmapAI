@@ -52,6 +52,7 @@ public class TelegramNotificationService {
         
         public String formatMessage() {
             StringBuilder sb = new StringBuilder();
+            sb.append("👋 مرحباً ").append(com.bookmaai.config.TelegramConfig.USER_NAME).append("!\n");
             sb.append(type.getEmoji()).append(" ").append(type.getArabicName()).append("\n");
             sb.append("━━━━━━━━━━━━━━━━━━━━\n");
             sb.append("📊 النمط: ").append(title).append("\n");
@@ -63,7 +64,8 @@ public class TelegramNotificationService {
                     sb.append("").append(key).append(": ").append(value).append("\n"));
             }
             
-            sb.append("━━━━━━━━━━━━━━━━━━━━");
+            sb.append("━━━━━━━━━━━━━━━━━━━━\n");
+            sb.append("📱 BookmapAI System");
             return sb.toString();
         }
         
@@ -91,15 +93,22 @@ public class TelegramNotificationService {
         this.botToken = botToken;
         this.chatId = chatId;
         System.out.println("📱 [TelegramNotificationService] Initializing Telegram service...");
+        System.out.println("📱 Configured for: " + com.bookmaai.config.TelegramConfig.getUserContact());
     }
     
     public void initialize() {
-        if (botToken != null && !botToken.isEmpty() && chatId != null && !chatId.isEmpty()) {
+        if (com.bookmaai.config.TelegramConfig.isConfigured()) {
             isEnabled.set(true);
             startNotificationProcessor();
-            System.out.println("📱 [TelegramNotificationService] Service initialized and enabled");
+            System.out.println("📱 [TelegramNotificationService] ✅ Service initialized and enabled");
+            System.out.println("📱 Target: " + com.bookmaai.config.TelegramConfig.USER_NAME + " (" + com.bookmaai.config.TelegramConfig.USER_PHONE + ")");
+            
+            // Send welcome message
+            sendWelcomeMessage();
         } else {
-            System.out.println("📱 [TelegramNotificationService] Service disabled - missing configuration");
+            System.out.println("📱 [TelegramNotificationService] ⚠️ Service disabled - missing bot configuration");
+            System.out.println("📱 Setup instructions:");
+            System.out.println(com.bookmaai.config.TelegramConfig.getSetupInstructions());
         }
     }
     
@@ -149,12 +158,26 @@ public class TelegramNotificationService {
     private boolean sendTelegramMessage(String message) {
         // Simulate sending message (in real implementation, this would use HTTP client)
         try {
-            System.out.println("📱 [TelegramNotificationService] Sending Telegram message:");
+            System.out.println("📱 [TelegramNotificationService] Sending Telegram message to " + com.bookmaai.config.TelegramConfig.USER_PHONE + ":");
+            System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             System.out.println(message);
+            System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             return true;
         } catch (Exception e) {
             System.err.println("📱 [TelegramNotificationService] Error sending message: " + e.getMessage());
             return false;
+        }
+    }
+    
+    /**
+     * Send welcome message to Aziz
+     */
+    private void sendWelcomeMessage() {
+        try {
+            String welcomeMessage = com.bookmaai.config.TelegramConfig.getWelcomeMessage();
+            sendTelegramMessage(welcomeMessage);
+        } catch (Exception e) {
+            System.err.println("📱 [TelegramNotificationService] Error sending welcome message: " + e.getMessage());
         }
     }
     

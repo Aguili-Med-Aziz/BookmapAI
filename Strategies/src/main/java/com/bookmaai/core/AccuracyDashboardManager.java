@@ -277,7 +277,7 @@ public class AccuracyDashboardManager {
             } catch (Exception e) {
                 System.err.println("Error updating dashboard data: " + e.getMessage());
             }
-        }, 0, 30, TimeUnit.SECONDS); // Update every 30 seconds
+        }, 0, 1, TimeUnit.SECONDS); // Update every 1 second for REAL-TIME dashboard
     }
     
     private void startPerformanceMonitoring() {

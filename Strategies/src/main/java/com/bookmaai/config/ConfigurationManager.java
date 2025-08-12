@@ -72,11 +72,13 @@ public class ConfigurationManager {
         return configurations.get(key);
     }
     
+    @SuppressWarnings("unchecked")
     public boolean isTradingEnabled() {
         Map<String, Object> trading = (Map<String, Object>) configurations.get("trading");
         return trading != null && (Boolean) trading.get("trading_enabled");
     }
     
+    @SuppressWarnings("unchecked")
     public double getPerfectStormSuccess() {
         Map<String, Object> patterns = (Map<String, Object>) configurations.get("patterns");
         return patterns != null ? (Double) patterns.get("perfect_storm_success") : 94.2;

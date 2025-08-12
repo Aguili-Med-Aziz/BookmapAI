@@ -175,8 +175,10 @@ public class SystemValidationManager {
         
         try {
             // Test market analysis
+            MarketData marketData = new MarketData("EURUSD", 1.0850, 1000.0);
+            List<Pattern> patterns = Arrays.asList(new Pattern("FAIR_VALUE_GAP", 0.85, "EURUSD"));
             CompletableFuture<GPT4AnalysisEngine.MarketAnalysis> analysis = 
-                gpt4Engine.analyzeMarketConditions("EURUSD");
+                gpt4Engine.analyzeMarketConditions(marketData, patterns);
             
             GPT4AnalysisEngine.MarketAnalysis result = analysis.get(5, TimeUnit.SECONDS);
             
@@ -323,8 +325,10 @@ public class SystemValidationManager {
                 patternEngine.detectFairValueGap("EURUSD", data);
             
             // 3. AI analysis
+            MarketData analysisData = new MarketData("EURUSD", 1.0850, 1000.0);
+            List<Pattern> analysisPatterns = Arrays.asList(new Pattern("ORDER_BLOCK", 0.82, "EURUSD"));
             CompletableFuture<GPT4AnalysisEngine.MarketAnalysis> analysis = 
-                gpt4Engine.analyzeMarketConditions("EURUSD");
+                gpt4Engine.analyzeMarketConditions(analysisData, analysisPatterns);
             
             // 4. Integration manager analysis
             BookmapIntegrationManager.WindowAnalysis windowAnalysis = 
@@ -392,7 +396,7 @@ public class SystemValidationManager {
             // Test null parameters
             totalTests++;
             try {
-                gpt4Engine.analyzeMarketConditions(null);
+                gpt4Engine.analyzeMarketConditions(null, null);
             } catch (Exception e) {
                 errorsCaught++;
             }
@@ -510,9 +514,10 @@ public class SystemValidationManager {
         public LocalDateTime getTimestamp() { return timestamp; }
         
         public void printReport() {
-            System.out.println("\n" + "=".repeat(80));
+            String separator = String.join("", Collections.nCopies(80, "="));
+            System.out.println("\n" + separator);
             System.out.println("📋 SYSTEM VALIDATION REPORT - " + timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            System.out.println("=".repeat(80));
+            System.out.println(separator);
             System.out.println(summary);
             System.out.println("\n📊 Component Test Results:");
             
@@ -521,7 +526,7 @@ public class SystemValidationManager {
             }
             
             System.out.println("\n🎯 Overall System Status: " + (passed ? "✅ OPERATIONAL" : "❌ ISSUES DETECTED"));
-            System.out.println("=".repeat(80) + "\n");
+            System.out.println(separator + "\n");
         }
     }
 } 
