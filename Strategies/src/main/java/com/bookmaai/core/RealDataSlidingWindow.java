@@ -3,6 +3,7 @@ package com.bookmaai.core;
 import java.util.*;
 import java.util.concurrent.*;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 🔄 Real Data Sliding Window - REAL DATA ONLY
@@ -14,6 +15,17 @@ public class RealDataSlidingWindow {
     
     private final Map<String, Map<String, WindowData>> windows = new ConcurrentHashMap<>();
     private final DataExportManager exportManager = new DataExportManager();
+    private final ScheduledExecutorService exportScheduler = Executors.newScheduledThreadPool(1);
+    private volatile boolean autoExportEnabled = true;
+    
+    // Auto-export settings
+    private static final int EXPORT_INTERVAL_MINUTES = 5; // Export every 5 minutes
+    private static final int MIN_DATA_POINTS_FOR_EXPORT = 10; // Minimum data points to trigger export
+    
+    public RealDataSlidingWindow() {
+        // Start automatic periodic exports
+        startAutoExport();
+    }
     
     /**
      * Add real market data point
@@ -30,6 +42,9 @@ public class RealDataSlidingWindow {
         addToWindow(symbolWindows, "5m", point, 300);
         addToWindow(symbolWindows, "15m", point, 900);
         addToWindow(symbolWindows, "1h", point, 3600);
+        
+        // Trigger export if enough data accumulated
+        checkAndTriggerExport(symbol);
     }
     
     private void addToWindow(Map<String, WindowData> windows, String timeframe, DataPoint point, int windowSeconds) {
@@ -59,9 +74,26 @@ public class RealDataSlidingWindow {
                 List<DataPoint> points = window.getPoints();
                 
                 if (!points.isEmpty()) {
-                    // Convert to required format for export
-                    // exportManager.exportToCsv(symbol, timeframe, points);
-                    System.out.println("💾 Exporting " + symbol + " " + timeframe + ": " + points.size() + " points");
+                    // Export to CSV using the enhanced method
+                    exportManager.exportDataPointsToCsv(symbol, timeframe, points);
+                    System.out.println("💾 Exported " + symbol + " " + timeframe + ": " + points.size() + " points");
+                }
+            }
+        }
+    }
+    
+    /**
+     * Export data for specific symbol and timeframe
+     */
+    public void exportSymbolData(String symbol, String timeframe) {
+        Map<String, WindowData> symbolWindows = windows.get(symbol);
+        if (symbolWindows != null) {
+            WindowData window = symbolWindows.get(timeframe);
+            if (window != null) {
+                List<DataPoint> points = window.getPoints();
+                if (!points.isEmpty()) {
+                    exportManager.exportDataPointsToCsv(symbol, timeframe, points);
+                    System.out.println("💾 Exported " + symbol + " " + timeframe + ": " + points.size() + " points");
                 }
             }
         }
@@ -156,6 +188,61 @@ public class RealDataSlidingWindow {
         public double getClose() { return close; }
         public double getVolume() { return volume; }
         public int getCount() { return count; }
+    }
+    
+    // ==================== AUTO-EXPORT FUNCTIONALITY ====================
+    
+    /**
+     * Start automatic periodic exports
+     */
+    private void startAutoExport() {
+        if (autoExportEnabled) {
+            exportScheduler.scheduleAtFixedRate(this::exportData, 
+                EXPORT_INTERVAL_MINUTES, EXPORT_INTERVAL_MINUTES, TimeUnit.MINUTES);
+            System.out.println("💾 Auto-export scheduled every " + EXPORT_INTERVAL_MINUTES + " minutes");
+        }
+    }
+    
+    /**
+     * Check if symbol has enough data to trigger export
+     */
+    private void checkAndTriggerExport(String symbol) {
+        if (!autoExportEnabled) return;
+        
+        Map<String, WindowData> symbolWindows = windows.get(symbol);
+        if (symbolWindows != null) {
+            // Check 1-minute window for immediate exports
+            WindowData oneMinWindow = symbolWindows.get("1m");
+            if (oneMinWindow != null && oneMinWindow.getPoints().size() >= MIN_DATA_POINTS_FOR_EXPORT) {
+                // Export 1m data immediately when enough points accumulated
+                exportSymbolData(symbol, "1m");
+            }
+        }
+    }
+    
+    /**
+     * Enable or disable auto-export
+     */
+    public void setAutoExportEnabled(boolean enabled) {
+        this.autoExportEnabled = enabled;
+        if (enabled) {
+            startAutoExport();
+        }
+    }
+    
+    /**
+     * Shutdown export scheduler
+     */
+    public void shutdown() {
+        exportScheduler.shutdown();
+        try {
+            if (!exportScheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                exportScheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            exportScheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }
 

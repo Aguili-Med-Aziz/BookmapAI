@@ -158,6 +158,10 @@ public class SimpleRealDataServer {
                     serveInstrumentStatus(writer, path);
                 } else if (path.startsWith("/api/instruments")) {
                     serveInstrumentsAPI(writer);
+                } else if (path.startsWith("/api/export/trigger")) {
+                    triggerDataExport(writer);
+                } else if (path.startsWith("/api/export/status")) {
+                    serveExportStatus(writer);
                 } else if (path.startsWith("/api/system")) {
                     serveSystemAPI(writer);
                 } else if (path.startsWith("/api/components")) {
@@ -713,6 +717,57 @@ public class SimpleRealDataServer {
         } else {
             writer.println("{\"error\": \"Invalid path format. Use /api/instruments/status/ALIAS\"}");
         }
+    }
+    
+    /**
+     * Trigger manual data export
+     */
+    private void triggerDataExport(PrintWriter writer) {
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: application/json");
+        writer.println("Access-Control-Allow-Origin: *");
+        writer.println();
+
+        try {
+            // Trigger export through sliding window
+            slidingWindow.exportData();
+            
+            StringBuilder json = new StringBuilder();
+            json.append("{\n");
+            json.append("  \"status\": \"success\",\n");
+            json.append("  \"message\": \"Data export triggered successfully\",\n");
+            json.append("  \"timestamp\": ").append(System.currentTimeMillis()).append(",\n");
+            json.append("  \"export_location\": \"exports/\"\n");
+            json.append("}");
+            
+            writer.println(json.toString());
+            
+        } catch (Exception e) {
+            writer.println("{\"status\": \"error\", \"message\": \"Export failed: " + e.getMessage() + "\"}");
+        }
+    }
+    
+    /**
+     * Get export status and information
+     */
+    private void serveExportStatus(PrintWriter writer) {
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: application/json");
+        writer.println("Access-Control-Allow-Origin: *");
+        writer.println();
+
+        StringBuilder json = new StringBuilder();
+        json.append("{\n");
+        json.append("  \"export_enabled\": true,\n");
+        json.append("  \"export_directory\": \"exports/\",\n");
+        json.append("  \"auto_export_interval_minutes\": 5,\n");
+        json.append("  \"min_data_points_for_export\": 10,\n");
+        json.append("  \"timestamp\": ").append(System.currentTimeMillis()).append(",\n");
+        json.append("  \"supported_formats\": [\"CSV\", \"JSON\"],\n");
+        json.append("  \"timeframes\": [\"1m\", \"5m\", \"15m\", \"1h\"]\n");
+        json.append("}");
+        
+        writer.println(json.toString());
     }
     
     /**

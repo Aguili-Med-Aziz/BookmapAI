@@ -61,6 +61,45 @@ public class DataExportManager {
     }
     
     /**
+     * Export DataPoint objects to CSV format (enhanced method)
+     */
+    public void exportDataPointsToCsv(String symbol, String timeframe, List<?> dataPoints) {
+        if (dataPoints.isEmpty()) {
+            return;
+        }
+        
+        String filename = String.format("%s_%s_data_%s.csv", 
+            symbol, timeframe, LocalDateTime.now().format(FILE_TIMESTAMP));
+        Path filePath = exportPath.resolve(filename);
+        
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(filePath))) {
+            // CSV header
+            writer.println("timestamp,price,volume,side");
+            
+            // Data rows with proper DataPoint extraction
+            for (Object point : dataPoints) {
+                if (point instanceof com.bookmaai.core.RealDataSlidingWindow.DataPoint) {
+                    com.bookmaai.core.RealDataSlidingWindow.DataPoint dp = 
+                        (com.bookmaai.core.RealDataSlidingWindow.DataPoint) point;
+                    writer.printf("%s,%.5f,%.2f,%s\n", 
+                        dp.getTimestamp().format(DATA_TIMESTAMP),
+                        dp.getPrice(),
+                        dp.getVolume(),
+                        dp.getSide());
+                } else {
+                    // Fallback for unknown types
+                    writer.printf("%s,0.0,0.0,UNKNOWN\n", LocalDateTime.now().format(DATA_TIMESTAMP));
+                }
+            }
+            
+            System.out.println("💾 Exported CSV: " + filename + " (" + dataPoints.size() + " records)");
+            
+        } catch (IOException e) {
+            System.err.println("❌ Failed to export CSV: " + e.getMessage());
+        }
+    }
+    
+    /**
      * Export aggregation data to JSON format
      */
     public void exportToJson(String symbol, String timeframe, Object aggregation) {
