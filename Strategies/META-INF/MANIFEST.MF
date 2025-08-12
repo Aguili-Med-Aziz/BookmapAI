@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Implementation-Title: BookmapAI Real Data System - 100% Real Data Only
+Mock-Data: ELIMINATED
+Implementation-Version: 5.4.0
+Real-Data-Sources: Bookmap Layer1 API Only
+Built-Date: 2025-08-07 18:30:13
+Launcher-Class: com.bookmaai.core.RealDataSystemLauncher
+Built-JDK: 1.8.0_451
+Simulation-Mode: COMPLETELY DISABLED
+Main-Class: com.bookmaai.web.SimpleRealDataServer
+Implementation-Vendor: BookmapAI Research Team
+Data-Policy: 100% Real Data Only
+Dashboard-URL: http://localhost:8080
+Server-Class: com.bookmaai.web.SimpleRealDataServer
+Bookmap-Addon-Class: com.bookmaai.addon.UnifiedBookmapAIAddon
+

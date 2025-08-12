@@ -1,0 +1,198 @@
+[2025-07-17 20:13:26.395] [INFO] [Dashboard] Logger initialized for component: Dashboard
+[2025-07-17 20:13:26.396] [INFO] [Dashboard] Log file: C:\Bookmap\Logs\BookmapAI_Dashboard_2025-07-17_2013.log
+[2025-07-17 20:13:26.396] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:26.396] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:26.396] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:26.397] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:26.397] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:26.399] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.api.layer1.simpledemo.BookmapAIAddon.initializeBookmapAI(BookmapAIAddon.java:85)
+	at velox.api.layer1.simpledemo.BookmapAIAddon.lambda$new$0(BookmapAIAddon.java:54)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:26.402] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] Logger initialized for component: Dashboard
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] Log file: C:\Bookmap\Logs\BookmapAI_Dashboard_2025-07-17_2013.log
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:28.426] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:28.427] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.api.layer1.simpledemo.BookmapAIStrategy.initializeBookmapAI(BookmapAIStrategy.java:95)
+	at velox.api.layer1.simpledemo.BookmapAIStrategy.lambda$waitForActivation$0(BookmapAIStrategy.java:66)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:28.427] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:29.615] [INFO] [Dashboard] Logger initialized for component: Dashboard
+[2025-07-17 20:13:29.616] [INFO] [Dashboard] Log file: C:\Bookmap\Logs\BookmapAI_Dashboard_2025-07-17_2013.log
+[2025-07-17 20:13:29.616] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:29.616] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:29.616] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:29.616] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:29.616] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:29.617] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.api.layer1.simpledemo.SimpleBookmapAI.initializeBookmapAI(SimpleBookmapAI.java:79)
+	at velox.api.layer1.simpledemo.SimpleBookmapAI.lambda$waitForActivation$0(SimpleBookmapAI.java:50)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:29.617] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:29.666] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:29.667] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:29.667] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:29.667] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:29.667] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:29.667] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.api.layer1.simpledemo.BookmapAIAddon.initializeBookmapAI(BookmapAIAddon.java:85)
+	at velox.api.layer1.simpledemo.BookmapAIAddon.lambda$new$0(BookmapAIAddon.java:54)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:29.668] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:30.453] [INFO] [Dashboard] Logger initialized for component: Dashboard
+[2025-07-17 20:13:30.453] [INFO] [Dashboard] Log file: C:\Bookmap\Logs\BookmapAI_Dashboard_2025-07-17_2013.log
+[2025-07-17 20:13:30.453] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:30.453] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:30.454] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:30.454] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:30.454] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:30.454] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.BookmapAI.initializeBookmapAI(BookmapAI.java:80)
+	at velox.BookmapAI.lambda$waitForActivation$0(BookmapAI.java:51)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:30.455] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:33.260] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:33.260] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:33.261] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:33.261] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:33.261] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:33.262] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.api.layer1.simpledemo.BookmapAIStrategy.initializeBookmapAI(BookmapAIStrategy.java:95)
+	at velox.api.layer1.simpledemo.BookmapAIStrategy.lambda$waitForActivation$0(BookmapAIStrategy.java:66)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:33.262] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:46.654] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:46.655] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:46.655] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:46.655] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:46.656] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:46.657] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.api.layer1.simpledemo.SimpleBookmapAI.initializeBookmapAI(SimpleBookmapAI.java:79)
+	at velox.api.layer1.simpledemo.SimpleBookmapAI.lambda$waitForActivation$0(SimpleBookmapAI.java:50)
+	at java.base/java.lang.Thread.run(Unknown Source)
+[2025-07-17 20:13:46.658] [ERROR] [Dashboard] Port 8080 might be in use by another application
+[2025-07-17 20:13:46.717] [INFO] [Dashboard] SimpleDashboard instance created
+[2025-07-17 20:13:46.717] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:46.717] [INFO] [Dashboard] SimpleDashboard Web Server Starting...
+[2025-07-17 20:13:46.718] [INFO] [Dashboard] ========================================
+[2025-07-17 20:13:46.718] [INFO] [Dashboard] Attempting to start HTTP server on port 8080
+[2025-07-17 20:13:46.718] [ERROR] [Dashboard] Failed to start dashboard server
+Exception: BindException: Address already in use: bind
+java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(Unknown Source)
+	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.HttpServerImpl.<init>(Unknown Source)
+	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(Unknown Source)
+	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(Unknown Source)
+	at com.bookmaai.web.SimpleDashboard.start(SimpleDashboard.java:50)
+	at com.bookmaai.core.BookmapAddonIntegration.initializeWebDashboard(BookmapAddonIntegration.java:192)
+	at com.bookmaai.core.BookmapAddonIntegration.initialize(BookmapAddonIntegration.java:56)
+	at velox.BookmapAI.initializeBookmapAI(BookmapAI.java:80)
+	at velox.BookmapAI.lambda$waitForActivation$0(BookmapAI.java:51)
