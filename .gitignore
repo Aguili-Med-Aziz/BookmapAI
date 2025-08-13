@@ -4,7 +4,7 @@
 #Strategies/.gradle/
 #*.jar
 #*.tar
-#*.zip
+*.zip
 #*.log
 #*.tmp
 *.bak
