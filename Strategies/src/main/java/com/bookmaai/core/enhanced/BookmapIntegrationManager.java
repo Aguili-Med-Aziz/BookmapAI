@@ -334,15 +334,20 @@ public class BookmapIntegrationManager {
     }
     
     private double calculateVolatility(RealTimeDataEngine.MarketData data) {
-        return Math.random() * 0.03; // Simplified calculation
+        // Calculate real volatility from actual price movements
+        // TODO: Implement volatility calculation using real price history
+        return data != null ? 0.001 : 0.0; // Placeholder until real calculation is implemented
     }
     
     private double calculateLiquidity(RealTimeDataEngine.MarketData data) {
-        return 0.8 + Math.random() * 0.2; // Simplified calculation
+        // Calculate real liquidity from actual market depth
+        // TODO: Implement liquidity calculation using real order book data
+        return data != null ? data.getVolume() / 1000000.0 : 0.0; // Use volume as proxy for liquidity
     }
     
     private double calculateCorrelation(String symbol) {
-        return Math.random() * 0.5; // Simplified calculation
+        // Calculate real correlation from actual market data
+        return 0.0; // Return 0 until real correlation data is available
     }
     
     private double calculateEntryPrice(AdvancedICTPatternEngine.PatternResult pattern) {

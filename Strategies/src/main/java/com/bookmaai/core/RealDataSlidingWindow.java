@@ -19,7 +19,7 @@ public class RealDataSlidingWindow {
     private volatile boolean autoExportEnabled = true;
     
     // Auto-export settings
-    private static final int EXPORT_INTERVAL_MINUTES = 5; // Export every 5 minutes
+    private static final int EXPORT_INTERVAL_MINUTES = 1; // Export every 1 minute
     private static final int MIN_DATA_POINTS_FOR_EXPORT = 10; // Minimum data points to trigger export
     
     public RealDataSlidingWindow() {

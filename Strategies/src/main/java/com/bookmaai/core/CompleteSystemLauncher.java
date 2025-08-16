@@ -135,8 +135,8 @@ public class CompleteSystemLauncher {
                     System.out.println(String.format("💚 [%s] Real Bookmap Data Active - %d sessions", 
                                      getCurrentTime(), sessionCount));
                     
-                    // Share status via Telegram occasionally
-                    if (Math.random() < 0.1) { // ~every 5 minutes
+                    // Share status via Telegram at regular intervals
+                    if (System.currentTimeMillis() % 300000 < 1000) { // Every 5 minutes
                         StringBuilder status = new StringBuilder();
                         status.append("📊 **Live Trading Status - REAL DATA**\n\n");
                         

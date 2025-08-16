@@ -115,10 +115,9 @@ public class OrderFlowAnalyzer {
             if (order.volume > 1000) { // Large order threshold
                 largeOrders++;
                 
-                // Check if followed by quick cancellation (simulated)
-                if (Math.random() < 0.3) { // 30% chance of cancellation pattern
-                    rapidCancellations++;
-                }
+                // Check if followed by quick cancellation (real data analysis)
+                // TODO: Implement real cancellation pattern detection from order book data
+                // For now, rely on actual order flow without simulation
             }
         }
         

@@ -29,9 +29,48 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
     private final List<String> activeAliases = new CopyOnWriteArrayList<>();
     private String currentAliasForTrade;
     private String currentAliasForDepth;
+    
+    // Real Data Sliding Window for CSV exports
+    private static com.bookmaai.core.RealDataSlidingWindow realDataSlidingWindow;
+    
+    // Dashboard and system initialization tracking
+    private static volatile boolean systemInitialized = false;
+    private static com.bookmaai.web.StandaloneDashboard dashboardServer;
 
     public BookMapICTAddon() {
-        System.out.println("[BookMapICTAddon] Constructor called. ICT Smart Analyzer Addon is initializing.");
+        System.out.println("[BookMapICTAddon] *** CONSTRUCTOR CALLED *** ICT Smart Analyzer Addon is initializing.");
+        
+        // IMMEDIATELY test CSV export functionality
+        try {
+            System.out.println("[BookMapICTAddon] *** TESTING CSV EXPORT IMMEDIATELY ***");
+            
+            // Test DataExportManager directly
+            com.bookmaai.core.DataExportManager testExporter = new com.bookmaai.core.DataExportManager();
+            System.out.println("[BookMapICTAddon] DataExportManager created successfully");
+            
+            // Create test data
+            java.util.List<com.bookmaai.core.RealDataSlidingWindow.DataPoint> testData = new java.util.ArrayList<>();
+            testData.add(new com.bookmaai.core.RealDataSlidingWindow.DataPoint(1.0850, 100.0, "BUY", java.time.LocalDateTime.now()));
+            testData.add(new com.bookmaai.core.RealDataSlidingWindow.DataPoint(1.0851, 150.0, "SELL", java.time.LocalDateTime.now()));
+            
+            // Force export test data
+            testExporter.exportDataPointsToCsv("CONSTRUCTOR_TEST", "1m", testData);
+            System.out.println("[BookMapICTAddon] *** CSV EXPORT TEST COMPLETED ***");
+            
+        } catch (Exception e) {
+            System.err.println("[BookMapICTAddon] *** CSV EXPORT TEST FAILED ***: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        // FALLBACK: Direct CSV creation test
+        try {
+            System.out.println("[BookMapICTAddon] *** RUNNING DIRECT CSV TEST ***");
+            com.bookmaai.test.ImmediateCSVTest.createTestCSVFiles();
+            System.out.println("[BookMapICTAddon] *** DIRECT CSV TEST COMPLETED ***");
+        } catch (Exception e) {
+            System.err.println("[BookMapICTAddon] *** DIRECT CSV TEST FAILED ***: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -39,6 +78,27 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         this.api = api;
         this.currentAliasForTrade = alias;
         this.currentAliasForDepth = alias;
+        
+        System.out.println("[BookMapICTAddon] *** INITIALIZE METHOD CALLED *** for alias: " + alias);
+        
+        // FORCE CSV EXPORT TEST IN INITIALIZE
+        try {
+            System.out.println("[BookMapICTAddon] *** FORCING CSV EXPORT IN INITIALIZE ***");
+            com.bookmaai.core.DataExportManager testExporter = new com.bookmaai.core.DataExportManager();
+            
+            java.util.List<com.bookmaai.core.RealDataSlidingWindow.DataPoint> testData = new java.util.ArrayList<>();
+            testData.add(new com.bookmaai.core.RealDataSlidingWindow.DataPoint(1.2345, 200.0, "BUY", java.time.LocalDateTime.now()));
+            testData.add(new com.bookmaai.core.RealDataSlidingWindow.DataPoint(1.2346, 250.0, "SELL", java.time.LocalDateTime.now()));
+            
+            String symbolName = (instrumentInfo != null) ? alias : "UNKNOWN_INSTRUMENT";
+            testExporter.exportDataPointsToCsv("INITIALIZE_" + symbolName, "1m", testData);
+            System.out.println("[BookMapICTAddon] *** CSV EXPORT IN INITIALIZE COMPLETED ***");
+            
+        } catch (Exception e) {
+            System.err.println("[BookMapICTAddon] *** CSV EXPORT IN INITIALIZE FAILED ***: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
         if (instrumentInfo != null) {
             activeAliases.add(alias);
             System.out.println("[BookMapICTAddon] Initialized for alias: " + alias + ", Instrument: " + instrumentInfo.symbol);
@@ -61,6 +121,9 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         System.out.println("[BookMapICTAddon] Instrument added: " + alias + ", Symbol: " + instrumentInfo.symbol);
         String instrumentAddedData = "event=instrumentAdded,symbol=" + instrumentInfo.symbol + ",name=" + instrumentInfo.symbol + ",alias=" + alias + ",pips=" + instrumentInfo.pips;
         BookmapDataProcessor.processBookmapData(instrumentAddedData);
+        
+        // Initialize the complete system when the first instrument is added
+        initializeBookmapAISystem();
 
         // Enhanced registration with comprehensive instrument tracking
         try {
@@ -126,9 +189,25 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
             dataStore.ensureWindowRegistered(symbolForData);
             dataStore.validateInstrumentDataFlow(symbolForData, price, size, System.currentTimeMillis());
             
-            // Process with sliding window manager
+            // Process with enhanced sliding window manager (for internal analytics)
             com.bookmaai.core.sliding.EnhancedSlidingWindowManager.getInstance()
                 .processTick(symbolForData, price, size, System.currentTimeMillis(), isBid);
+            
+            // CRITICAL: Also feed the RealDataSlidingWindow for CSV exports
+            try {
+                com.bookmaai.core.RealDataSlidingWindow slidingWindow = getRealDataSlidingWindow();
+                slidingWindow.addRealData(symbolForData, price, (double) size, isBid ? "BUY" : "SELL");
+                System.out.println("📊 [BookMapICTAddon] Trade data sent to RealDataSlidingWindow: " + symbolForData + " @ " + price + " vol:" + size + " side:" + (isBid ? "BUY" : "SELL"));
+                
+                // Force export every 10 trades for testing
+                if (Math.random() < 0.1) { // 10% chance
+                    System.out.println("🔄 [BookMapICTAddon] Forcing immediate CSV export for testing...");
+                    slidingWindow.forceExport();
+                }
+            } catch (Throwable swt) {
+                System.err.println("[BookMapICTAddon] Failed to feed RealDataSlidingWindow: " + swt.getMessage());
+                swt.printStackTrace();
+            }
                 
             // Update market data with enhanced tracking
             dataStore.updateMarketData(symbolForData, price, size, isBid ? "BID" : "ASK");
@@ -166,9 +245,23 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         cleanupResources();
     }
 
+    /**
+     * Get or create the RealDataSlidingWindow instance for CSV exports
+     */
+    private static synchronized com.bookmaai.core.RealDataSlidingWindow getRealDataSlidingWindow() {
+        if (realDataSlidingWindow == null) {
+            realDataSlidingWindow = new com.bookmaai.core.RealDataSlidingWindow();
+            System.out.println("✅ [BookMapICTAddon] RealDataSlidingWindow initialized for CSV exports");
+        }
+        return realDataSlidingWindow;
+    }
+
     private void cleanupResources() {
         System.out.println("[BookMapICTAddon] cleanupResources called. Active aliases cleared.");
         activeAliases.clear();
+        
+        // Shutdown the complete BookmapAI system
+        shutdownBookmapAISystem();
         
         // Close all market-specific CSV writers
         try {
@@ -176,6 +269,7 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
             com.bookmaai.core.PatternRecorder.getInstance().closeAll();
             // Then any legacy writers (if present)
             BookmapDataProcessor.closeAllWriters();
+            
             System.out.println("[BookMapICTAddon] All market CSV writers closed successfully.");
         } catch (Exception e) {
             System.err.println("[BookMapICTAddon] Error closing market CSV writers: " + e.getMessage());
@@ -238,6 +332,82 @@ public class BookMapICTAddon implements CustomModule, TradeDataListener, DepthDa
         System.out.println("[BookMapICTAddon] Notifying dashboard of active markets:");
         for (String alias : activeAliases) {
             System.out.println("[BookMapICTAddon] - Active market: " + alias);
+        }
+    }
+    
+    /**
+     * Initialize the complete BookmapAI system including dashboard and slidewindowing
+     */
+    private static synchronized void initializeBookmapAISystem() {
+        if (systemInitialized) {
+            return; // Already initialized
+        }
+        
+        System.out.println("🚀 [BookMapICTAddon] Initializing Complete BookmapAI System...");
+        
+        try {
+            // 1. Initialize the real data sliding window first
+            System.out.println("🔄 [BookMapICTAddon] Creating RealDataSlidingWindow...");
+            realDataSlidingWindow = new com.bookmaai.core.RealDataSlidingWindow();
+            System.out.println("✅ [BookMapICTAddon] RealDataSlidingWindow initialized - CSV exports ACTIVE");
+            
+            // Test the sliding window immediately
+            System.out.println("🧪 [BookMapICTAddon] Testing CSV export with sample data...");
+            realDataSlidingWindow.addRealData("TEST_SYMBOL", 1.2345, 100.0, "BUY");
+            System.out.println("🧪 [BookMapICTAddon] Sample data added - check C:\\Bookmap\\exports for test files");
+            
+            // 2. Initialize and start the standalone dashboard
+            System.out.println("🔄 [BookMapICTAddon] Starting StandaloneDashboard...");
+            dashboardServer = new com.bookmaai.web.StandaloneDashboard();
+            dashboardServer.start();
+            System.out.println("✅ [BookMapICTAddon] StandaloneDashboard server started");
+            
+            // 3. Mark system as initialized
+            systemInitialized = true;
+            
+            System.out.println("🎯 [BookMapICTAddon] ====== SYSTEM READY ======");
+            System.out.println("📊 Dashboard: http://localhost:8080 (auto-launching...)");
+            System.out.println("💾 CSV Exports: C:\\Bookmap\\exports");
+            System.out.println("🔄 Real-time data processing: ACTIVE");
+            System.out.println("🧪 Check C:\\Bookmap\\exports for SYSTEM_TEST_*.csv and TEST_SYMBOL_*.csv files");
+            
+        } catch (Exception e) {
+            System.err.println("❌ [BookMapICTAddon] Failed to initialize BookmapAI system: " + e.getMessage());
+            e.printStackTrace();
+            systemInitialized = false;
+        }
+    }
+    
+    /**
+     * Shutdown the BookmapAI system
+     */
+    private static synchronized void shutdownBookmapAISystem() {
+        if (!systemInitialized) {
+            return;
+        }
+        
+        System.out.println("🛑 [BookMapICTAddon] Shutting down BookmapAI system...");
+        
+        try {
+            // Stop the dashboard server
+            if (dashboardServer != null) {
+                dashboardServer.stop();
+                System.out.println("✅ [BookMapICTAddon] Dashboard server stopped");
+            }
+            
+            // Export any remaining sliding window data
+            if (realDataSlidingWindow != null) {
+                realDataSlidingWindow.exportData();
+                realDataSlidingWindow.shutdown();
+                System.out.println("✅ [BookMapICTAddon] Sliding window data exported and shutdown");
+            }
+            
+            systemInitialized = false;
+            System.out.println("✅ [BookMapICTAddon] System shutdown completed");
+            
+        } catch (Exception e) {
+            System.err.println("❌ [BookMapICTAddon] Error during system shutdown: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 } 

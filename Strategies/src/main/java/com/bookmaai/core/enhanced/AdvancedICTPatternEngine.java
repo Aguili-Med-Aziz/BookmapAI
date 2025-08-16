@@ -532,17 +532,10 @@ public class AdvancedICTPatternEngine {
         List<PriceData> candles = new ArrayList<>();
         double basePrice = currentData.getPrice();
         
-        // Generate 30 recent candles with realistic price action
-        for (int i = 29; i >= 0; i--) {
-            double variation = (Math.random() - 0.5) * 0.002; // ±0.1% variation
-            double price = basePrice + variation;
-            double open = price + (Math.random() - 0.5) * 0.0005;
-            double high = Math.max(open, price) + Math.random() * 0.0003;
-            double low = Math.min(open, price) - Math.random() * 0.0003;
-            double volume = 100000 + Math.random() * 200000;
-            
-            candles.add(new PriceData(symbol, open, high, low, price, volume));
-        }
+        // Use real price data from Bookmap - no simulation
+        // TODO: Implement real candle data collection from actual market feeds
+        // For now, return empty list until real data is available
+        System.out.println("⚠️ [ICTPattern] No simulated candles - waiting for real Bookmap data");
         
         return candles;
     }
